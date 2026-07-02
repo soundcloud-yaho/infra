@@ -1,0 +1,1 @@
+# [Values] Karpenter — clusterName/IRSA ARN/SQS 큐명 <- terraform outputs에서 복사. nodeSelector: System 노드그룹 고정(자기가 만든 노드에 타면 안 됨)

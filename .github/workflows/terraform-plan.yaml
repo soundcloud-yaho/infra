@@ -1,0 +1,1 @@
+# [CI] terraform/ 경로 변경 PR에만 terraform plan 결과 코멘트. apply는 로컬 수동 (사고 방지)
