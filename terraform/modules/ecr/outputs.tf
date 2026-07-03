@@ -1,4 +1,7 @@
-# [ECR] 모듈 출력 값 - CI 워크플로우와 deployment.yaml 이미지 경로에 사용
-output "repository_urls" {
-  value = { for k, v in aws_ecr_repository.this : k => v.repository_url }
+# repository_urls 맵 → 개별 output으로 분리
+output "backend_repository_url" {
+  value = aws_ecr_repository.this["backend"].repository_url
+}
+output "ai_repository_url" {
+  value = aws_ecr_repository.this["ai"].repository_url
 }

@@ -44,11 +44,6 @@ variable "master_username" {
   type        = string
   default     = "app_admin"
 }
-variable "master_password" {
-  description = "tfvars에 절대 평문 저장 금지 - export TF_VAR_db_master_password=... 로 주입"
-  type        = string
-  sensitive   = true
-}
 variable "db_instance_class" {
   description = "Aurora 인스턴스 사양 - 데모 규모용 최소 사양"
   type        = string

@@ -15,3 +15,7 @@ output "lb_controller_role_arn" {
   description = "-> k8s/values/aws-lb-controller-values.yaml의 serviceAccount annotation"
   value       = aws_iam_role.lb_controller.arn
 }
+output "kms_key_arn" {
+  description = "Aurora 암호화 KMS 키 ARN - database 모듈로 전달"
+  value       = aws_kms_key.this.arn
+}

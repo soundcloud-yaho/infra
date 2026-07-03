@@ -6,7 +6,7 @@
 #
 # ALB 자체는 LB Controller가 Ingress 보고 자동 생성 - 여기선 SG만 미리 만들어둠
 # LB Controller가 이 alb_sg를 Ingress 어노테이션으로 지정해서 사용
-
+data "aws_caller_identity" "current" {}
 # ---------- ALB SG: 인터넷에서 80/443만 허용 ----------
 resource "aws_security_group" "alb" {
   name        = "${var.project_name}-${var.environment}-alb-sg"
@@ -118,4 +118,48 @@ resource "aws_iam_role" "lb_controller" {
 resource "aws_iam_role_policy_attachment" "lb_controller" {
   role       = aws_iam_role.lb_controller.name
   policy_arn = aws_iam_policy.lb_controller.arn
+}
+
+resource "aws_kms_key" "this" {
+  description             = "${var.project_name}-${var.environment} Aurora 암호화 키"
+  deletion_window_in_days = 7
+  enable_key_rotation     = true
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        # root 계정 전체 접근 (필수 - 없으면 키 관리 자체가 안 됨)
+        Sid    = "EnableRootAccess"
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        }
+        Action   = "kms:*"
+        Resource = "*"
+      },
+      {
+        # Aurora가 암호화/복호화에 키 사용
+        Sid    = "AllowAuroraService"
+        Effect = "Allow"
+        Principal = {
+          Service = "rds.amazonaws.com"
+        }
+        Action = [
+          "kms:Decrypt",
+          "kms:GenerateDataKey",
+          "kms:CreateGrant",
+          "kms:DescribeKey"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+
+  tags = { Name = "${var.project_name}-${var.environment}-kms" }
+}
+
+resource "aws_kms_alias" "this" {
+  name          = "alias/${var.project_name}-${var.environment}-aurora"
+  target_key_id = aws_kms_key.this.key_id
 }
