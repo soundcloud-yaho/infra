@@ -1,88 +1,121 @@
-# [Security 코어 모듈] 최전방 웹 레이어 보안 및 암호화 경계 설정
-# - 악성 매크로 봇 차단 및 L7 Layer DDoS 공격 방어를 위한 AWS WAF(Web ACL) 규칙 정의
-# - 데이터베이스 및 클러스터 비밀 자산 암호화를 위한 KMS 고객 관리형 키(CMK) 구성
+# [Security] SG 최소 권한 체인(ALB → EKS Node → Aurora) + LB Controller IRSA
+#
+# SG 체인 구조:
+#   인터넷 → ALB SG(80/443) → EKS Node SG(app_port만) → Aurora SG(5432만)
+#   각 SG가 이전 SG를 소스로 참조해서 IP가 아닌 SG 단위로 화이트리스트 관리
+#
+# ALB 자체는 LB Controller가 Ingress 보고 자동 생성 - 여기선 SG만 미리 만들어둠
+# LB Controller가 이 alb_sg를 Ingress 어노테이션으로 지정해서 사용
 
-resource "aws_wafv2_web_acl" "this" {
-  name        = "${var.project_name}-${var.environment}-web-acl"
-  description = "Web ACL for ${var.project_name} ${var.environment}"
-  scope       = "REGIONAL"
+# ---------- ALB SG: 인터넷에서 80/443만 허용 ----------
+resource "aws_security_group" "alb" {
+  name        = "${var.project_name}-${var.environment}-alb-sg"
+  description = "ALB inbound: 80/443 from internet"
+  vpc_id      = var.vpc_id
 
-  default_action {
-    allow {}
+  ingress {
+    description = "HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    description = "HTTPS"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
-  rule {
-    name     = "AWSManagedRulesCommonRuleSet"
-    priority = 1
-
-    override_action {
-      none {}
-    }
-
-    statement {
-      managed_rule_group_statement {
-        name        = "AWSManagedRulesCommonRuleSet"
-        vendor_name = "AWS"
-      }
-    }
-
-    visibility_config {
-      cloudwatch_metrics_enabled = true
-      metric_name                = "${var.project_name}-${var.environment}-common-rules"
-      sampled_requests_enabled   = true
-    }
-  }
-
-  rule {
-    name     = "AWSManagedRulesKnownBadInputsRuleSet"
-    priority = 2
-
-    override_action {
-      none {}
-    }
-
-    statement {
-      managed_rule_group_statement {
-        name        = "AWSManagedRulesKnownBadInputsRuleSet"
-        vendor_name = "AWS"
-      }
-    }
-
-    visibility_config {
-      cloudwatch_metrics_enabled = true
-      metric_name                = "${var.project_name}-${var.environment}-bad-inputs"
-      sampled_requests_enabled   = true
-    }
-  }
-
-  visibility_config {
-    cloudwatch_metrics_enabled = true
-    metric_name                = "${var.project_name}-${var.environment}-web-acl"
-    sampled_requests_enabled   = true
-  }
-
-  tags = {
-    Name        = "${var.project_name}-${var.environment}-web-acl"
-    Project     = var.project_name
-    Environment = var.environment
-    ManagedBy   = "terraform"
-  }
+  tags = { Name = "${var.project_name}-${var.environment}-alb-sg" }
 }
 
-resource "aws_kms_key" "this" {
-  description             = "${var.project_name}-${var.environment} KMS key for Aurora and EKS secrets"
-  deletion_window_in_days = 7
-  enable_key_rotation     = true
+# ---------- EKS Node SG: ALB에서 app_port만 + 노드 간 통신 ----------
+resource "aws_security_group" "eks_node" {
+  name        = "${var.project_name}-${var.environment}-eks-node-sg"
+  description = "EKS worker nodes: app traffic from ALB + node-to-node"
+  vpc_id      = var.vpc_id
 
-  tags = {
-    Name        = "${var.project_name}-${var.environment}-kms"
-    Project     = var.project_name
-    Environment = var.environment
-    ManagedBy   = "terraform"
+  ingress {
+    description     = "App traffic from ALB (target-type: ip)"
+    from_port       = var.app_port
+    to_port         = var.app_port
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb.id]
   }
+  ingress {
+    description = "Node-to-node (Karpenter 노드 포함, 모든 포트)"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    self        = true
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = { Name = "${var.project_name}-${var.environment}-eks-node-sg" }
 }
 
-resource "aws_kms_alias" "this" {
-  name          = "alias/${var.project_name}-${var.environment}"
-  target_key_id = aws_kms_key.this.key_id
+# ---------- Aurora SG: EKS Node에서 5432만 허용 ----------
+resource "aws_security_group" "aurora" {
+  name        = "${var.project_name}-${var.environment}-aurora-sg"
+  description = "Aurora: PostgreSQL only from EKS nodes"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    description     = "PostgreSQL from EKS nodes/pods"
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
+    security_groups = [aws_security_group.eks_node.id]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = { Name = "${var.project_name}-${var.environment}-aurora-sg" }
+}
+
+# ---------- AWS Load Balancer Controller IRSA ----------
+resource "aws_iam_policy" "lb_controller" {
+  name   = "${var.project_name}-${var.environment}-lb-controller-policy"
+  policy = file("${path.module}/lb_controller_policy.json")
+}
+
+resource "aws_iam_role" "lb_controller" {
+  name = "${var.project_name}-${var.environment}-lb-controller"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect    = "Allow"
+      Principal = { Federated = var.oidc_provider_arn }
+      Action    = "sts:AssumeRoleWithWebIdentity"
+      Condition = {
+        StringEquals = {
+          "${var.oidc_issuer}:sub" = "system:serviceaccount:kube-system:aws-load-balancer-controller"
+          "${var.oidc_issuer}:aud" = "sts.amazonaws.com"
+        }
+      }
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "lb_controller" {
+  role       = aws_iam_role.lb_controller.name
+  policy_arn = aws_iam_policy.lb_controller.arn
 }

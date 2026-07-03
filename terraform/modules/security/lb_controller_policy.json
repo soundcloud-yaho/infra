@@ -1,0 +1,1 @@
+{ "TODO": "curl -o lb_controller_policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/main/docs/install/iam_policy.json 실행 후 이 파일을 교체할 것" }
