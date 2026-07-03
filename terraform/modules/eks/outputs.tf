@@ -14,5 +14,5 @@ output "cluster_security_group_id" {
 output "oidc_provider_arn" { value = aws_iam_openid_connect_provider.this.arn }
 output "oidc_issuer" {
   description = "https:// 제거된 issuer - IRSA 신뢰 정책 조건에 사용"
-  value       = replace(aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")
+  value       = replace(aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "") 
 }
