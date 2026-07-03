@@ -3,3 +3,4 @@ module "frontend" {
   source = "../../modules/frontend"
   name   = var.name
 }
+ 
