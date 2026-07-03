@@ -16,7 +16,7 @@ variable "db_subnet_ids" {
   type        = list(string)
 }
 variable "security_group_id" {
-  description = "Aurora 인바운드 허용 SG ID - security 모듈 output에서 전달"
+  description = "Aurora 인바운드 허용 SG ID - security 모듈 output에서 전달" 
   type        = string
 }
 variable "kms_key_arn" {
