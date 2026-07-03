@@ -1,1 +1,5 @@
-# [호출] ecr 모듈 — backend/ai 저장소
+# [호출] ecr 모듈
+module "ecr" {
+  source = "../../modules/ecr"
+  name   = var.name
+}
