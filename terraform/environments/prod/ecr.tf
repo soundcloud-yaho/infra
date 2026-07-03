@@ -1,1 +1,9 @@
-# [호출] ecr 모듈 — backend/ai 저장소
+# 컨테이너 이미지 저장을 위한 ECR Repository 프로비저닝
+
+module "ecr" {
+  source = "../../modules/ecr"
+
+  project_name     = var.project_name
+  environment      = var.environment
+  repository_names = var.ecr_repository_names
+}
