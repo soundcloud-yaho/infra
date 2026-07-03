@@ -11,3 +11,8 @@ output "database_name" {
   description = "DB 이름 - K8s Secret의 DB_NAME 값"
   value       = aws_rds_cluster.this.database_name
 }
+output "master_user_secret_arn" {
+  description = "Aurora 마스터 비밀번호 Secret ARN - K8s Secret 생성 시 참조"
+  value       = aws_rds_cluster.this.master_user_secret[0].secret_arn
+  sensitive   = true
+}

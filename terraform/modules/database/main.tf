@@ -22,7 +22,7 @@ resource "aws_rds_cluster" "this" {
   engine_version                  = var.db_engine_version      # engine_version → db_engine_version
   database_name                   = var.database_name
   master_username                 = var.master_username
-  master_password                 = var.master_password
+  manage_master_user_password = true
   db_subnet_group_name            = aws_db_subnet_group.this.name
   db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.this.name
   vpc_security_group_ids          = [var.security_group_id]    # aurora_security_group_id → security_group_id

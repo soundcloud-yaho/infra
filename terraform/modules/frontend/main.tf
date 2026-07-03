@@ -2,8 +2,8 @@
 # 버킷은 퍼블릭 차단, CloudFront만 OAC로 읽기 허용 -> S3 URL 직접 접근 시 403이 정상
 
 resource "aws_s3_bucket" "frontend" {
-  bucket        = "${var.name}-frontend-${data.aws_caller_identity.current.account_id}" # 전역 유일해야 해서 계정ID 접미사
-  force_destroy = true # 졸업 프로젝트용 - destroy 시 파일 있어도 삭제 허용
+  bucket        = "${var.project_name}-${var.environment}-frontend-${data.aws_caller_identity.current.account_id}" # 전역 유일해야 해서 계정ID 접미사
+  force_destroy = true
 }
 
 data "aws_caller_identity" "current" {}
@@ -19,7 +19,7 @@ resource "aws_s3_bucket_public_access_block" "frontend" {
 
 # ---------- CloudFront 배포 ----------
 resource "aws_cloudfront_origin_access_control" "frontend" {
-  name                              = "${var.name}-frontend-oac"
+  name                              = "${var.project_name}-${var.environment}-frontend-oac"
   origin_access_control_origin_type = "s3"
   signing_behavior                  = "always"
   signing_protocol                  = "sigv4"
@@ -87,12 +87,13 @@ resource "aws_s3_bucket_policy" "frontend" {
     }]
   })
 
-  depends_on = [aws_s3_bucket_public_access_block.frontend]
+  depends_on = [aws_s3_bucket.frontend,
+aws_s3_bucket_public_access_block.frontend]
 }
 
 # ---------- CI가 s3 sync / cloudfront invalidation을 실행할 IAM 유저 (또는 OIDC 연동 권장) ----------
 resource "aws_iam_policy" "frontend_deploy" {
-  name = "${var.name}-frontend-deploy"
+  name = "${var.project_name}-${var.environment}-frontend-deploy"
 
   policy = jsonencode({
     Version = "2012-10-17"

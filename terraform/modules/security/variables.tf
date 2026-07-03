@@ -11,10 +11,7 @@ variable "vpc_id" {
   description = "SG를 생성할 VPC ID"
   type        = string
 }
-variable "eks_cluster_security_group_id" {
-  description = "EKS 클러스터 SG ID - Aurora 인바운드 소스로 사용"
-  type        = string
-}
+
 variable "oidc_provider_arn" {
   description = "IRSA용 OIDC 프로바이더 ARN"
   type        = string

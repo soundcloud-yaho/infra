@@ -21,18 +21,13 @@ output "database_subnet_ids" {
 }
 
 output "eks_cluster_name" {
-  description = "EKS Cluster Name"
-  value       = module.compute.cluster_name
+  value = module.eks.cluster_name      # compute → eks
 }
-
 output "eks_cluster_endpoint" {
-  description = "EKS Cluster Endpoint"
-  value       = module.compute.cluster_endpoint
+  value = module.eks.cluster_endpoint  # compute → eks
 }
-
 output "eks_oidc_issuer" {
-  description = "EKS OIDC Issuer URL"
-  value       = module.compute.oidc_issuer
+  value = module.eks.oidc_issuer       # compute → eks
 }
 
 output "backend_repository_url" {
