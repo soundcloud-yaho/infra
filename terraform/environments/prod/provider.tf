@@ -1,1 +1,4 @@
-# [Provider] AWS 리전 ap-northeast-2, 공통 태그(Project/Owner) 주입
+# 프로덕션 환경 AWS 제공자(Provider) 및 필수 플러그인 버전 정의
+provider "aws" {
+  region = "ap-northeast-2" # 대한민국 서울 단일 리전 타겟팅
+}
