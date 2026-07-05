@@ -1,6 +1,6 @@
 # [ECR] 이미지 저장소 2개 (backend / ai) + 수명주기 정책
 resource "aws_ecr_repository" "this" {
-  for_each = toset(var.repository_names)
+  for_each = toset(var.ecr_repository_names)
   name     = "${var.project_name}-${var.environment}/${each.value}"
 
   image_scanning_configuration {

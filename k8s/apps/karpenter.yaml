@@ -1,1 +1,30 @@
-# [App] Karpenter 헬름 차트 + values + NodePool 매니페스트
+# [App] Karpenter 배포 - 헬름 차트(공식 OCI 저장소) + 우리 values + NodePool 매니페스트
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: karpenter
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: public.ecr.aws/karpenter
+      chart: karpenter
+      targetRevision: 1.5.0
+      helm:
+        valueFiles:
+          - $values/k8s/values/karpenter-values.yaml
+    - repoURL: https://github.com/CHANGEME_ORG/worldcup-infra.git
+      targetRevision: main
+      ref: values
+    - repoURL: https://github.com/CHANGEME_ORG/worldcup-infra.git
+      targetRevision: main
+      path: k8s/manifests/karpenter
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true

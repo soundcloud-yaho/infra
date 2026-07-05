@@ -109,8 +109,8 @@ resource "aws_cloudwatch_event_target" "interruption" {
 
 # ---------- 컨트롤러 IRSA Role ----------
 # kube-system 네임스페이스의 karpenter ServiceAccount만 이 Role을 쓸 수 있다
-resource "aws_iam_role" "controller" {
-  name = "${var.cluster_name}-karpenter-controller"
+  resource "aws_iam_role" "controller" {
+    name = "${var.cluster_name}-karpenter-controller"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"

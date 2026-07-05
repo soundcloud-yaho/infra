@@ -16,13 +16,66 @@ variable "private_subnet_ids" {
 }
 
 variable "system_instance_types" {
-  description = "System 노드그룹 인스턴스 타입 - 관제 파드(Prometheus 등)가 무거우면 t3.large로"
+  description = "System 노드그룹 인스턴스 타입"
   type        = list(string)
   default     = ["t3.medium"]
 }
-
 variable "system_desired_size" {
-  description = "System 노드그룹 노드 수 - 최소 2개 권장 (단일 장애점 방지)"
+  description = "System 노드그룹 desired 노드 수"
+  type        = number
+  default     = 2
+}
+variable "system_min_size" {
+  description = "System 노드그룹 최소 노드 수"
+  type        = number
+  default     = 2
+}
+variable "system_max_size" {
+  description = "System 노드그룹 최대 노드 수"
+  type        = number
+  default     = 3
+}
+
+# ---------- AI 노드그룹 변수 ----------
+variable "ai_instance_types" {
+  description = "AI 노드그룹 인스턴스 타입 - 메모리 위주 (NeuralProphet 학습용)"
+  type        = list(string)
+  default     = ["m5.large"]
+}
+variable "ai_desired_size" {
+  description = "AI 노드그룹 desired 노드 수"
+  type        = number
+  default     = 1
+}
+variable "ai_min_size" {
+  description = "AI 노드그룹 최소 노드 수"
+  type        = number
+  default     = 1
+}
+variable "ai_max_size" {
+  description = "AI 노드그룹 최대 노드 수"
+  type        = number
+  default     = 2
+}
+
+# ---------- Worker 노드그룹 변수 ----------
+variable "worker_instance_types" {
+  description = "Worker 노드그룹 인스턴스 타입 - FastAPI 베이스라인"
+  type        = list(string)
+  default     = ["t3.medium"]
+}
+variable "worker_desired_size" {
+  description = "Worker 노드그룹 desired 노드 수"
+  type        = number
+  default     = 1
+}
+variable "worker_min_size" {
+  description = "Worker 노드그룹 최소 노드 수"
+  type        = number
+  default     = 1
+}
+variable "worker_max_size" {
+  description = "Worker 노드그룹 최대 노드 수"
   type        = number
   default     = 2
 }

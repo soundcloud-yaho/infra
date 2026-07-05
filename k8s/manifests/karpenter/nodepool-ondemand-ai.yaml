@@ -1,1 +1,0 @@
-# [Karpenter] AI 전용 NodePool — On-Demand 고정(학습 중 회수 방지) + taint(허가증 없는 파드 진입 차단)

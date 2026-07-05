@@ -24,8 +24,8 @@ public_subnet_cidrs = [
 ]
 
 private_subnet_cidrs = [
-  "10.0.11.0/24",
-  "10.0.12.0/24"
+  "10.0.32.0/19",
+  "10.0.64.0/19"
 ]
 
 database_subnet_cidrs = [
@@ -33,20 +33,27 @@ database_subnet_cidrs = [
   "10.0.22.0/24"
 ]
 
-enable_nat_gateway = true
 
 # =====================================================
 # Compute Configuration
 # =====================================================
 
-cluster_version = "1.31"
+  cluster_version = "1.33"
 
-node_instance_types = ["t3.medium"]
+system_instance_types = ["t3.medium"]
+system_desired_size = 2
+system_min_size = 2
+system_max_size = 3
 
-node_desired_size = 2
-node_min_size     = 1
-node_max_size     = 3
+ai_instance_types = ["m5.large"]
+ai_desired_size   = 1
+ai_min_size       = 1
+ai_max_size       = 2
 
+worker_instance_types = ["t3.medium"]
+worker_desired_size   = 1
+worker_min_size       = 1
+worker_max_size       = 2
 # =====================================================
 # Application Configuration
 # =====================================================
