@@ -1,1 +1,23 @@
-# [Karpenter] EC2NodeClass — AMI 패밀리, discovery 태그 셀렉터, 노드 IAM Role
+# [Karpenter] EC2NodeClass - "어떤 사양의 노드를 어디에 띄울지" 하드웨어 명세서
+apiVersion: karpenter.k8s.aws/v1
+kind: EC2NodeClass
+metadata:
+  name: default
+spec:
+  amiSelectorTerms:
+    - alias: al2023@latest
+
+  role: soundcloud-prod-eks-karpenter-node
+
+  subnetSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: soundcloud-prod-eks
+
+  securityGroupSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: soundcloud-prod-eks
+
+  tags:
+    Project: soundcloud      
+    Environment: prod        
+    ManagedBy: karpenter   

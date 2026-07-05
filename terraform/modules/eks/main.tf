@@ -89,15 +89,60 @@ resource "aws_eks_node_group" "system" {
   capacity_type   = "ON_DEMAND" # 관제탑은 절대 Spot 금지
 
   scaling_config {
-    desired_size = var.system_desired_size
-    min_size     = var.system_desired_size
-    max_size     = var.system_desired_size + 1
-  }
+  desired_size = var.system_desired_size
+  min_size     = var.system_min_size
+  max_size     = var.system_max_size
+}
 
   labels = { role = "system" } # karpenter values의 nodeSelector와 짝
 
   depends_on = [aws_iam_role_policy_attachment.node]
 }
+resource "aws_eks_node_group" "ai" {
+  cluster_name    = aws_eks_cluster.this.name
+  node_group_name = "${var.cluster_name}-ai"
+  node_role_arn   = aws_iam_role.node.arn
+  subnet_ids      = var.private_subnet_ids
+  instance_types  = var.ai_instance_types
+  capacity_type   = "ON_DEMAND"
+
+  scaling_config {
+    desired_size = var.ai_desired_size
+    min_size     = var.ai_min_size
+    max_size     = var.ai_max_size
+  }
+
+  labels = { role = "ai" }
+
+  # AI CronJob만 진입 허용 - toleration 없는 파드 차단
+  taint {
+    key    = "dedicated"
+    value  = "ai"
+    effect = "NO_SCHEDULE"
+  }
+
+  depends_on = [aws_iam_role_policy_attachment.node]
+}
+
+# ---------- Worker 관리형 노드그룹 (FastAPI 베이스라인, 항상 ON_DEMAND 1개 유지) ----------
+resource "aws_eks_node_group" "worker" {
+  cluster_name    = aws_eks_cluster.this.name
+  node_group_name = "${var.cluster_name}-worker"
+  node_role_arn   = aws_iam_role.node.arn
+  subnet_ids      = var.private_subnet_ids
+  instance_types  = var.worker_instance_types
+  capacity_type   = "ON_DEMAND"
+
+  scaling_config {
+    desired_size = var.worker_desired_size
+    min_size     = var.worker_min_size
+    max_size     = var.worker_max_size
+  }
+
+  labels = { role = "worker" }
+
+  depends_on = [aws_iam_role_policy_attachment.node]
+}   
 
 # ---------- 필수 애드온 ----------
 resource "aws_eks_addon" "vpc_cni" {

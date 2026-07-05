@@ -45,11 +45,6 @@ variable "database_subnet_cidrs" {
   type        = list(string)
 }
 
-variable "enable_nat_gateway" {
-  description = "NAT Gateway 생성 여부"
-  type        = bool
-  default     = true
-}
 
 # =====================================================
 # Security Configuration
@@ -70,32 +65,72 @@ variable "allowed_http_cidrs" {
 variable "cluster_version" {
   description = "EKS Kubernetes 버전"
   type        = string
-  default     = "1.31"
+  default     = "1.33"
 }
-
-variable "node_instance_types" {
-  description = "EKS Managed Node Group 인스턴스 타입"
+variable "system_instance_types" {
+  description = "System 노드그룹 인스턴스 타입"
   type        = list(string)
   default     = ["t3.medium"]
 }
-
-variable "node_desired_size" {
-  description = "EKS NodeGroup Desired Size"
+variable "system_desired_size" {
+  description = "System 노드그룹 desired 노드 수"
+  type        = number
+  default     = 2
+}
+variable "system_min_size" {
+  description = "System 노드그룹 최소 노드 수"
+  type        = number
+  default     = 2
+}
+variable "system_max_size" {
+  description = "System 노드그룹 최대 노드 수"
+  type        = number
+  default     = 3
+}
+# ---------- AI 노드그룹 ----------
+variable "ai_instance_types" {
+  description = "AI 노드그룹 인스턴스 타입"
+  type        = list(string)
+  default     = ["m5.large"]
+}
+variable "ai_desired_size" {
+  description = "AI 노드그룹 desired 노드 수"
+  type        = number
+  default     = 1
+}
+variable "ai_min_size" {
+  description = "AI 노드그룹 최소 노드 수"
+  type        = number
+  default     = 1
+}
+variable "ai_max_size" {
+  description = "AI 노드그룹 최대 노드 수"
   type        = number
   default     = 2
 }
 
-variable "node_min_size" {
-  description = "EKS NodeGroup Minimum Size"
+# ---------- Worker 노드그룹 ----------
+variable "worker_instance_types" {
+  description = "Worker 노드그룹 인스턴스 타입"
+  type        = list(string)
+  default     = ["t3.medium"]
+}
+variable "worker_desired_size" {
+  description = "Worker 노드그룹 desired 노드 수"
   type        = number
   default     = 1
 }
-
-variable "node_max_size" {
-  description = "EKS NodeGroup Maximum Size"
+variable "worker_min_size" {
+  description = "Worker 노드그룹 최소 노드 수"
   type        = number
-  default     = 3
+  default     = 1
 }
+variable "worker_max_size" {
+  description = "Worker 노드그룹 최대 노드 수"
+  type        = number
+  default     = 2
+}
+
 
 # =====================================================
 # Application Configuration
@@ -132,11 +167,6 @@ variable "master_username" {
   type        = string
 }
 
-variable "master_password" {
-  description = "Master Password"
-  type        = string
-  sensitive   = true
-}
 
 variable "db_engine_version" {
   description = "Aurora PostgreSQL Engine Version"

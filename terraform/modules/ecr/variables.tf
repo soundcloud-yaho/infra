@@ -9,7 +9,7 @@ variable "environment" {
   type        = string
 }
 
-variable "repositories" {
+variable "ecr_repository_names" {
   description = "생성할 ECR 저장소 이름 목록"
   type        = list(string)
   default     = ["backend", "ai"]

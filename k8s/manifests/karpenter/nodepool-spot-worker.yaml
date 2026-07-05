@@ -1,1 +1,37 @@
-# [Karpenter] 서비스 워커 NodePool — Spot, 인스턴스 타입 4~6종 다양화, CPU 상한 설정
+# [Karpenter] 서비스 워커 NodePool - Spot, 경기 시간대 버스트 담당
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: spot-worker
+spec:
+  template:
+    metadata:
+      labels:
+        role: worker
+    spec:
+      nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+        name: default
+      requirements:
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values: ["spot"]
+        - key: karpenter.k8s.aws/instance-family
+          operator: In
+          values: ["c5", "c6i", "m5", "m6i"]
+        - key: karpenter.k8s.aws/instance-size
+          operator: In
+          values: ["large", "xlarge"]
+        - key: kubernetes.io/arch
+          operator: In
+          values: ["amd64"]
+      expireAfter: 24h 
+
+  limits:
+    cpu: "32"
+    memory: 64Gi
+
+  disruption:
+    consolidationPolicy: WhenEmptyOrUnderutilized
+    consolidateAfter: 180s

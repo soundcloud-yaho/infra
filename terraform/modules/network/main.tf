@@ -16,27 +16,27 @@ resource "aws_internet_gateway" "this" {
 
 # ---------- Public Subnet (ALB, NAT 배치) ----------
 resource "aws_subnet" "public" {
-  count                   = length(var.azs)
+  count                   = length(var.availability_zones)
   vpc_id                  = aws_vpc.this.id
-  cidr_block              = var.public_cidrs[count.index]
-  availability_zone       = var.azs[count.index]
+  cidr_block              = var.public_subnet_cidrs[count.index]
+  availability_zone       = var.availability_zones[count.index]
   map_public_ip_on_launch = true
 
   tags = {
-    Name                     = "${var.project_name}-${var.environment}-public-${var.azs[count.index]}"
+    Name                     = "${var.project_name}-${var.environment}-public-${var.availability_zones[count.index]}"
     "kubernetes.io/role/elb" = "1" # LB Controller가 인터넷용 ALB를 놓을 서브넷 식별 태그
   }
 }
 
 # ---------- Private Subnet (EKS 워커 노드) ----------
 resource "aws_subnet" "private" {
-  count             = length(var.azs)
+  count             = length(var.availability_zones)
   vpc_id            = aws_vpc.this.id
-  cidr_block        = var.private_cidrs[count.index]
-  availability_zone = var.azs[count.index]
+  cidr_block        = var.private_subnet_cidrs[count.index]
+  availability_zone = var.availability_zones[count.index]
 
   tags = {
-    Name                              = "${var.project_name}-${var.environment}-private-${var.azs[count.index]}"
+    Name                              = "${var.project_name}-${var.environment}-private-${var.availability_zones[count.index]}"
     "kubernetes.io/role/internal-elb" = "1"              # 내부용 LB 서브넷 식별
     "karpenter.sh/discovery"          = var.cluster_name # Karpenter가 노드 띄울 서브넷 자동 발견
   }
@@ -44,12 +44,12 @@ resource "aws_subnet" "private" {
 
 # ---------- DB Subnet (Aurora 전용, 인터넷 경로 없음) ----------
 resource "aws_subnet" "db" {
-  count             = length(var.azs)
+  count             = length(var.availability_zones)
   vpc_id            = aws_vpc.this.id
-  cidr_block        = var.db_cidrs[count.index]
-  availability_zone = var.azs[count.index]
+  cidr_block        = var.database_subnet_cidrs[count.index]
+  availability_zone = var.availability_zones[count.index]
 
-  tags = { Name = "${var.project_name}-${var.environment}-db-${var.azs[count.index]}" }
+  tags = { Name = "${var.project_name}-${var.environment}-db-${var.availability_zones[count.index]}" }
 }
 
 # ---------- NAT Gateway (1개 - 비용 절약. 프로덕션이면 AZ당 1개) ----------
@@ -78,7 +78,7 @@ resource "aws_route_table" "public" {
 }
 
 resource "aws_route_table_association" "public" {
-  count          = length(var.azs)
+  count          = length(var.availability_zones)
   subnet_id      = aws_subnet.public[count.index].id
   route_table_id = aws_route_table.public.id
 }
@@ -94,7 +94,7 @@ resource "aws_route_table" "private" {
 }
 
 resource "aws_route_table_association" "private" {
-  count          = length(var.azs)
+  count          = length(var.availability_zones)
   subnet_id      = aws_subnet.private[count.index].id
   route_table_id = aws_route_table.private.id
 }
@@ -106,7 +106,7 @@ resource "aws_route_table" "db" {
 }
 
 resource "aws_route_table_association" "db" {
-  count          = length(var.azs)
+  count          = length(var.availability_zones)
   subnet_id      = aws_subnet.db[count.index].id
   route_table_id = aws_route_table.db.id
 }

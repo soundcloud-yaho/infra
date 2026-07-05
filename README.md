@@ -28,7 +28,7 @@ VPC는 3계층(Public / Private / DB subnet), EKS 워커는 **노드 그룹 3분
 | AI/MLOps | On-Demand | NeuralProphet, Quantile Regression, Isolation Forest CronJob — 학습 도중 Spot 회수로 작업 유실 방지 |
 | Spot Worker | Spot (다중 인스턴스 타입) | FastAPI 서비스 Pod — 경기 시간대 버스트, Karpenter가 초 단위로 구매/반납 |
 
-DR 전략은 **Warm Standby** (도쿄 리전에 최소 EKS + Aurora Global 상시, 장애 시 Route 53 failover + Karpenter 확장). 발표 전 2주만 가동.
+DR 전략은 **Warm Standby** & **Pilot Light** (도쿄 리전에 최소 EKS + Aurora Global 상시, 장애 시 Route 53 failover + Karpenter 확장). 발표 전 2주만 가동.
 
 ---
 
