@@ -1,1 +1,36 @@
 # [Core] Namespace 정의 — monitoring / app / ai (Kubecost 비용 추적 기준)
+# 프로젝트 네임스페이스 정의 — 모든 매니페스트보다 먼저 apply
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: app
+  labels:
+    project: soundcloud
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ai
+  labels:
+    project: soundcloud
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+  labels:
+    project: soundcloud
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: keda
+  labels:
+    project: soundcloud
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: argocd
+  labels:
+    project: soundcloud
