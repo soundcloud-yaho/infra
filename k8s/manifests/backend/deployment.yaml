@@ -1,1 +1,60 @@
 # [Backend] FastAPI Deployment — Probe/Request/Limit 필수, 이미지 태그가 곧 배포 버전 (이 줄 수정 = 배포 명령)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: app
+  labels:
+    app: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      nodeSelector:
+        role: worker
+      containers:
+        - name: backend
+          image: CHANGEME_ACCOUNT_ID.dkr.ecr.ap-northeast-2.amazonaws.com/soundcloud-prod/backend:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_WRITER_HOST
+              value: "CHANGEME_AURORA_WRITER_ENDPOINT"
+            - name: DB_READER_HOST
+              value: "CHANGEME_AURORA_READER_ENDPOINT"
+            - name: DB_USER
+              value: "postgres"
+            - name: DB_NAME
+              value: "worldcup"
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: aurora-db-secret    # 방법 확정 후 수정
+                  key: password
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "512Mi"

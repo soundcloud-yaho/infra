@@ -91,7 +91,6 @@ resource "aws_s3_bucket_policy" "frontend" {
 aws_s3_bucket_public_access_block.frontend]
 }
 
-# ---------- CI가 s3 sync / cloudfront invalidation을 실행할 IAM 유저 (또는 OIDC 연동 권장) ----------
 resource "aws_iam_policy" "frontend_deploy" {
   name = "${var.project_name}-${var.environment}-frontend-deploy"
 
