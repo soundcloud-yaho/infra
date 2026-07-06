@@ -42,7 +42,6 @@ resource "aws_eks_cluster" "this" {
 }
 
 # ---------- OIDC 프로바이더 (IRSA의 뿌리) ----------
-# Pod의 ServiceAccount 토큰을 AWS IAM이 신뢰하게 만드는 다리
 data "tls_certificate" "oidc" {
   url = aws_eks_cluster.this.identity[0].oidc[0].issuer
 }
@@ -78,15 +77,13 @@ resource "aws_iam_role_policy_attachment" "node" {
   policy_arn = each.value
 }
 
-# ---------- System 관리형 노드그룹 (관제 파드 전용, Karpenter가 관리하지 않음) ----------
-# Karpenter 컨트롤러가 여기 상주한다 - 자기가 만든 노드에 자기가 탈 수 없기 때문
 resource "aws_eks_node_group" "system" {
   cluster_name    = aws_eks_cluster.this.name
   node_group_name = "system"
   node_role_arn   = aws_iam_role.node.arn
   subnet_ids      = var.private_subnet_ids
   instance_types  = var.system_instance_types
-  capacity_type   = "ON_DEMAND" # 관제탑은 절대 Spot 금지
+  capacity_type   = "ON_DEMAND" 
 
   scaling_config {
   desired_size = var.system_desired_size
@@ -94,7 +91,7 @@ resource "aws_eks_node_group" "system" {
   max_size     = var.system_max_size
 }
 
-  labels = { role = "system" } # karpenter values의 nodeSelector와 짝
+  labels = { role = "system" } 
 
   depends_on = [aws_iam_role_policy_attachment.node]
 }
