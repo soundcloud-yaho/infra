@@ -1,1 +1,19 @@
 # [부트스트랩] App of Apps 루트 — ArgoCD 수동 설치 직후 이 파일 하나만 kubectl apply, 이후 전부 자동
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/soundcloud-yaho/infra.git
+    targetRevision: main
+    path: k8s/apps                  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
