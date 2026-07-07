@@ -21,13 +21,13 @@ output "database_subnet_ids" {
 }
 
 output "eks_cluster_name" {
-  value = module.eks.cluster_name      # compute → eks
+  value = module.eks.cluster_name     
 }
 output "eks_cluster_endpoint" {
-  value = module.eks.cluster_endpoint  # compute → eks
+  value = module.eks.cluster_endpoint 
 }
 output "eks_oidc_issuer" {
-  value = module.eks.oidc_issuer       # compute → eks
+  value = module.eks.oidc_issuer      
 }
 
 output "backend_repository_url" {
@@ -62,4 +62,14 @@ output "kms_key_arn" {
 output "web_acl_arn" {
   description = "WAF Web ACL ARN"
   value       = module.security.web_acl_arn
+}
+
+output "cloudfront_certificate_arn" {
+  description = "CloudFront용 ACM 인증서 ARN (버지니아) -> CloudFront 배포 설정"
+  value       = aws_acm_certificate_validation.cloudfront.certificate_arn
+}
+
+output "api_certificate_arn" {
+  description = "ALB(API)용 ACM 인증서 ARN (서울) -> Ingress certificate-arn 어노테이션"
+  value       = aws_acm_certificate_validation.api.certificate_arn
 }

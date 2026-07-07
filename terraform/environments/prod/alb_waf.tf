@@ -1,5 +1,3 @@
-# 전방 웹 방화벽(WAF) 및 Application Load Balancer(ALB) 인프라 연동
-
 module "security" {
   source = "../../modules/security"
 
