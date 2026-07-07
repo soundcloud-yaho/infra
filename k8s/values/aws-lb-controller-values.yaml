@@ -1,1 +1,14 @@
 # [Values] LB Controller — clusterName/IRSA ARN <- terraform outputs에서 복사
+clusterName: soundcloud-prod-eks
+region: ap-northeast-2
+
+replicaCount: 2
+
+nodeSelector:
+  role: system
+
+serviceAccount:
+  create: true                            
+  name: aws-load-balancer-controller    
+  # annotation은 CI 주입:
+  # --set-string serviceAccount.annotations."eks\.amazonaws\.com/role-arn"=$(terraform output -raw lb_controller_role_arn)
