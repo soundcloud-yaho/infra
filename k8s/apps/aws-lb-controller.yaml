@@ -1,1 +1,27 @@
 # [App] AWS Load Balancer Controller — Ingress를 보고 ALB 자동 생성
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: aws-lb-controller
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://aws.github.io/eks-charts
+      chart: aws-load-balancer-controller
+      targetRevision: 1.14.0
+      helm:
+        valueFiles:
+          - $values/k8s/values/aws-lb-controller-values.yaml
+    - repoURL: https://github.com/soundcloud-yaho/infra.git
+      targetRevision: main
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true

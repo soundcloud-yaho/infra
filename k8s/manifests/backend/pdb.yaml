@@ -1,1 +1,11 @@
 # [Backend] PodDisruptionBudget — Spot 회수 시 동시 종료 제한
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: backend
+  namespace: app
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: backend

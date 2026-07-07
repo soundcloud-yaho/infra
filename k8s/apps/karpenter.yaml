@@ -13,10 +13,10 @@ spec:
       helm:
         valueFiles:
           - $values/k8s/values/karpenter-values.yaml
-    - repoURL: https://github.com/CHANGEME_ORG/worldcup-infra.git
+    - repoURL: https://github.com/soundcloud-yaho/infra.git
       targetRevision: main
       ref: values
-    - repoURL: https://github.com/CHANGEME_ORG/worldcup-infra.git
+    - repoURL: https://github.com/soundcloud-yaho/infra.git
       targetRevision: main
       path: k8s/manifests/karpenter
   destination:
