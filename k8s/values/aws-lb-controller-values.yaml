@@ -8,7 +8,7 @@ nodeSelector:
   role: system
 
 serviceAccount:
-  create: true                            
-  name: aws-load-balancer-controller    
-  # annotation은 CI 주입:
-  # --set-string serviceAccount.annotations."eks\.amazonaws\.com/role-arn"=$(terraform output -raw lb_controller_role_arn)
+  create: true
+  name: aws-load-balancer-controller
+  annotations:
+    eks.amazonaws.com/role-arn: CHANGEME_LB_CONTROLLER_ROLE_ARN   # terraform output 복사
