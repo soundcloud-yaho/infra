@@ -34,3 +34,10 @@ metadata:
   name: argocd
   labels:
     project: soundcloud
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tailscale
+  labels:
+    project: soundcloud
