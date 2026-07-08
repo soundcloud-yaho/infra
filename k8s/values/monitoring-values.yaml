@@ -1,0 +1,16 @@
+# [Values] Monitoring
+grafana:
+  admin:
+    existingSecret: "grafana-admin-secret"
+    userKey: admin-user
+    passwordKey: admin-password
+  service:
+    type: ClusterIP
+    # nodePort: 32000
+
+prometheus:
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false 
+  service:
+    type: NodePort
+    nodePort: 32100
