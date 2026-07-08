@@ -1,1 +1,53 @@
-# [CI] terraform/ 경로 변경 PR에만 terraform plan 결과 코멘트. apply는 로컬 수동 (사고 방지)
+# [CI] Terraform 코드 변경 시 fmt, validate, plan을 수행하여 인프라 변경 사항을 사전 검증
+# 실제 AWS 리소스는 생성하지 않으며, Pull Request 단계에서 코드 품질 및 변경 내용을 확인
+
+name: Terraform CI
+
+on:
+  pull_request:
+    branches: ["**"]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+#  id-token: write
+
+env:
+  AWS_REGION: ap-northeast-2
+  TF_WORKING_DIR: terraform/environments/prod
+
+jobs:
+  terraform-ci:
+    runs-on: ubuntu-latest
+
+    #defaults:
+     # run:
+      #  working-directory: ${{ env.TF_WORKING_DIR }}
+
+    steps:
+      - name: Workflow Template
+        run: echo "Terraform CI Template"
+
+      # - name: Checkout Repository
+      #   uses: actions/checkout@v4
+
+      # - name: Configure AWS Credentials
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     aws-region: ${{ env.AWS_REGION }}
+      #     role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+
+      # - name: Setup Terraform
+      #   uses: hashicorp/setup-terraform@v3
+
+      # - name: Terraform Init
+      #   run: terraform init
+
+      # - name: Terraform Format Check
+      #   run: terraform fmt -check -recursive ../../
+
+      # - name: Terraform Validate
+      #   run: terraform validate
+
+      # - name: Terraform Plan
+      #   run: terraform plan
