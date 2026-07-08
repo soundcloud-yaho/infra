@@ -1,12 +1,10 @@
-# [CI] Terraform 코드 변경 시 fmt, validate, plan을 수행하여 인프라 변경 사항을 사전 검증
-# 실제 AWS 리소스는 생성하지 않으며, Pull Request 단계에서 코드 품질 및 변경 내용을 확인
+# [CI/CD] Terraform으로 생성한 AWS 인프라를 수동으로 삭제
+# 운영 환경 보호를 위해 workflow_dispatch로만 실행하며, 테스트 환경 정리 및 비용 절감을 위해 사용
 
-name: Terraform CI
+name: Terraform Destroy
 
 on:
-  pull_request:
-    branches: ["**"]
-    types: [opened, synchronize, reopened]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -17,7 +15,7 @@ env:
   TF_WORKING_DIR: terraform/environments/prod
 
 jobs:
-  terraform-ci:
+  terraform-destroy:
     runs-on: ubuntu-latest
 
     defaults:
@@ -40,11 +38,5 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
-      - name: Terraform Format Check
-        run: terraform fmt -check -recursive ../../
-
-      - name: Terraform Validate
-        run: terraform validate
-
-      - name: Terraform Plan
-        run: terraform plan
+      - name: Terraform Destroy
+        run: terraform destroy -auto-approve

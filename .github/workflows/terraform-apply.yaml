@@ -1,12 +1,10 @@
-# [CI] Terraform 코드 변경 시 fmt, validate, plan을 수행하여 인프라 변경 사항을 사전 검증
-# 실제 AWS 리소스는 생성하지 않으며, Pull Request 단계에서 코드 품질 및 변경 내용을 확인
+# [CI/CD] Terraform을 실행하여 AWS 인프라(VPC, EKS, IAM, Aurora, ACM, ECR 등)를 실제 생성 및 변경
+# Apply 후 Output 값을 k8s/values/*.yaml에 수동 반영하고, 이후 ArgoCD가 Git 변경을 자동 배포
 
-name: Terraform CI
+name: Terraform Apply
 
 on:
-  pull_request:
-    branches: ["**"]
-    types: [opened, synchronize, reopened]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -17,7 +15,7 @@ env:
   TF_WORKING_DIR: terraform/environments/prod
 
 jobs:
-  terraform-ci:
+  terraform-apply:
     runs-on: ubuntu-latest
 
     defaults:
@@ -40,11 +38,8 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
-      - name: Terraform Format Check
-        run: terraform fmt -check -recursive ../../
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
 
-      - name: Terraform Validate
-        run: terraform validate
-
-      - name: Terraform Plan
-        run: terraform plan
+      - name: Terraform Output
+        run: terraform output
