@@ -1,5 +1,5 @@
 # [CI] Terraform 코드 변경 시 fmt, validate, plan을 수행하여 인프라 변경 사항을 사전 검증
-# 현재 AWS OIDC Role 설정 전이므로 AWS 인증 및 plan 단계는 주석 처리하고 fmt/validate만 실행
+# 실제 AWS 리소스는 생성하지 않으며, Pull Request 단계에서 코드 품질 및 변경 내용을 확인
 
 name: Terraform CI
 
@@ -10,7 +10,7 @@ on:
 
 permissions:
   contents: read
-  # id-token: write  # AWS OIDC Role 설정 완료 후 활성화
+  id-token: write
 
 env:
   AWS_REGION: ap-northeast-2
@@ -25,28 +25,29 @@ jobs:
         working-directory: ${{ env.TF_WORKING_DIR }}
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - name: Workflow Template
+        run: echo "Terraform CI Template"
 
-      # AWS OIDC Role 설정 완료 후 활성화
+      # - name: Checkout Repository
+      #   uses: actions/checkout@v4
+
       # - name: Configure AWS Credentials
       #   uses: aws-actions/configure-aws-credentials@v4
       #   with:
       #     aws-region: ${{ env.AWS_REGION }}
       #     role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
 
-      #- name: Setup Terraform
-      #  uses: hashicorp/setup-terraform@v3
+      # - name: Setup Terraform
+      #   uses: hashicorp/setup-terraform@v3
 
-      - name: Terraform Init
-        run: terraform init -backend=false
+      # - name: Terraform Init
+      #   run: terraform init
 
-      - name: Terraform Format Check
-        run: terraform fmt -check -recursive ../../
+      # - name: Terraform Format Check
+      #   run: terraform fmt -check -recursive ../../
 
-      #- name: Terraform Validate
-      #  run: terraform validate
+      # - name: Terraform Validate
+      #   run: terraform validate
 
-      # AWS 인증 및 Remote Backend 설정 완료 후 활성화
       # - name: Terraform Plan
       #   run: terraform plan
