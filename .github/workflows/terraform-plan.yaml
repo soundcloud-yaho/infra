@@ -10,7 +10,7 @@ on:
 
 permissions:
   contents: read
-  id-token: write
+#  id-token: write
 
 env:
   AWS_REGION: ap-northeast-2
@@ -20,9 +20,9 @@ jobs:
   terraform-ci:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: ${{ env.TF_WORKING_DIR }}
+    #defaults:
+     # run:
+      #  working-directory: ${{ env.TF_WORKING_DIR }}
 
     steps:
       - name: Workflow Template
