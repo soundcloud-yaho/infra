@@ -181,3 +181,19 @@ variable "db_instance_class" {
   description = "Aurora Instance Class"
   type        = string
 }
+
+# =====================================================
+# Network Configuration
+# VPC 및 NAT Gateway 설정
+# =====================================================
+
+variable "enable_nat_gateway" {
+  description = "NAT Gateway 생성 여부"
+  type        = bool
+  default     = true
+}
+
+variable "eks_cluster_name" {
+  description = "EKS Cluster 이름"
+  type        = string
+}
