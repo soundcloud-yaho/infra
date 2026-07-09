@@ -7,3 +7,9 @@ variable "environment" {
   description = "배포 환경 (예: prod)"
   type        = string
 }
+
+variable "web_acl_id" {
+  description = "CloudFront에 연결할 WAF ARN"
+  type        = string
+  default     = null
+}

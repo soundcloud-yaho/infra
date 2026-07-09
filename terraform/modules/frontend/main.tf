@@ -30,6 +30,9 @@ resource "aws_cloudfront_distribution" "frontend" {
   default_root_object = "index.html"
   price_class         = "PriceClass_200" # 한국/아시아 리전 포함, 전세계 최고가 등급 제외로 비용 절감
 
+  # CloudFront에 WAF Web ACL 연결
+  web_acl_id = var.web_acl_id
+
   origin {
     domain_name              = aws_s3_bucket.frontend.bucket_regional_domain_name
     origin_id                = "s3-frontend"
@@ -40,8 +43,8 @@ resource "aws_cloudfront_distribution" "frontend" {
     target_origin_id       = "s3-frontend"
     viewer_protocol_policy = "redirect-to-https"
     allowed_methods        = ["GET", "HEAD"]
-    cached_methods          = ["GET", "HEAD"]
-    cache_policy_id         = "658327ea-f89d-4fab-a63d-7e88639e58f6" # AWS 관리형 CachingOptimized
+    cached_methods         = ["GET", "HEAD"]
+    cache_policy_id        = "658327ea-f89d-4fab-a63d-7e88639e58f6" # AWS 관리형 CachingOptimized
   }
 
   # CSR 앱이라 404/403도 index.html로 돌려서 클라이언트 라우팅이 처리하게 함
@@ -50,6 +53,7 @@ resource "aws_cloudfront_distribution" "frontend" {
     response_code      = 200
     response_page_path = "/index.html"
   }
+
   custom_error_response {
     error_code         = 403
     response_code      = 200
@@ -73,22 +77,29 @@ resource "aws_s3_bucket_policy" "frontend" {
 
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [{
-      Sid       = "AllowCloudFrontOAC"
-      Effect    = "Allow"
-      Principal = { Service = "cloudfront.amazonaws.com" }
-      Action    = "s3:GetObject"
-      Resource  = "${aws_s3_bucket.frontend.arn}/*"
-      Condition = {
-        StringEquals = {
-          "AWS:SourceArn" = aws_cloudfront_distribution.frontend.arn
+    Statement = [
+      {
+        Sid       = "AllowCloudFrontOAC"
+        Effect    = "Allow"
+        Principal = {
+          Service = "cloudfront.amazonaws.com"
+        }
+        Action   = "s3:GetObject"
+        Resource = "${aws_s3_bucket.frontend.arn}/*"
+
+        Condition = {
+          StringEquals = {
+            "AWS:SourceArn" = aws_cloudfront_distribution.frontend.arn
+          }
         }
       }
-    }]
+    ]
   })
 
-  depends_on = [aws_s3_bucket.frontend,
-aws_s3_bucket_public_access_block.frontend]
+  depends_on = [
+    aws_s3_bucket.frontend,
+    aws_s3_bucket_public_access_block.frontend
+  ]
 }
 
 resource "aws_iam_policy" "frontend_deploy" {
@@ -100,7 +111,11 @@ resource "aws_iam_policy" "frontend_deploy" {
       {
         Sid    = "S3Sync"
         Effect = "Allow"
-        Action = ["s3:PutObject", "s3:DeleteObject", "s3:ListBucket"]
+        Action = [
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:ListBucket"
+        ]
         Resource = [
           aws_s3_bucket.frontend.arn,
           "${aws_s3_bucket.frontend.arn}/*"
@@ -109,7 +124,9 @@ resource "aws_iam_policy" "frontend_deploy" {
       {
         Sid      = "Invalidate"
         Effect   = "Allow"
-        Action   = ["cloudfront:CreateInvalidation"]
+        Action   = [
+          "cloudfront:CreateInvalidation"
+        ]
         Resource = aws_cloudfront_distribution.frontend.arn
       }
     ]

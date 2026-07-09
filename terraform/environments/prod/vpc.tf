@@ -13,4 +13,5 @@ module "network" {
   private_subnet_cidrs  = var.private_subnet_cidrs
   database_subnet_cidrs = var.database_subnet_cidrs
   enable_nat_gateway    = var.enable_nat_gateway
+  cluster_name          = var.eks_cluster_name
 }

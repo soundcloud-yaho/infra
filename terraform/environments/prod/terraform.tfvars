@@ -38,12 +38,12 @@ database_subnet_cidrs = [
 # Compute Configuration
 # =====================================================
 
-  cluster_version = "1.33"
+cluster_version = "1.33"
 
 system_instance_types = ["t3.medium"]
-system_desired_size = 2
-system_min_size = 2
-system_max_size = 3
+system_desired_size   = 2
+system_min_size       = 2
+system_max_size       = 3
 
 ai_instance_types = ["m5.large"]
 ai_desired_size   = 1

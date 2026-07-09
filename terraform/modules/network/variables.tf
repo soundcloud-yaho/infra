@@ -39,3 +39,8 @@ variable "database_subnet_cidrs" {
   type        = list(string)
   default     = ["10.0.96.0/24", "10.0.97.0/24"]
 }
+variable "enable_nat_gateway" {
+  description = "NAT Gateway 생성 여부"
+  type        = bool
+  default     = true
+}

@@ -21,21 +21,28 @@ output "database_subnet_ids" {
 }
 
 output "eks_cluster_name" {
-  value = module.eks.cluster_name     
+  description = "EKS Cluster Name"
+  value       = module.eks.cluster_name
 }
+
 output "eks_cluster_endpoint" {
-  value = module.eks.cluster_endpoint 
+  description = "EKS Cluster Endpoint"
+  value       = module.eks.cluster_endpoint
 }
+
 output "eks_oidc_issuer" {
-  value = module.eks.oidc_issuer      
+  description = "EKS OIDC Issuer"
+  value       = module.eks.oidc_issuer
 }
 
 output "backend_repository_url" {
-  value = module.ecr.backend_repository_url
+  description = "Backend ECR Repository URL"
+  value       = module.ecr.backend_repository_url
 }
 
 output "ai_repository_url" {
-  value = module.ecr.ai_repository_url
+  description = "AI ECR Repository URL"
+  value       = module.ecr.ai_repository_url
 }
 
 output "aurora_writer_endpoint" {
@@ -60,8 +67,13 @@ output "kms_key_arn" {
 }
 
 output "web_acl_arn" {
-  description = "WAF Web ACL ARN"
-  value       = module.security.web_acl_arn
+  description = "CloudFront WAF Web ACL ARN"
+  value       = module.waf.web_acl_arn
+}
+
+output "waf_log_bucket_name" {
+  description = "WAF 로그 저장 S3 Bucket 이름"
+  value       = module.waf.waf_log_bucket_name
 }
 
 output "cloudfront_certificate_arn" {

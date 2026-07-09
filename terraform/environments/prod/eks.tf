@@ -3,9 +3,9 @@
 module "eks" {
   source = "../../modules/eks"
 
-  cluster_name        = "${var.project_name}-${var.environment}-eks"
-  cluster_version     = var.cluster_version
-  private_subnet_ids  = module.network.private_subnet_ids
+  cluster_name       = "${var.project_name}-${var.environment}-eks"
+  cluster_version    = var.cluster_version
+  private_subnet_ids = module.network.private_subnet_ids
 
   # System 노드그룹
   system_instance_types = var.system_instance_types
