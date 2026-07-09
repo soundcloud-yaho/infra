@@ -15,6 +15,10 @@ variable "environment" {
   type        = string
 }
 
+variable "cluster_name" {
+  description = "EKS 클러스터 이름"
+  type        = string
+}
 # =====================================================
 # Network Configuration
 # VPC 및 네트워크 설정
