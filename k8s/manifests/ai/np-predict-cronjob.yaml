@@ -1,1 +1,80 @@
-# [AI] NeuralProphet 추론 CronJob — 5분 주기, 예측값 Pushgateway push
+# [AI] NeuralProphet 추론 CronJob — 5분 주기, train 산출 모델로 예측 후 Pushgateway push
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: neuralprophet-predict
+  namespace: ai
+  labels:
+    app: neuralprophet
+    component: predict
+spec:
+  # CronJob 스케줄: ai/neuralprophet/predict.py 를 5분마다 실행
+  schedule: "*/5 * * * *"  # 매 5분 (KEDA/Karpenter 스케일 신호 갱신 주기)
+  concurrencyPolicy: Forbid  # 이전 predict Job 미완료 시 중복 실행 금지 (Pushgateway 중복 push 방지)
+  successfulJobsHistoryLimit: 3  # 완료 Job 히스토리 보관 개수
+  failedJobsHistoryLimit: 3  # 실패 Job 히스토리 보관 개수
+  startingDeadlineSeconds: 240  # 스케줄 시각 +4분 내 시작 못 하면 해당 회차 스킵 (5분 주기 대비)
+  jobTemplate:
+    spec:
+      # Job 레벨: predict는 학습보다 짧은 상한
+      backoffLimit: 1  # Pod 재시작 포함 최대 1회 재시도
+      activeDeadlineSeconds: 600  # Job 최대 10분 (모델 로드 + 4h 이력 조회 + 60분 예측 + push)
+      template:
+        metadata:
+          labels:
+            app: neuralprophet
+            component: predict
+        spec:
+          # Pod 레벨: train과 동일 AI 노드풀 + train PVC에서 모델 읽기
+          restartPolicy: OnFailure  # 컨테이너 비정상 종료 시에만 재시작
+          nodeSelector:
+            role: ai  # Karpenter AI NodePool 노드만 선택
+          tolerations:
+            - key: dedicated
+              operator: Equal
+              value: ai
+              effect: NoSchedule  # taint dedicated=ai:NoSchedule 노드에만 Pod 배치
+          volumes:
+            - name: model-output
+              persistentVolumeClaim:
+                claimName: neuralprophet-model  # train CronJob이 저장한 worldcup_model.np 마운트
+          containers:
+            - name: predict
+              image: CHANGEME_ACCOUNT_ID.dkr.ecr.ap-northeast-2.amazonaws.com/soundcloud-prod/ai:latest
+              imagePullPolicy: IfNotPresent  # 노드에 이미지 있으면 재 pull 생략
+              workingDir: /app/neuralprophet  # predict.py·config.py 위치
+              command:
+                # ai/neuralprophet/predict.py CLI (argparse)
+                - python
+                - predict.py
+                - --source
+                - prometheus  # load_inference_data(): Prometheus 최근 이력 조회 (재학습 없음)
+                - --skip-plots  # plot_forecast_horizon() 생략 (CronJob에서 그래프 파일 불필요)
+              env:
+                # ai/neuralprophet/config.py → predict.py 기본값/CLI fallback
+                - name: NP_OUTPUT_DIR
+                  value: /data/models  # OUTPUT_DIR: predict JSON 등 부가 산출물 (모델은 MODEL_PATH)
+                - name: PROMETHEUS_URL
+                  value: http://kube-prometheus-stack-prometheus.monitoring.svc:9090  # --prometheus-url
+                - name: PROMETHEUS_QUERY
+                  value: 'sum(rate(http_requests_total{namespace="worldcup",service="result-api"}[5m]))'  # --query: train과 동일 RPS 메트릭
+                - name: PREDICT_HISTORY_HOURS
+                  value: "4"  # --history-hours: fetch_inference_payload() AR 입력용 최근 4h (n_lags=36 × 5min)
+                - name: PUSHGATEWAY_URL
+                  value: http://kube-prometheus-stack-prometheus-pushgateway.monitoring.svc:9091  # --pushgateway-url
+                - name: PUSHGATEWAY_JOB
+                  value: neuralprophet-predict  # --pushgateway-job: common/pushgateway.py PUSHGATEWAY_JOB
+                - name: PUSHGATEWAY_INSTANCE
+                  value: neuralprophet  # --pushgateway-instance: Pushgateway instance 라벨
+              volumeMounts:
+                - name: model-output
+                  mountPath: /data/models  # config MODEL_PATH → worldcup_model.np (train 산출물)
+              resources:
+                # 추론은 학습보다 가벼움 (모델 로드 + 단일 forward pass)
+                requests:
+                  cpu: "500m"
+                  memory: "1536Mi"
+                limits:
+                  cpu: "1000m"
+                  memory: "3Gi"
