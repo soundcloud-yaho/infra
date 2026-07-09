@@ -6,7 +6,7 @@
 
 project_name = "soundcloud"
 environment  = "prod"
-
+cluster_name = "soundcloud-prod-eks"
 # =====================================================
 # Network Configuration
 # =====================================================
