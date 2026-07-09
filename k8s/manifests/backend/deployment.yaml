@@ -23,22 +23,11 @@ spec:
           image: 201243087060.dkr.ecr.ap-northeast-2.amazonaws.com/backend:latest
           ports:
             - containerPort: 8080
-          env:
-            - name: DB_WRITER_HOST
-              value: "CHANGEME_AURORA_WRITER_ENDPOINT"
-            - name: DB_READER_HOST
-              value: "CHANGEME_AURORA_READER_ENDPOINT"
-            - name: DB_USER
-              value: "postgres"
-            - name: DB_NAME
-              value: "worldcup"
-            - name: DB_PORT
-              value: "5432"
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: aurora-db-secret    # 방법 확정 후 수정
-                  key: password
+          envFrom:
+            - configMapRef:
+                name: db-config       # DB_WRITER_HOST, DB_READER_HOST, DB_USER, DB_NAME, DB_PORT
+            - secretRef:
+                name: aurora-db-secret  # DB_PASSWORD
           livenessProbe:
             httpGet:
               path: /healthz
