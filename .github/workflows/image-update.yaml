@@ -1,0 +1,137 @@
+# [CD] Backend 또는 AI 이미지가 ECR에 Push되면
+# Kubernetes Manifest의 이미지 태그를 변경하고 Pull Request를 생성
+
+name: Update Application Image
+
+on:
+  repository_dispatch:
+    types:
+      - update-backend-image
+      - update-ai-image
+
+  # 처음 테스트할 때 Actions 화면에서 직접 실행 가능
+  workflow_dispatch:
+    inputs:
+      application:
+        description: "변경할 애플리케이션"
+        required: true
+        type: choice
+        options:
+          - backend
+          - ai
+
+      image_tag:
+        description: "ECR 이미지 태그"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  AWS_ACCOUNT_ID: "201243087060"
+  AWS_REGION: ap-northeast-2
+  ECR_PREFIX: 201243087060.dkr.ecr.ap-northeast-2.amazonaws.com/soundcloud-prod
+
+jobs:
+  update-image:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          ref: master
+
+      - name: Set Application and Image Tag
+        id: variables
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
+            APPLICATION="${{ github.event.client_payload.application }}"
+            IMAGE_TAG="${{ github.event.client_payload.image_tag }}"
+          else
+            APPLICATION="${{ inputs.application }}"
+            IMAGE_TAG="${{ inputs.image_tag }}"
+          fi
+
+          if [ "$APPLICATION" != "backend" ] && [ "$APPLICATION" != "ai" ]; then
+            echo "지원하지 않는 application입니다: $APPLICATION"
+            exit 1
+          fi
+
+          if [ -z "$IMAGE_TAG" ]; then
+            echo "image_tag 값이 비어 있습니다."
+            exit 1
+          fi
+
+          echo "application=$APPLICATION" >> "$GITHUB_OUTPUT"
+          echo "image_tag=$IMAGE_TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Update Backend Image
+        if: steps.variables.outputs.application == 'backend'
+        shell: bash
+        run: |
+          IMAGE="${{ env.ECR_PREFIX }}/backend:${{ steps.variables.outputs.image_tag }}"
+
+          sed -i \
+            "s|image: .*backend:.*|image: ${IMAGE}|g" \
+            k8s/manifests/backend/deployment.yaml
+
+          sed -i \
+            "s|image: .*backend:.*|image: ${IMAGE}|g" \
+            k8s/manifests/ai/sync-cronjob.yaml
+
+          echo "변경된 Backend 이미지:"
+          grep -R "image:.*backend:" \
+            k8s/manifests/backend/deployment.yaml \
+            k8s/manifests/ai/sync-cronjob.yaml
+
+      - name: Update AI Image
+        if: steps.variables.outputs.application == 'ai'
+        shell: bash
+        run: |
+          IMAGE="${{ env.ECR_PREFIX }}/ai:${{ steps.variables.outputs.image_tag }}"
+
+          sed -i \
+            "s|image: .*soundcloud-prod/ai:.*|image: ${IMAGE}|g" \
+            k8s/manifests/ai/np-train-cronjob.yaml \
+            k8s/manifests/ai/np-predict-cronjob.yaml \
+            k8s/manifests/ai/qr-report-cronjob.yaml
+
+          echo "변경된 AI 이미지:"
+          grep -R "image:.*soundcloud-prod/ai:" \
+            k8s/manifests/ai/
+
+      - name: Check Changed Files
+        shell: bash
+        run: |
+          git diff --check
+          git diff
+
+          if git diff --quiet; then
+            echo "변경된 이미지 태그가 없습니다."
+            exit 1
+          fi
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: deploy/${{ steps.variables.outputs.application }}-${{ steps.variables.outputs.image_tag }}
+          delete-branch: true
+          commit-message: "deploy: update ${{ steps.variables.outputs.application }} image to ${{ steps.variables.outputs.image_tag }}"
+          title: "deploy: update ${{ steps.variables.outputs.application }} image to ${{ steps.variables.outputs.image_tag }}"
+          body: |
+            ## 이미지 배포 변경
+
+            - 애플리케이션: `${{ steps.variables.outputs.application }}`
+            - 이미지 태그: `${{ steps.variables.outputs.image_tag }}`
+            - 실행 Workflow: `${{ github.workflow }}`
+
+            해당 PR이 master에 병합되면 ArgoCD가 변경된 Manifest를 감지하여 EKS에 반영합니다.
+          labels: |
+            deployment
+            automated
+          base: master

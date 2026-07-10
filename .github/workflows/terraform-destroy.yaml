@@ -1,21 +1,27 @@
-# [CI/CD] Terraform으로 생성한 AWS 인프라를 수동으로 삭제
-# 운영 환경 보호를 위해 workflow_dispatch로만 실행하며, 테스트 환경 정리 및 비용 절감을 위해 사용
+# [CD] Terraform으로 생성한 AWS 인프라를 수동으로 삭제
+# DESTROY 입력 시에만 실행 (실수 방지)
 
 name: Terraform Destroy
 
 on:
   workflow_dispatch:
+    inputs:
+      confirmation:
+        description: "삭제하려면 DESTROY를 입력하세요."
+        required: true
+        type: string
 
 permissions:
   contents: read
-  id-token: write
 
 env:
   AWS_REGION: ap-northeast-2
   TF_WORKING_DIR: terraform/environments/prod
+  TF_IN_AUTOMATION: true
 
 jobs:
   terraform-destroy:
+    if: ${{ inputs.confirmation == 'DESTROY' }}
     runs-on: ubuntu-latest
 
     defaults:
@@ -29,14 +35,18 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
-        run: terraform init
+        run: terraform init -input=false
+
+      - name: Terraform Destroy Plan
+        run: terraform plan -destroy -input=false -out=destroy.tfplan
 
       - name: Terraform Destroy
-        run: terraform destroy -auto-approve
+        run: terraform apply -input=false -auto-approve destroy.tfplan
