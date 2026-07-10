@@ -24,7 +24,7 @@ spec:
               effect: NoSchedule
           containers:
             - name: quantile-recommend
-              image: CHANGEME_ACCOUNT_ID.dkr.ecr.ap-northeast-2.amazonaws.com/soundcloud-prod/ai:latest
+              image: 201243087060.dkr.ecr.ap-northeast-2.amazonaws.com/soundcloud-prod/ai:latest
               command: ["python", "-m", "quantile_regression.recommend"]
               env:
                 - name: PROMETHEUS_URL

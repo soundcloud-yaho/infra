@@ -6,7 +6,7 @@ settings:
 serviceAccount:
   annotations:
     # <- output: karpenter_controller_role_arn
-    eks.amazonaws.com/role-arn: arn:aws:iam::CHANGEME_ACCOUNT_ID:role/soundcloud-prod-eks-karpenter-controller
+    eks.amazonaws.com/role-arn: arn:aws:iam::201243087060:role/soundcloud-prod-eks-karpenter-controller
 
 nodeSelector:
   role: system

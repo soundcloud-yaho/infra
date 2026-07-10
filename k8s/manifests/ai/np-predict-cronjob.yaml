@@ -41,7 +41,7 @@ spec:
                 claimName: neuralprophet-model  # train CronJob이 저장한 worldcup_model.np 마운트
           containers:
             - name: predict
-              image: CHANGEME_ACCOUNT_ID.dkr.ecr.ap-northeast-2.amazonaws.com/soundcloud-prod/ai:latest
+              image: 201243087060.dkr.ecr.ap-northeast-2.amazonaws.com/soundcloud-prod/ai:latest
               imagePullPolicy: IfNotPresent  # 노드에 이미지 있으면 재 pull 생략
               workingDir: /app/neuralprophet  # predict.py·config.py 위치
               command:
