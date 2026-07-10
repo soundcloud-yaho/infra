@@ -19,7 +19,7 @@ spec:
     spec:
       # Job 레벨: predict는 학습보다 짧은 상한
       backoffLimit: 1  # Pod 재시작 포함 최대 1회 재시도
-      activeDeadlineSeconds: 600  # Job 최대 10분 (모델 로드 + 4h 이력 조회 + 60분 예측 + push)
+      activeDeadlineSeconds: 240  # Job 최대 4분 (정상 추론은 수십 초; 상한 도달 = 고장 → 다음 5분 스케줄에 재시도)
       template:
         metadata:
           labels:
@@ -58,11 +58,11 @@ spec:
                 - name: PROMETHEUS_URL
                   value: http://kube-prometheus-stack-prometheus.monitoring.svc:9090  # --prometheus-url
                 - name: PROMETHEUS_QUERY
-                  value: 'sum(rate(http_requests_total{namespace="worldcup",service="result-api"}[5m]))'  # --query: train과 동일 RPS 메트릭
+                  value: 'sum(rate(http_requests_total{namespace="app",service="backend"}[5m]))'  # --query: train과 동일 RPS 메트릭
                 - name: PREDICT_HISTORY_HOURS
                   value: "4"  # --history-hours: fetch_inference_payload() AR 입력용 최근 4h (n_lags=36 × 5min)
                 - name: PUSHGATEWAY_URL
-                  value: http://kube-prometheus-stack-prometheus-pushgateway.monitoring.svc:9091  # --pushgateway-url
+                  value: http://pushgateway-prometheus-pushgateway.monitoring.svc:9091  # --pushgateway-url (별도 pushgateway 릴리즈)
                 - name: PUSHGATEWAY_JOB
                   value: neuralprophet-predict  # --pushgateway-job: common/pushgateway.py PUSHGATEWAY_JOB
                 - name: PUSHGATEWAY_INSTANCE

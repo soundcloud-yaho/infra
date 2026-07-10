@@ -36,7 +36,7 @@ spec:
     spec:
       # Job 레벨: Pod 실패 시 재시도·최대 실행 시간
       backoffLimit: 1  # Pod 재시작 포함 최대 1회 재시도 (학습 실패 시 빠른 알림)
-      activeDeadlineSeconds: 7200  # Job 최대 2h (Prometheus 30일 조회 + NeuralProphet 학습 상한)
+      activeDeadlineSeconds: 3600  # Job 최대 1h (30일·150에폭 정상 ~520분; 행 걸림 시 PVC·AI 노드 조기 해제)
       template:
         metadata:
           labels:
@@ -74,7 +74,7 @@ spec:
                 - name: PROMETHEUS_URL
                   value: http://kube-prometheus-stack-prometheus.monitoring.svc:9090  # --prometheus-url 기본값
                 - name: PROMETHEUS_QUERY
-                  value: 'sum(rate(http_requests_total{namespace="worldcup",service="result-api"}[5m]))'  # --query: worldcup result-api RPS
+                  value: 'sum(rate(http_requests_total{namespace="app",service="backend"}[5m]))'  # --query: app backend RPS
                 - name: TRAIN_TIMEZONE
                   value: Asia/Seoul  # --timezone: default_train_window() 학습 구간(어제 23:59:59 KST) 계산
                 - name: TRAIN_LOOKBACK_DAYS
