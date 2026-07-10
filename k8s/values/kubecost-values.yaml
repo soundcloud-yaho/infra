@@ -1,10 +1,49 @@
-nodeSelector:
-  role: system
+kubecostProductConfigs:
+  clusterName: soundcloud-prod-eks
+  currencyCode: USD
+
+kubecostModel:
+  nodeSelector:
+    role: system
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+
+kubecostFrontend:
+  nodeSelector:
+    role: system
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
 
 global:
   grafana:
     enabled: false
+    proxy: false
 
-kubecostProductConfigs:
-  clusterName: soundcloud-prod-eks
-  currencyCode: USD
+prometheus:
+  server:
+    nodeSelector:
+      role: system
+    persistentVolume:
+      size: 8Gi
+
+  alertmanager:
+    enabled: false
+  nodeExporter:
+    enabled: false
+  pushgateway:
+    enabled: false
+  kubeStateMetrics:
+    enabled: false
+
+service:
+  type: ClusterIP

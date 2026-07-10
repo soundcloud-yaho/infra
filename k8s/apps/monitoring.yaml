@@ -14,7 +14,7 @@ spec:
         valueFiles:
           - $values/k8s/values/monitoring-values.yaml
     - repoURL: https://github.com/soundcloud-yaho/infra.git
-      targetRevision: main
+      targetRevision: master
       ref: values
   destination:
     server: https://kubernetes.default.svc
