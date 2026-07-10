@@ -1,1 +1,10 @@
-# [Values] Kubecost — Prometheus 연동
+nodeSelector:
+  role: system
+
+global:
+  grafana:
+    enabled: false
+
+kubecostProductConfigs:
+  clusterName: soundcloud-prod-eks
+  currencyCode: USD

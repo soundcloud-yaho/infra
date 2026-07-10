@@ -1,4 +1,3 @@
-# [Values] Monitoring
 grafana:
   admin:
     existingSecret: "grafana-admin-secret"
@@ -6,11 +5,30 @@ grafana:
     passwordKey: admin-password
   service:
     type: ClusterIP
-    # nodePort: 32000
+  nodeSelector:
+    role: system
 
 prometheus:
   prometheusSpec:
-    serviceMonitorSelectorNilUsesHelmValues: false 
+    serviceMonitorSelectorNilUsesHelmValues: false
+    nodeSelector:
+      role: system
   service:
-    type: NodePort
-    nodePort: 32100
+    type: ClusterIP
+
+alertmanager:
+  alertmanagerSpec:
+    nodeSelector:
+      role: system
+
+kube-state-metrics:
+  nodeSelector:
+    role: system
+
+prometheusOperator:
+  nodeSelector:
+    role: system
+
+prometheus-node-exporter:
+  tolerations:
+    - operator: Exists

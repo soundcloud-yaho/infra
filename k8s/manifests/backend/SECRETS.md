@@ -24,6 +24,11 @@ kubectl create secret generic slack-webhook \
   --namespace=ai \
   --from-literal=SLACK_WEBHOOK_URL='<실제 URL로 교체>'
 
+## grafana adein 
+kubectl create secret generic grafana-admin-secret \
+  --namespace=monitoring \
+  --from-literal=admin-user='admin' \
+  --from-literal=admin-password='<실제 비번>'
 ---
 
 ## 자동 생성되는 것 (참고, 수동 생성 불필요)
