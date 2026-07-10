@@ -1,0 +1,18 @@
+nodeSelector:
+  role: system
+
+replicaCount: 1
+
+serviceMonitor:
+  enabled: true
+  #namespace: monitoring
+  additionalLabels:
+    release: kube-prometheus-stack
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
