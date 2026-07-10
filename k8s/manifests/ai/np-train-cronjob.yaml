@@ -1,1 +1,96 @@
 # [AI] NeuralProphet 학습 CronJob — 일 1회, AI NodePool toleration 필수
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: neuralprophet-model
+  namespace: ai
+  labels:
+    app: neuralprophet
+    component: train
+spec:
+  # train.py가 저장하는 worldcup_model.np 및 train_metrics.json 등 모델 산출물 PVC
+  accessModes:
+    - ReadWriteOnce  # 단일 노드에서만 R/W (학습 Job 1개 + predict Job이 순차 공유)
+  resources:
+    requests:
+      storage: 5Gi  # 모델(.np) + 검증 그래프 + metrics JSON 여유 용량
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: neuralprophet-train
+  namespace: ai
+  labels:
+    app: neuralprophet
+    component: train
+spec:
+  # CronJob 스케줄: ai/neuralprophet/train.py 를 일 1회 실행
+  schedule: "0 1 * * *"  # 매일 01:00 (timeZone과 함께 KST 기준)
+  timeZone: Asia/Seoul  # K8s 1.27+ CronJob 타임존 → train.py TRAIN_TIMEZONE과 동일
+  concurrencyPolicy: Forbid  # 이전 학습 Job이 끝나기 전 새 Job 생성 금지 (PVC 동시 쓰기 방지)
+  successfulJobsHistoryLimit: 3  # 완료 Job 히스토리 보관 개수
+  failedJobsHistoryLimit: 3  # 실패 Job 히스토리 보관 개수
+  startingDeadlineSeconds: 3600  # 스케줄 시각 +1h 내 시작 못 하면 해당 회차 스킵
+  jobTemplate:
+    spec:
+      # Job 레벨: Pod 실패 시 재시도·최대 실행 시간
+      backoffLimit: 1  # Pod 재시작 포함 최대 1회 재시도 (학습 실패 시 빠른 알림)
+      activeDeadlineSeconds: 3600  # Job 최대 1h (30일·150에폭 정상 ~520분; 행 걸림 시 PVC·AI 노드 조기 해제)
+      template:
+        metadata:
+          labels:
+            app: neuralprophet
+            component: train
+        spec:
+          # Pod 레벨: AI 전용 노드풀 스케줄링 + PVC 마운트
+          restartPolicy: OnFailure  # 컨테이너 비정상 종료 시에만 재시작 (CronJob Job 패턴)
+          nodeSelector:
+            role: ai  # Karpenter AI NodePool 노드만 선택
+          tolerations:
+            - key: dedicated
+              operator: Equal
+              value: ai
+              effect: NoSchedule  # taint dedicated=ai:NoSchedule 노드에만 Pod 배치
+          volumes:
+            - name: model-output
+              persistentVolumeClaim:
+                claimName: neuralprophet-model  # predict CronJob과 동일 PVC 공유
+          containers:
+            - name: train
+              image: CHANGEME_ACCOUNT_ID.dkr.ecr.ap-northeast-2.amazonaws.com/soundcloud-prod/ai:latest
+              imagePullPolicy: IfNotPresent  # 노드에 이미지 있으면 재 pull 생략
+              workingDir: /app/neuralprophet  # train.py·config.py·preprocess.py 위치
+              command:
+                # ai/neuralprophet/train.py CLI (argparse)
+                - python
+                - train.py
+                - --source
+                - prometheus  # load_training_data(): Prometheus instant/range query (file 대신 운영 모드)
+              env:
+                # ai/neuralprophet/config.py → train.py 기본값/CLI fallback
+                - name: NP_OUTPUT_DIR
+                  value: /data/models  # OUTPUT_DIR: worldcup_model.np, train_metrics.json 저장 경로
+                - name: PROMETHEUS_URL
+                  value: http://kube-prometheus-stack-prometheus.monitoring.svc:9090  # --prometheus-url 기본값
+                - name: PROMETHEUS_QUERY
+                  value: 'sum(rate(http_requests_total{namespace="app",service="backend"}[5m]))'  # --query: app backend RPS
+                - name: TRAIN_TIMEZONE
+                  value: Asia/Seoul  # --timezone: default_train_window() 학습 구간(어제 23:59:59 KST) 계산
+                - name: TRAIN_LOOKBACK_DAYS
+                  value: "30"  # --lookback-days: Prometheus에서 최근 30일 시계열 조회
+                # 토너먼트 시작일을 알고 있으면 lookback 대신 고정 시작일 사용
+                # train.py --train-start / config TRAIN_DATA_START → default_train_window() start 고정
+                # - name: TRAIN_DATA_START
+                #   value: "2026-06-01T00:00:00+09:00"
+              volumeMounts:
+                - name: model-output
+                  mountPath: /data/models  # NP_OUTPUT_DIR과 동일 (PVC ↔ 컨테이너 경로)
+              resources:
+                # NeuralProphet CPU 학습: requests=보장, limits=burst 허용
+                requests:
+                  cpu: "1000m"
+                  memory: "2Gi"
+                limits:
+                  cpu: "2000m"
+                  memory: "4Gi"
