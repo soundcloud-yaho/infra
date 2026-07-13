@@ -1,49 +1,21 @@
-kubecostProductConfigs:
-  clusterName: soundcloud-prod-eks
-  currencyCode: USD
-
-kubecostModel:
-  nodeSelector:
-    role: system
-  resources:
-    requests:
-      cpu: 200m
-      memory: 512Mi
-    limits:
-      cpu: 1000m
-      memory: 2Gi
-
-kubecostFrontend:
-  nodeSelector:
-    role: system
-  resources:
-    requests:
-      cpu: 50m
-      memory: 64Mi
-    limits:
-      cpu: 200m
-      memory: 256Mi
+# 모드B: 번들 Prometheus/Grafana 끄고 윤주 kube-prometheus-stack 재사용
 
 global:
+  prometheus:
+    enabled: false        
+    fqdn: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
   grafana:
-    enabled: false
-    proxy: false
+    enabled: false        
 
-prometheus:
-  server:
-    nodeSelector:
-      role: system
-    persistentVolume:
-      size: 8Gi
 
-  alertmanager:
-    enabled: false
-  nodeExporter:
-    enabled: false
-  pushgateway:
-    enabled: false
-  kubeStateMetrics:
-    enabled: false
+nodeSelector:
+  role: system
 
-service:
-  type: ClusterIP
+serviceMonitor:
+  enabled: true
+  additionalLabels:
+    release: kube-prometheus-stack
+  aggregatorMetrics:
+    enabled: true
+    additionalLabels:
+      release: kube-prometheus-stack
