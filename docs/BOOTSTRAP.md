@@ -1,1 +1,11 @@
 # [문서] 부트스트랩 순서: state 버킷 수동 생성 -> terraform apply -> output 값을 k8s/values에 복사 -> ArgoCD 수동 설치 -> root-app apply
+1. Terraform apply           [수동, 1회 버튼]
+2. CHANGEME(가) 채우기        [자동화 가능]
+3. ArgoCD 설치                [자동화 가능, 사람이 트리거]
+4. CHANGEME(나) 채우기+push   [반자동 — 값은 사람이 확인, 치환은 자동화]
+5. namespaces + storageclass apply  [자동화 가능]
+6. Secret 4개 생성            [반자동 — 값은 사람이 준비, 생성 명령은 자동화]
+7. root-app apply             [자동화 가능]
+8. CHANGEME(다) 배포후 확인    [수동 — 배포 결과를 봐야 알 수 있는 값들]
+9. 최초 train 트리거           [수동]
+10. 남은 수동 작업 (Route53, tailscale route) [수동]
