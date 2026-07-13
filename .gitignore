@@ -27,3 +27,8 @@ Thumbs.db
 *.swo
 .env
 *.env
+
+*.tar.gz
+helm
+kubectl
+linux-amd64/
