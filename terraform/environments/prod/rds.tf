@@ -8,7 +8,7 @@ module "database" {
 
   vpc_id            = module.network.vpc_id
   db_subnet_ids     = module.network.database_subnet_ids
-  security_group_id = aws_security_group.aurora.id
+  security_group_id = module.security.aurora_sg_id
   kms_key_arn       = module.security.kms_key_arn
 
   database_name     = var.database_name

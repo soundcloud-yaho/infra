@@ -1,13 +1,13 @@
 
 data "aws_route53_zone" "main" {
-  name         = "rebao.store"
+  name         = "rubao.store"
   private_zone = false
 }
 
 resource "aws_acm_certificate" "cloudfront" {
   provider                  = aws.virginia
-  domain_name               = "rebao.store"
-  subject_alternative_names = ["www.rebao.store"]
+  domain_name               = "rubao.store"
+  subject_alternative_names = ["www.rubao.store"]
   validation_method         = "DNS"
 
   tags = {
@@ -45,7 +45,7 @@ resource "aws_acm_certificate_validation" "cloudfront" {
 }
 
 resource "aws_acm_certificate" "api" {
-  domain_name       = "api.rebao.store"
+  domain_name       = "api.rubao.store"
   validation_method = "DNS"
 
   tags = {
@@ -78,4 +78,27 @@ resource "aws_route53_record" "api_cert_validation" {
 resource "aws_acm_certificate_validation" "api" {
   certificate_arn         = aws_acm_certificate.api.arn
   validation_record_fqdns = [for r in aws_route53_record.api_cert_validation : r.fqdn]
+}
+resource "aws_route53_record" "www" {
+  zone_id = data.aws_route53_zone.main.zone_id
+  name    = "www.rubao.store"
+  type    = "A"
+
+  alias {
+    name                   = module.frontend.cloudfront_domain_name
+    zone_id                = module.frontend.cloudfront_hosted_zone_id
+    evaluate_target_health = false
+  }
+}
+
+resource "aws_route53_record" "root" {
+  zone_id = data.aws_route53_zone.main.zone_id
+  name    = "rubao.store"
+  type    = "A"
+
+  alias {
+    name                   = module.frontend.cloudfront_domain_name
+    zone_id                = module.frontend.cloudfront_hosted_zone_id
+    evaluate_target_health = false
+  }
 }

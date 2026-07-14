@@ -78,3 +78,5 @@ database_name     = "worldcup"
 master_username   = "postgres"
 db_engine_version = "16.6"
 db_instance_class = "db.t4g.medium"
+
+enable_nat_gateway = true
