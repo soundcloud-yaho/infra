@@ -11,4 +11,4 @@ serviceAccount:
   create: true
   name: aws-load-balancer-controller
   annotations:
-    eks.amazonaws.com/role-arn: CHANGEME_LB_CONTROLLER_ROLE_ARN   # terraform output 복사
+    eks.amazonaws.com/role-arn: arn:aws:iam::201243087060:role/soundcloud-prod-eks-lb-controller
