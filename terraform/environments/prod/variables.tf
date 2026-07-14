@@ -181,3 +181,9 @@ variable "db_instance_class" {
   description = "Aurora Instance Class"
   type        = string
 }
+
+variable "enable_nat_gateway" {
+  description = "NAT Gateway 생성 여부"
+  type        = bool
+  default     = true
+}
