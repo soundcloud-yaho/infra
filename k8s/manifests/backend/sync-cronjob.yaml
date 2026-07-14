@@ -28,6 +28,8 @@ spec:
                     name: db-config       # Writer 엔드포인트만 실제 사용됨 (쓰기 전용)
                 - secretRef:
                     name: aurora-db-secret
+                  - secretRef:
+                    name: football-api-secret 
               resources:
                 requests:
                   cpu: "100m"
