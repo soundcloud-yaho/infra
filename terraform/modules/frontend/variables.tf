@@ -13,3 +13,11 @@ variable "web_acl_id" {
   type        = string
   default     = null
 }
+
+variable "aliases" {
+  type = list(string)
+}
+
+variable "acm_certificate_arn" {
+  type = string
+}

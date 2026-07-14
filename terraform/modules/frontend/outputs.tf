@@ -15,3 +15,6 @@ output "deploy_policy_arn" {
   description = "CI용 IAM 유저/Role에 attach"
   value       = aws_iam_policy.frontend_deploy.arn
 }
+output "cloudfront_hosted_zone_id" {
+  value = aws_cloudfront_distribution.frontend.hosted_zone_id
+}

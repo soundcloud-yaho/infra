@@ -10,18 +10,18 @@ data "aws_caller_identity" "current" {}
 # ---------- ALB SG: 인터넷에서 80/443만 허용 ----------
 resource "aws_security_group" "alb" {
   name        = "${var.project_name}-${var.environment}-alb-sg"
-  description = "ALB inbound: 80/443 from internet"
+  description = "Security group for ALB"
   vpc_id      = var.vpc_id
 
   ingress {
-    description = "HTTP"
+    description = "HTTP from Internet"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
-    description = "HTTPS"
+    description = "HTTPS from Internet"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
@@ -40,18 +40,18 @@ resource "aws_security_group" "alb" {
 # ---------- EKS Node SG: ALB에서 app_port만 + 노드 간 통신 ----------
 resource "aws_security_group" "eks_node" {
   name        = "${var.project_name}-${var.environment}-eks-node-sg"
-  description = "EKS worker nodes: app traffic from ALB + node-to-node"
+  description = "Security group for EKS worker nodes"
   vpc_id      = var.vpc_id
 
   ingress {
-    description     = "App traffic from ALB (target-type: ip)"
+    description     = "Application traffic from ALB to Pod IP"
     from_port       = var.app_port
     to_port         = var.app_port
     protocol        = "tcp"
     security_groups = [aws_security_group.alb.id]
   }
   ingress {
-    description = "Node-to-node (Karpenter 노드 포함, 모든 포트)"
+    description = "Node to node communication"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -70,11 +70,11 @@ resource "aws_security_group" "eks_node" {
 # ---------- Aurora SG: EKS Node에서 5432만 허용 ----------
 resource "aws_security_group" "aurora" {
   name        = "${var.project_name}-${var.environment}-aurora-sg"
-  description = "Aurora: PostgreSQL only from EKS nodes"
+  description = "Security group for Aurora DB"
   vpc_id      = var.vpc_id
 
   ingress {
-    description     = "PostgreSQL from EKS nodes/pods"
+    description     = "PostgreSQL from EKS nodes"
     from_port       = 5432
     to_port         = 5432
     protocol        = "tcp"

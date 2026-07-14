@@ -29,6 +29,7 @@ resource "aws_cloudfront_distribution" "frontend" {
   enabled             = true
   default_root_object = "index.html"
   price_class         = "PriceClass_200" # 한국/아시아 리전 포함, 전세계 최고가 등급 제외로 비용 절감
+  aliases             = var.aliases  
 
   # CloudFront에 WAF Web ACL 연결
   web_acl_id = var.web_acl_id
@@ -67,7 +68,9 @@ resource "aws_cloudfront_distribution" "frontend" {
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = true # 커스텀 도메인 쓰면 acm_certificate_arn으로 교체
+    acm_certificate_arn      = var.acm_certificate_arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2021"
   }
 }
 
