@@ -19,3 +19,14 @@ output "kms_key_arn" {
   description = "Aurora 암호화 KMS 키 ARN - database 모듈로 전달"
   value       = aws_kms_key.this.arn
 }
+output "alb_sg_id" {
+  value = aws_security_group.alb.id
+}
+
+output "eks_node_sg_id" {
+  value = aws_security_group.eks_node.id
+}
+
+output "aurora_sg_id" {
+  value = aws_security_group.aurora.id
+}

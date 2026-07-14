@@ -32,3 +32,4 @@ Thumbs.db
 helm
 kubectl
 linux-amd64/
+tfplan
