@@ -36,8 +36,9 @@ kubectl create secret generic grafana-admin-secret \
 - tailscale-state (namespace: tailscale) — tailscale 파드가 TS_KUBE_SECRET으로 자동 생성. rbac.yaml의 secret 권한으로 가능.
 
 ---------------------------
-scripts/aurora-db-secret.sh
----------------------------
+### scripts/aurora-db-secret.sh
+실행 환경에 따라 바꿀 수 있게 환경 변수를 썼습니다
+
 ### 전제 조건
 
 - `terraform`, `aws`, `kubectl`, `jq` 설치
@@ -45,11 +46,12 @@ scripts/aurora-db-secret.sh
 - EKS와 Aurora가 Terraform으로 생성된 상태
 - Terraform state에 `master_user_secret_arn` output 존재
 - 실행 IAM 주체에 다음 권한 필요
-  - `eks:DescribeCluster`
   - `secretsmanager:GetSecretValue`
   - 필요 시 `kms:Decrypt`
-- EKS 접근 권한 및 `app` namespace의 Secret 생성·수정 RBAC 권한 필요
-- `app` namespace가 미리 생성되어 있어야 함
+  - EKS kubeconfig 설정 시 `eks:DescribeCluster`
+- EKS kubeconfig 연결 완료
+- EKS 접근 권한 및 `app` Namespace의 Secret 생성·수정 RBAC 권한 필요
+- `app` Namespace가 미리 생성되어 있어야 함
 
 ### 실행
 # 터미널 루트 이동
@@ -61,7 +63,7 @@ chmod +x scripts/aurora-db-secret.sh
 # 스크립트 실행
 ./scripts/aurora-db-secret.sh
 
-# 정상 작동 확인 // 데이터가 1이면 DB_PASSWARD 키가 생성된 것
+# 정상 작동 확인 // 데이터가 1이면 DB_PASSWORD 키가 생성된 것
 kubectl get secret aurora-db-secret -n app
 # NAME               TYPE     DATA
 # aurora-db-secret   Opaque   1
