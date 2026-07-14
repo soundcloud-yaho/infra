@@ -7,6 +7,6 @@ metadata:
 data:
   DB_WRITER_HOST: "CHANGEME_AURORA_WRITER_ENDPOINT"
   DB_READER_HOST: "CHANGEME_AURORA_READER_ENDPOINT"
-  DB_USER: "postgres"
+  DB_USER: "app_admin"
   DB_NAME: "worldcup"
   DB_PORT: "5432"

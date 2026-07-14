@@ -28,7 +28,8 @@ spec:
               command: ["python", "-m", "quantile_regression.recommend"]
               env:
                 - name: PROMETHEUS_URL
-                  value: "CHANGEME_PROMETHEUS_URL"
+                  value: "http://kube-prometheus-stack-kube-prom-prometheus.monitoring.svc.cluster.local:9090"
+                        # kubectl get svc -n monitoring | grep prometheus 로 확인 필요 (유추값)
                 - name: ANALYSIS_WINDOW_DAYS
                   value: "7"
                 - name: TARGET_NODEPOOL
