@@ -79,3 +79,9 @@ variable "worker_max_size" {
   type        = number
   default     = 2
 }
+
+variable "eks_node_sg_id" {
+  description = "EKS 노드에 추가로 붙일 보안그룹 ID (ALB→Node→Aurora SG 체인용)"
+  type        = string
+}
+
