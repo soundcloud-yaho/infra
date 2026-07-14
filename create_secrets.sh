@@ -7,7 +7,7 @@
 set -e
 
 TF_DIR="terraform/environments/prod"
-SECRETS_FILE="secrets.tfvars"
+SECRETS_FILE="terraform/environments/prod/secrets.tfvars"
 
 echo "======================================"
 echo " K8s Secret 생성 스크립트"
@@ -60,7 +60,7 @@ fi
 DB_PASSWORD=$(aws secretsmanager get-secret-value \
   --secret-id "${SECRET_ARN}" \
   --query SecretString \
-  --output text | python -c "import sys,json; print(json.load(sys.stdin)['password'])")
+  --output text | python3 -c "import sys,json; print(json.load(sys.stdin)['password'])")
 
 if [ -z "${DB_PASSWORD}" ]; then
   echo "[ FAIL ] Aurora 비밀번호 조회 실패"

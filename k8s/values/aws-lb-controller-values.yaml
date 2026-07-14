@@ -1,6 +1,7 @@
 # [Values] LB Controller — clusterName/IRSA ARN <- terraform outputs에서 복사
 clusterName: soundcloud-prod-eks
 region: ap-northeast-2
+vpcId: vpc-03d877a2382472a2e
 
 replicaCount: 2
 
