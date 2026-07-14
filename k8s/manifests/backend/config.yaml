@@ -5,8 +5,8 @@ metadata:
   name: db-config
   namespace: app
 data:
-  DB_WRITER_HOST: "CHANGEME_AURORA_WRITER_ENDPOINT"
-  DB_READER_HOST: "CHANGEME_AURORA_READER_ENDPOINT"
+  DB_WRITER_HOST: "soundcloud-prod-aurora.cluster-cf42qiw2429n.ap-northeast-2.rds.amazonaws.com"
+  DB_READER_HOST: "soundcloud-prod-aurora.cluster-ro-cf42qiw2429n.ap-northeast-2.rds.amazonaws.com"
   DB_USER: "app_admin"
   DB_NAME: "worldcup"
   DB_PORT: "5432"
