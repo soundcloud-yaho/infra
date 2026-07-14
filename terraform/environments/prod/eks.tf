@@ -6,7 +6,7 @@ module "eks" {
   cluster_name       = "${var.project_name}-${var.environment}-eks"
   cluster_version    = var.cluster_version
   private_subnet_ids = module.network.private_subnet_ids
-
+  eks_node_sg_id     = module.security.eks_node_sg_id
   # System 노드그룹
   system_instance_types = var.system_instance_types
   system_desired_size   = var.system_desired_size

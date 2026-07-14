@@ -20,7 +20,7 @@ spec:
         role: worker
       containers:
         - name: backend
-          image: 201243087060.dkr.ecr.ap-northeast-2.amazonaws.com/backend:latest
+          image: 201243087060.dkr.ecr.ap-northeast-2.amazonaws.com/soundcloud-prod/backend:24165bf
           ports:
             - containerPort: 8080
           envFrom:

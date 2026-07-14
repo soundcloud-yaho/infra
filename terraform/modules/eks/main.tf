@@ -27,15 +27,14 @@ resource "aws_eks_cluster" "this" {
   role_arn = aws_iam_role.cluster.arn
 
   vpc_config {
-    subnet_ids              = var.private_subnet_ids # 워커/컨트롤플레인 ENI는 프라이빗에만
-    endpoint_public_access  = true                   # kubectl을 로컬에서 치기 위함 (실무는 IP 제한 권장)
+    subnet_ids              = var.private_subnet_ids
+    endpoint_public_access  = true
     endpoint_private_access = true
   }
 
-  # access entries 방식 - aws-auth ConfigMap 수동 관리 지옥에서 해방
   access_config {
     authentication_mode                         = "API_AND_CONFIG_MAP"
-    bootstrap_cluster_creator_admin_permissions = true # terraform 실행자에게 admin 자동 부여
+    bootstrap_cluster_creator_admin_permissions = true
   }
 
   depends_on = [aws_iam_role_policy_attachment.cluster]
@@ -68,40 +67,115 @@ resource "aws_iam_role" "node" {
 
 resource "aws_iam_role_policy_attachment" "node" {
   for_each = toset([
-    "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",          # 노드가 클러스터에 조인
-    "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",               # Pod에 VPC IP 할당
-    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly", # ECR 이미지 pull
-    "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",       # SSM 접속 (SSH 키 불필요)
+    "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+    "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
+    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+    "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
   ])
   role       = aws_iam_role.node.name
   policy_arn = each.value
 }
 
+# ==========================================================
+# [신규] Launch Template 3개 — 노드그룹별 커스텀 SG 부착용
+#   - 우리가 만든 eks_node SG(ALB→Node→Aurora 체인용) +
+#     EKS가 자동 생성한 cluster_security_group(컨트롤플레인 통신용)
+#     둘 다 붙여야 안전함 (커스텀 SG만 넣으면 컨트롤플레인 통신이 끊길 위험)
+# ==========================================================
+
+resource "aws_launch_template" "system" {
+  name_prefix   = "${var.cluster_name}-system-"
+  instance_type = var.system_instance_types[0]
+
+  vpc_security_group_ids = [
+    var.eks_node_sg_id,
+    aws_eks_cluster.this.vpc_config[0].cluster_security_group_id,
+  ]
+
+  tag_specifications {
+    resource_type = "instance"
+    tags          = { Name = "${var.cluster_name}-system" }
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_launch_template" "ai" {
+  name_prefix   = "${var.cluster_name}-ai-"
+  instance_type = var.ai_instance_types[0]
+
+  vpc_security_group_ids = [
+    var.eks_node_sg_id,
+    aws_eks_cluster.this.vpc_config[0].cluster_security_group_id,
+  ]
+
+  tag_specifications {
+    resource_type = "instance"
+    tags          = { Name = "${var.cluster_name}-ai" }
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_launch_template" "worker" {
+  name_prefix   = "${var.cluster_name}-worker-"
+  instance_type = var.worker_instance_types[0]
+
+  vpc_security_group_ids = [
+    var.eks_node_sg_id,
+    aws_eks_cluster.this.vpc_config[0].cluster_security_group_id,
+  ]
+
+  tag_specifications {
+    resource_type = "instance"
+    tags          = { Name = "${var.cluster_name}-worker" }
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+# ---------- System 노드그룹 ----------
 resource "aws_eks_node_group" "system" {
   cluster_name    = aws_eks_cluster.this.name
   node_group_name = "system"
   node_role_arn   = aws_iam_role.node.arn
   subnet_ids      = var.private_subnet_ids
-  instance_types  = var.system_instance_types
-  capacity_type   = "ON_DEMAND" 
+  capacity_type   = "ON_DEMAND"
+
+  launch_template {
+    id      = aws_launch_template.system.id
+    version = "$Latest"
+  }
 
   scaling_config {
-  desired_size = var.system_desired_size
-  min_size     = var.system_min_size
-  max_size     = var.system_max_size
-}
+    desired_size = var.system_desired_size
+    min_size     = var.system_min_size
+    max_size     = var.system_max_size
+  }
 
-  labels = { role = "system" } 
+  labels = { role = "system" }
 
   depends_on = [aws_iam_role_policy_attachment.node]
 }
+
+# ---------- AI 노드그룹 ----------
 resource "aws_eks_node_group" "ai" {
   cluster_name    = aws_eks_cluster.this.name
   node_group_name = "${var.cluster_name}-ai"
   node_role_arn   = aws_iam_role.node.arn
   subnet_ids      = var.private_subnet_ids
-  instance_types  = var.ai_instance_types
   capacity_type   = "ON_DEMAND"
+
+  launch_template {
+    id      = aws_launch_template.ai.id
+    version = "$Latest"
+  }
 
   scaling_config {
     desired_size = var.ai_desired_size
@@ -111,7 +185,6 @@ resource "aws_eks_node_group" "ai" {
 
   labels = { role = "ai" }
 
-  # AI CronJob만 진입 허용 - toleration 없는 파드 차단
   taint {
     key    = "dedicated"
     value  = "ai"
@@ -121,14 +194,18 @@ resource "aws_eks_node_group" "ai" {
   depends_on = [aws_iam_role_policy_attachment.node]
 }
 
-# ---------- Worker 관리형 노드그룹 (FastAPI 베이스라인, 항상 ON_DEMAND 1개 유지) ----------
+# ---------- Worker 노드그룹 ----------
 resource "aws_eks_node_group" "worker" {
   cluster_name    = aws_eks_cluster.this.name
   node_group_name = "${var.cluster_name}-worker"
   node_role_arn   = aws_iam_role.node.arn
   subnet_ids      = var.private_subnet_ids
-  instance_types  = var.worker_instance_types
   capacity_type   = "ON_DEMAND"
+
+  launch_template {
+    id      = aws_launch_template.worker.id
+    version = "$Latest"
+  }
 
   scaling_config {
     desired_size = var.worker_desired_size
@@ -139,7 +216,7 @@ resource "aws_eks_node_group" "worker" {
   labels = { role = "worker" }
 
   depends_on = [aws_iam_role_policy_attachment.node]
-}   
+}
 
 # ---------- 필수 애드온 ----------
 resource "aws_eks_addon" "vpc_cni" {
@@ -155,5 +232,5 @@ resource "aws_eks_addon" "kube_proxy" {
 resource "aws_eks_addon" "coredns" {
   cluster_name = aws_eks_cluster.this.name
   addon_name   = "coredns"
-  depends_on   = [aws_eks_node_group.system] # coredns Pod가 뜰 노드가 먼저 있어야 함
+  depends_on   = [aws_eks_node_group.system]
 }
