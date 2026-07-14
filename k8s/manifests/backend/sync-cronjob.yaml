@@ -21,7 +21,7 @@ spec:
           containers:
             - name: sync
               # backend와 동일한 이미지 사용 — sync 커맨드만 다름
-              image: 201243087060.dkr.ecr.ap-northeast-2.amazonaws.com/soundcloud-prod/backend:latest
+              image: 201243087060.dkr.ecr.ap-northeast-2.amazonaws.com/soundcloud-prod/backend:d3f161f
               command: ["python", "-m", "sync.sync_matches"]
               envFrom:
                 - configMapRef:
