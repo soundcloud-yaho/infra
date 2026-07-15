@@ -12,4 +12,4 @@ serviceAccount:
   create: true
   name: aws-load-balancer-controller
   annotations:
-    eks.amazonaws.com/role-arn: arn:aws:iam::201243087060:role/soundcloud-prod-eks-lb-controller
+    eks.amazonaws.com/role-arn: arn:aws:iam::201243087060:role/soundcloud-prod-lb-controller
