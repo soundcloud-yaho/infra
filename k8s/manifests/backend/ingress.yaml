@@ -14,7 +14,7 @@ metadata:
 spec:
   ingressClassName: alb            
   rules:
-    - host: api.rebao.store     
+    - host: api.rubao.store     
       http:
         paths:
           - path: /
