@@ -1,1 +1,27 @@
-# [Values] KEDA — 기본 설정
+# [Values] KEDA — system 노드 HA 배치
+operator:
+  replicaCount: 2
+  nodeSelector:
+    role: system
+
+metricsServer:
+  replicaCount: 2
+  nodeSelector:
+    role: system
+
+webhooks:
+  replicaCount: 2
+  nodeSelector:
+    role: system
+
+watchNamespace: ""
+
+podDisruptionBudget:
+  operator:
+    minAvailable: 1
+  metricServer:
+    minAvailable: 1
+
+prometheus:
+  metricServer:
+    enabled: true

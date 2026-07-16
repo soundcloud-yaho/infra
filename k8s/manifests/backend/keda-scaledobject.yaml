@@ -1,1 +1,71 @@
-# [Backend] KEDA ScaledObject — 예측(선제) + 실측 CPU/RPS(보험) 이중 트리거, minReplica>=1
+# [Backend] KEDA ScaledObject — NeuralProphet 예측(선제) + 실측 RPS/CPU(보험) 이중 트리거
+#
+# 메트릭 파이프라인:
+#   np-predict CronJob → Pushgateway → Prometheus scrape
+#   → worldcup_recommended_pods{target="keda",job="neuralprophet-predict"}
+#
+# KEDA는 트리거별 desiredReplicas 중 MAX를 사용한다.
+# threshold=1 이면 desiredReplicas = ceil(metricValue / 1) = metricValue (Pod 수 직접 매핑)
+#
+# 스케일 상수(RPS_PER_POD, HEADROOM_FACTOR)는 ai/neuralprophet/config.py 와 동기화 필요
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: backend
+  namespace: app
+  labels:
+    app: backend
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: backend
+  pollingInterval: 30
+  cooldownPeriod: 300
+  minReplicaCount: 1
+  maxReplicaCount: 100
+  fallback:
+    failureThreshold: 3
+    replicas: 1
+  advanced:
+    restoreToOriginalReplicaCount: false
+    horizontalPodAutoscalerConfig:
+      behavior:
+        scaleDown:
+          stabilizationWindowSeconds: 300
+          policies:
+            - type: Percent
+              value: 50
+              periodSeconds: 300
+        scaleUp:
+          stabilizationWindowSeconds: 0
+          policies:
+            - type: Pods
+              value: 20
+              periodSeconds: 60
+            - type: Percent
+              value: 100
+              periodSeconds: 60
+          selectPolicy: Max
+  triggers:
+    # 선제 트리거: NeuralProphet이 Pushgateway에 push한 권장 Pod 수
+    - type: prometheus
+      metadata:
+        serverAddress: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
+        query: worldcup_recommended_pods{target="keda",job="neuralprophet-predict"}
+        threshold: "1"
+        activationThreshold: "0"
+    # 보험 트리거: 실측 RPS 기반 Pod 수 (HEADROOM=1.2, RPS_PER_POD=500)
+    - type: prometheus
+      metadata:
+        serverAddress: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
+        query: (sum(rate(http_requests_total{namespace="app",service="backend"}[5m])) * 1.2) / 500
+        threshold: "1"
+        activationThreshold: "0"
+    # 보험 트리거: CPU utilization 70% 초과 시 scale-out
+    - type: cpu
+      metricType: Utilization
+      metadata:
+        value: "70"
