@@ -67,6 +67,13 @@ spec:
                   value: neuralprophet-predict  # --pushgateway-job: common/pushgateway.py PUSHGATEWAY_JOB
                 - name: PUSHGATEWAY_INSTANCE
                   value: neuralprophet  # --pushgateway-instance: Pushgateway instance 라벨
+                # 스케일 상수 — infra/k8s/manifests/backend/keda-scaledobject.yaml 보험 트리거와 동기화
+                - name: RPS_PER_POD
+                  value: "500"
+                - name: HEADROOM_FACTOR
+                  value: "1.2"
+                - name: BASELINE_PODS
+                  value: "1"
               volumeMounts:
                 - name: model-output
                   mountPath: /data/models  # config MODEL_PATH → worldcup_model.np (train 산출물)
