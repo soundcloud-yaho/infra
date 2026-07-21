@@ -12,9 +12,9 @@ metadata:
     alb.ingress.kubernetes.io/healthcheck-path: /readyz
     alb.ingress.kubernetes.io/healthcheck-interval-seconds: "15"
 spec:
-  ingressClassName: alb            
+  ingressClassName: alb
   rules:
-    - host: api.rubao.store     
+    - host: api.rubao.store
       http:
         paths:
           - path: /
