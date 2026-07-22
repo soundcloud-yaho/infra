@@ -38,6 +38,8 @@ alertmanager:
 kube-state-metrics:
   nodeSelector:
     role: system
+  metricLabelsAllowlist:
+    - nodes=[karpenter.sh/nodepool,karpenter.sh/capacity-type]
 
 prometheusOperator:
   nodeSelector:
