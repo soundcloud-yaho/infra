@@ -25,7 +25,7 @@ spec:
           containers:
             - name: quantile-recommend
               image: 201243087060.dkr.ecr.ap-northeast-2.amazonaws.com/soundcloud-prod/ai:latest
-              command: ["python", "-m", "quantile_regression.recommend"]
+              command: ["python", "-m", "Segmented_Quantile.recommend"]
               env:
                 - name: PROMETHEUS_URL
                   value: "http://kube-prometheus-stack-prometheus.monitoring.svc:9090"
