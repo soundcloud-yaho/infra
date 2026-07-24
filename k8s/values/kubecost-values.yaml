@@ -1,6 +1,7 @@
 # 모드B: 번들 Prometheus/Grafana 끄고 윤주 kube-prometheus-stack 재사용
 
 global:
+  clusterId: "soundcloud-prod-eks"
   prometheus:
     enabled: false        
     fqdn: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
