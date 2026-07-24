@@ -58,7 +58,7 @@ spec:
                 claimName: neuralprophet-model  # predict CronJob과 동일 PVC 공유
           containers:
             - name: train
-              image: 201243087060.dkr.ecr.ap-northeast-2.amazonaws.com/soundcloud-prod/ai:4ac5820
+              image: 201243087060.dkr.ecr.ap-northeast-2.amazonaws.com/soundcloud-prod/ai:4c028dd"
               imagePullPolicy: IfNotPresent  # 노드에 이미지 있으면 재 pull 생략
               workingDir: /app/neuralprophet  # train.py·config.py·preprocess.py 위치
               command:
