@@ -40,7 +40,7 @@ EKS 워커 노드를 역할별로 3개 그룹으로 분리한다. 각 그룹은 
 | 노드그룹 | 타입 | 수량 | 역할 |
 |---|---|---|---|
 | System | ON_DEMAND | 2 | Karpenter, KEDA, ArgoCD, LB Controller, Prometheus/Grafana/Kubecost, Tailscale |
-| AI | ON_DEMAND | 1 | NeuralProphet, Quantile Regression, Isolation Forest, Bedrock 리포트 CronJob |
+| AI | ON_DEMAND | 1 | NeuralProphet, "Segmented Quantile, Isolation Forest, Bedrock 리포트 CronJob |
 | Worker | ON_DEMAND | 1 | FastAPI 베이스라인 (항상 최소 1개 유지, 콜드스타트 방지) |
 | Spot Worker | Spot | 0~N | 경기 시간대 버스트 — Karpenter가 초 단위로 구매/반납 |
 
@@ -137,7 +137,7 @@ k8s/
     ai/
       np-train-cronjob.yaml     NeuralProphet 학습 (일 1회, toleration: dedicated=ai)
       np-predict-cronjob.yaml   NeuralProphet 추론 (5분, toleration: dedicated=ai)
-      qr-report-cronjob.yaml    Quantile Regression 권고 리포트 (일 1회)
+      qr-report-cronjob.yaml    "Segmented Quantile 권고 리포트 (주 1회)
       bedrock-report-cronjob.yaml  Kubecost → Bedrock → Slack (주 1회)
       sync-cronjob.yaml         football-data.org 동기화 (1시간)
 ```
