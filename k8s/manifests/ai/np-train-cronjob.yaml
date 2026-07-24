@@ -9,7 +9,7 @@ metadata:
     app: neuralprophet
     component: train
 spec:
-  # train.py가 저장하는 worldcup_model.np 및 train_metrics.json 등 모델 산출물 PVC
+  storageClassName: gp3 
   accessModes:
     - ReadWriteOnce  # 단일 노드에서만 R/W (학습 Job 1개 + predict Job이 순차 공유)
   resources:
