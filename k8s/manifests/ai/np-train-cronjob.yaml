@@ -1,21 +1,3 @@
-# [AI] NeuralProphet 학습 CronJob — 일 1회, AI NodePool toleration 필수
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: neuralprophet-model
-  namespace: ai
-  labels:
-    app: neuralprophet
-    component: train
-spec:
-  storageClassName: gp3 
-  accessModes:
-    - ReadWriteOnce  # 단일 노드에서만 R/W (학습 Job 1개 + predict Job이 순차 공유)
-  resources:
-    requests:
-      storage: 5Gi  # 모델(.np) + 검증 그래프 + metrics JSON 여유 용량
----
 apiVersion: batch/v1
 kind: CronJob
 metadata:
