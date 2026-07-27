@@ -6,7 +6,10 @@ global:
     enabled: false        
     fqdn: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
   grafana:
-    enabled: false        
+    enabled: false       
+
+kubecostProductConfigs:
+  clusterName: "soundcloud-prod-eks" 
 
 
 nodeSelector:
