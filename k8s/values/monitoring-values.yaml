@@ -47,7 +47,7 @@ kube-state-metrics:
   nodeSelector:
     role: system
   metricLabelsAllowlist:
-    - nodes=[karpenter.sh/nodepool,karpenter.sh/capacity-type]
+    - nodes=[karpenter.sh/nodepool,karpenter.sh/capacity-type,eks.amazonaws.com/nodegroup]
 
 prometheusOperator:
   nodeSelector:
