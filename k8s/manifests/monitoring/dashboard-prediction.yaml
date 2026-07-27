@@ -30,178 +30,179 @@ data:
       "liveNow": false,
       "panels": [
         {
-          "collapsed": false,
+          "collapsed": true,
           "gridPos": {
             "h": 1,
             "w": 24,
             "x": 0,
             "y": 0
           },
-          "id": 48,
-          "panels": [],
-          "title": "실시간 트래픽",
-          "type": "row"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "description": "NeuralProphet 예측 RPS(1시간 내 피크)와 실측 RPS 비교",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
+          "id": 49,
+          "panels": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
               },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "axisSoftMin": 0,
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
+              "description": "NeuralProphet 예측 RPS(1시간 내 피크)와 실측 RPS 비교",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "axisSoftMin": 0,
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "reqps"
                 },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
+                "overrides": [
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "예측 RPS",
+                      "scope": "series"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.lineStyle",
+                        "value": {
+                          "dash": [
+                            10,
+                            10
+                          ],
+                          "fill": "dash"
+                        }
+                      },
+                      {
+                        "id": "color",
+                        "value": {
+                          "fixedColor": "light-green",
+                          "mode": "fixed"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "실측 RPS"
+                    },
+                    "properties": [
+                      {
+                        "id": "color",
+                        "value": {
+                          "fixedColor": "super-light-yellow",
+                          "mode": "fixed"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              "gridPos": {
+                "h": 9,
+                "w": 8,
+                "x": 0,
+                "y": 1
+              },
+              "id": 35,
+              "options": {
+                "annotations": {
+                  "clustering": -1,
+                  "multiLane": false
                 },
-                "showPoints": "auto",
-                "showValues": false,
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "enableFacetedFilter": false,
+                  "overflow": "ellipsis",
+                  "placement": "bottom",
+                  "showLegend": true
                 },
-                "thresholdsStyle": {
-                  "mode": "off"
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
                 }
               },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
+              "pluginVersion": "13.1.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
                   },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "reqps"
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "예측 RPS",
-                  "scope": "series"
+                  "editorMode": "builder",
+                  "expr": "worldcup_predicted_rps_peak{target=\"keda\"}",
+                  "instant": false,
+                  "legendFormat": "예측 RPS",
+                  "range": true,
+                  "refId": "A"
                 },
-                "properties": [
-                  {
-                    "id": "custom.lineStyle",
-                    "value": {
-                      "dash": [
-                        10,
-                        10
-                      ],
-                      "fill": "dash"
-                    }
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
                   },
-                  {
-                    "id": "color",
-                    "value": {
-                      "fixedColor": "light-green",
-                      "mode": "fixed"
-                    }
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "실측 RPS"
-                },
-                "properties": [
-                  {
-                    "id": "color",
-                    "value": {
-                      "fixedColor": "super-light-yellow",
-                      "mode": "fixed"
-                    }
-                  }
-                ]
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 9,
-            "w": 8,
-            "x": 0,
-            "y": 1
-          },
-          "id": 35,
-          "options": {
-            "annotations": {
-              "clustering": -1,
-              "multiLane": false
-            },
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "enableFacetedFilter": false,
-              "overflow": "ellipsis",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "13.1.0",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "editorMode": "builder",
-              "expr": "worldcup_predicted_rps_peak{target=\"keda\"}",
-              "instant": false,
-              "legendFormat": "예측 RPS",
-              "range": true,
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "editorMode": "builder",
-              "expr": "worldcup_current_rps{target=\"keda\"}",
-              "instant": false,
-              "legendFormat": "실측 RPS",
-              "range": true,
-              "refId": "B"
+                  "editorMode": "builder",
+                  "expr": "worldcup_current_rps{target=\"keda\"}",
+                  "instant": false,
+                  "legendFormat": "실측 RPS",
+                  "range": true,
+                  "refId": "B"
+                }
+              ],
+              "title": "예측 RPS vs 실측 RPS",
+              "type": "timeseries"
             }
           ],
-          "title": "예측 RPS vs 실측 RPS",
-          "type": "timeseries"
+          "title": "실시간 트래픽",
+          "type": "row"
         },
         {
           "collapsed": false,
@@ -209,10 +210,9 @@ data:
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 10
+            "y": 1
           },
-          "id": 49,
-          "panels": [],
+          "id": 50,
           "title": "선제 스케일링",
           "type": "row"
         },
@@ -330,7 +330,7 @@ data:
             "h": 9,
             "w": 8,
             "x": 0,
-            "y": 11
+            "y": 2
           },
           "id": 24,
           "options": {
@@ -465,7 +465,7 @@ data:
             "h": 9,
             "w": 8,
             "x": 8,
-            "y": 11
+            "y": 2
           },
           "id": 25,
           "options": {
@@ -571,7 +571,7 @@ data:
             "h": 9,
             "w": 8,
             "x": 16,
-            "y": 11
+            "y": 2
           },
           "id": 28,
           "options": {
@@ -600,10 +600,10 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "editorMode": "builder",
-              "expr": "http_requests_inprogress",
+              "editorMode": "code",
+              "expr": "sum(http_requests_inprogress)",
               "instant": false,
-              "legendFormat": "{{handler}}",
+              "legendFormat": "처리 중인 요청 수",
               "range": true,
               "refId": "A"
             }
@@ -613,14 +613,7 @@ data:
         },
         {
           "collapsed": false,
-          "gridPos": {
-            "h": 1,
-            "w": 24,
-            "x": 0,
-            "y": 20
-          },
-          "id": 50,
-          "panels": [],
+          "id": 51,
           "title": "SLO 상태",
           "type": "row"
         },
@@ -630,9 +623,9 @@ data:
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 21
+            "y": 0
           },
-          "id": 51,
+          "id": 52,
           "title": "인프라 영역",
           "type": "row"
         },
@@ -724,7 +717,7 @@ data:
             "h": 9,
             "w": 8,
             "x": 0,
-            "y": 22
+            "y": 1
           },
           "id": 40,
           "options": {
@@ -754,7 +747,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "label_replace(\r\n  label_replace(\r\n    100 - (\r\n      avg by (instance) (\r\n        irate(node_cpu_seconds_total{mode=\"idle\", instance=~\"10\\\\.0\\\\.46\\\\.42:9100|10\\\\.0\\\\.57\\\\.59:9100|10\\\\.0\\\\.80\\\\.112:9100|10\\\\.0\\\\.92\\\\.207:9100\"}[5m])\r\n      ) * 100\r\n    ),\r\n    \"node_role\", \"AI Workload\", \"instance\", \"^10\\\\.0\\\\.46\\\\.42:9100$\"\r\n  ),\r\n  \"node_role\", \"System\", \"instance\", \"^10\\\\.0\\\\.(57\\\\.59|80\\\\.112|92\\\\.207):9100$\"\r\n)",
+              "expr": "label_replace(\r\n  label_replace(\r\n    (100 - (avg by (instance) (irate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100))\r\n    * on(instance) group_left(node)\r\n      label_replace(node_uname_info, \"node\", \"$1\", \"nodename\", \"(.+)\")\r\n    * on(node) group_left(label_eks_amazonaws_com_nodegroup)\r\n      group by (node, label_eks_amazonaws_com_nodegroup) (\r\n        kube_node_labels{label_eks_amazonaws_com_nodegroup=~\"soundcloud-prod-eks-ai|system\"}\r\n      ),\r\n    \"node_role\", \"AI Workload\", \"label_eks_amazonaws_com_nodegroup\", \"soundcloud-prod-eks-ai\"\r\n  ),\r\n  \"node_role\", \"System\", \"label_eks_amazonaws_com_nodegroup\", \"system\"\r\n)",
               "instant": false,
               "legendFormat": "{{node_role}}",
               "range": true,
@@ -831,7 +824,7 @@ data:
             "h": 9,
             "w": 8,
             "x": 8,
-            "y": 22
+            "y": 1
           },
           "id": 42,
           "options": {
@@ -861,7 +854,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "label_replace(\r\n  label_replace(\r\n    (1 - (\r\n      node_memory_MemAvailable_bytes{instance=~\"10\\\\.0\\\\.46\\\\.42:9100|10\\\\.0\\\\.57\\\\.59:9100|10\\\\.0\\\\.80\\\\.112:9100|10\\\\.0\\\\.92\\\\.207:9100\"}\r\n      /\r\n      node_memory_MemTotal_bytes{instance=~\"10\\\\.0\\\\.46\\\\.42:9100|10\\\\.0\\\\.57\\\\.59:9100|10\\\\.0\\\\.80\\\\.112:9100|10\\\\.0\\\\.92\\\\.207:9100\"}\r\n    )) * 100,\r\n    \"node_role\", \"AI Workload\", \"instance\", \"^10\\\\.0\\\\.46\\\\.42:9100$\"\r\n  ),\r\n  \"node_role\", \"System\", \"instance\", \"^10\\\\.0\\\\.(57\\\\.59|80\\\\.112|92\\\\.207):9100$\"\r\n)",
+              "expr": "label_replace(\r\n  label_replace(\r\n    ((1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100)\r\n    * on(instance) group_left(node)\r\n      label_replace(node_uname_info, \"node\", \"$1\", \"nodename\", \"(.+)\")\r\n    * on(node) group_left(label_eks_amazonaws_com_nodegroup)\r\n      group by (node, label_eks_amazonaws_com_nodegroup) (\r\n        kube_node_labels{label_eks_amazonaws_com_nodegroup=~\"soundcloud-prod-eks-ai|system\"}\r\n      ),\r\n    \"node_role\", \"AI Workload\", \"label_eks_amazonaws_com_nodegroup\", \"soundcloud-prod-eks-ai\"\r\n  ),\r\n  \"node_role\", \"System\", \"label_eks_amazonaws_com_nodegroup\", \"system\"\r\n)",
               "legendFormat": "{{node_role}}",
               "range": true,
               "refId": "A"
@@ -875,7 +868,7 @@ data:
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "description": "노드 그룹 별 노드 수 변화",
+          "description": "전체 노드 수 변화량",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -953,7 +946,7 @@ data:
             "h": 9,
             "w": 8,
             "x": 16,
-            "y": 22
+            "y": 1
           },
           "id": 45,
           "options": {
@@ -999,9 +992,9 @@ data:
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 31
+            "y": 10
           },
-          "id": 52,
+          "id": 53,
           "title": "서비스 영역",
           "type": "row"
         },
@@ -1093,7 +1086,7 @@ data:
             "h": 9,
             "w": 8,
             "x": 0,
-            "y": 32
+            "y": 11
           },
           "id": 44,
           "options": {
@@ -1123,7 +1116,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "label_replace(\r\n  label_replace(\r\n    100 - (\r\n      avg by (instance) (\r\n        irate(node_cpu_seconds_total{mode=\"idle\", instance=~\"10\\\\.0\\\\.46\\\\.42:9100|10\\\\.0\\\\.57\\\\.59:9100|10\\\\.0\\\\.80\\\\.112:9100|10\\\\.0\\\\.92\\\\.207:9100\"}[5m])\r\n      ) * 100\r\n    ),\r\n    \"node_role\", \"AI Workload\", \"instance\", \"^10\\\\.0\\\\.46\\\\.42:9100$\"\r\n  ),\r\n  \"node_role\", \"System\", \"instance\", \"^10\\\\.0\\\\.(57\\\\.59|80\\\\.112|92\\\\.207):9100$\"\r\n)",
+              "expr": "label_replace(\r\n  (100 - (avg by (instance) (irate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100))\r\n  * on(instance) group_left(node)\r\n    label_replace(node_uname_info, \"node\", \"$1\", \"nodename\", \"(.+)\")\r\n  * on(node) group_left(label_eks_amazonaws_com_nodegroup)\r\n    group by (node, label_eks_amazonaws_com_nodegroup) (\r\n      kube_node_labels{label_eks_amazonaws_com_nodegroup=\"soundcloud-prod-eks-worker\"}\r\n    ),\r\n  \"node_role\", \"Worker\", \"instance\", \".+\"\r\n)\r\nor\r\nlabel_replace(\r\n  (100 - (avg by (instance) (irate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100))\r\n  * on(instance) group_left(node)\r\n    label_replace(node_uname_info, \"node\", \"$1\", \"nodename\", \"(.+)\")\r\n  * on(node) group_left()\r\n    group by (node, label_karpenter_sh_nodepool) (\r\n      kube_node_labels{label_karpenter_sh_nodepool=\"spot-worker\"}\r\n    ),\r\n  \"node_role\", \"Spot Worker\", \"instance\", \".+\"\r\n)",
               "instant": false,
               "legendFormat": "{{node_role}}",
               "range": true,
@@ -1200,7 +1193,7 @@ data:
             "h": 9,
             "w": 8,
             "x": 8,
-            "y": 32
+            "y": 11
           },
           "id": 47,
           "options": {
@@ -1230,13 +1223,131 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "label_replace(\r\n  (1 - (\r\n    node_memory_MemAvailable_bytes{instance=\"10.0.76.14:9100\"}\r\n    /\r\n    node_memory_MemTotal_bytes{instance=\"10.0.76.14:9100\"}\r\n  )) * 100,\r\n  \"node_role\", \"Worker\", \"instance\", \".*\"\r\n)\r\nor\r\nlabel_replace(\r\n  (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100\r\n  * on(instance) group_left(node)\r\n    label_replace(node_uname_info, \"node\", \"$1\", \"nodename\", \"(.+)\")\r\n  * on(node) group_left()\r\n    kube_node_labels{label_karpenter_sh_nodepool=\"spot-worker\"},\r\n  \"node_role\", \"Spot Worker\", \"instance\", \".+\"\r\n)",
+              "expr": "label_replace(\r\n  ((1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100)\r\n  * on(instance) group_left(node)\r\n    label_replace(node_uname_info, \"node\", \"$1\", \"nodename\", \"(.+)\")\r\n  * on(node) group_left(label_eks_amazonaws_com_nodegroup)\r\n    group by (node, label_eks_amazonaws_com_nodegroup) (\r\n      kube_node_labels{label_eks_amazonaws_com_nodegroup=\"soundcloud-prod-eks-worker\"}\r\n    ),\r\n  \"node_role\", \"Worker\", \"instance\", \".+\"\r\n)\r\nor\r\nlabel_replace(\r\n  ((1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100)\r\n  * on(instance) group_left(node)\r\n    label_replace(node_uname_info, \"node\", \"$1\", \"nodename\", \"(.+)\")\r\n  * on(node) group_left()\r\n    group by (node, label_karpenter_sh_nodepool) (\r\n      kube_node_labels{label_karpenter_sh_nodepool=\"spot-worker\"}\r\n    ),\r\n  \"node_role\", \"Spot Worker\", \"instance\", \".+\"\r\n)",
               "legendFormat": "{{node_role}}",
               "range": true,
               "refId": "A"
             }
           ],
           "title": "노드 메모리",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "전체 요청 중 상위 5%(p95), 상위 1%(p99) 느린 요청의 응답 시간 (p95 기준 300ms 초과 시 SLO 위반)",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "dashed"
+                }
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "light-red",
+                    "value": 0.3
+                  }
+                ]
+              },
+              "unit": "s"
+            }
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 8,
+            "x": 16,
+            "y": 11
+          },
+          "id": 38,
+          "options": {
+            "annotations": {
+              "clustering": -1,
+              "multiLane": false
+            },
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "enableFacetedFilter": false,
+              "overflow": "ellipsis",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "13.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[1m])) by (le))",
+              "instant": false,
+              "legendFormat": "p95",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[1m])) by (le))",
+              "instant": false,
+              "legendFormat": "p99",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "지연 시간",
           "type": "timeseries"
         },
         {
@@ -1305,8 +1416,8 @@ data:
           "gridPos": {
             "h": 9,
             "w": 8,
-            "x": 16,
-            "y": 32
+            "x": 0,
+            "y": 20
           },
           "id": 43,
           "options": {
@@ -1336,13 +1447,13 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum by (pod) (\r\n  container_memory_working_set_bytes{namespace=\"app\", pod=~\"backend.*\", container!=\"\", container!=\"POD\"}\r\n)\r\n/\r\nsum by (pod) (\r\n  container_spec_memory_limit_bytes{namespace=\"app\", pod=~\"backend.*\", container!=\"\", container!=\"POD\"}\r\n)\r\n* 100",
-              "legendFormat": "{{pod}}",
+              "expr": "sum(container_memory_working_set_bytes{namespace=\"app\", pod=~\"backend.*\", container!=\"\", container!=\"POD\"})\r\n/\r\nsum(container_spec_memory_limit_bytes{namespace=\"app\", pod=~\"backend.*\", container!=\"\", container!=\"POD\"})\r\n* 100",
+              "legendFormat": "평균 사용률",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "파드 메모리",
+          "title": "파드 메모리 평균",
           "type": "timeseries"
         },
         {
@@ -1350,7 +1461,7 @@ data:
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "description": "전체 요청 중 상위 5%(p95), 상위 1%(p99) 느린 요청의 응답 시간 (p95 기준 300ms 초과 시 SLO 위반)",
+          "description": "backend 파드 중 최대 메모리 사용률",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -1387,9 +1498,11 @@ data:
                   "mode": "none"
                 },
                 "thresholdsStyle": {
-                  "mode": "dashed"
+                  "mode": "off"
                 }
               },
+              "max": 100,
+              "min": 0,
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
@@ -1398,21 +1511,21 @@ data:
                     "value": 0
                   },
                   {
-                    "color": "light-red",
-                    "value": 0.3
+                    "color": "red",
+                    "value": 80
                   }
                 ]
               },
-              "unit": "s"
+              "unit": "percent"
             }
           },
           "gridPos": {
             "h": 9,
             "w": 8,
-            "x": 0,
-            "y": 41
+            "x": 8,
+            "y": 20
           },
-          "id": 38,
+          "id": 48,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -1440,27 +1553,13 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "exemplar": false,
-              "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[1m])) by (le))",
-              "instant": false,
-              "legendFormat": "p95",
+              "expr": "topk(1,\r\n  container_memory_working_set_bytes{namespace=\"app\", pod=~\"backend.*\", container!=\"\", container!=\"POD\"}\r\n  /\r\n  container_spec_memory_limit_bytes{namespace=\"app\", pod=~\"backend.*\", container!=\"\", container!=\"POD\"}\r\n) * 100",
+              "legendFormat": "{{pod}}",
               "range": true,
               "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "editorMode": "code",
-              "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[1m])) by (le))",
-              "instant": false,
-              "legendFormat": "p99",
-              "range": true,
-              "refId": "B"
             }
           ],
-          "title": "지연 시간",
+          "title": "최대 메모리 사용률 파드",
           "type": "timeseries"
         },
         {
@@ -1527,8 +1626,8 @@ data:
           "gridPos": {
             "h": 9,
             "w": 8,
-            "x": 8,
-            "y": 41
+            "x": 16,
+            "y": 20
           },
           "id": 39,
           "options": {
@@ -1569,92 +1668,93 @@ data:
           "type": "timeseries"
         },
         {
-          "collapsed": false,
+          "collapsed": true,
           "gridPos": {
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 50
+            "y": 29
           },
-          "id": 53,
-          "panels": [],
-          "title": "비용 효율",
-          "type": "row"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "description": "네임스페이스별 시간당 비용 (CPU 할당 x CPU 단가 + 메모리 할당 × RAM 단가)",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "continuous-GrYlRd"
-              },
-              "decimals": 2,
-              "min": 0,
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  }
-                ]
-              },
-              "unit": "currencyUSD"
-            }
-          },
-          "gridPos": {
-            "h": 9,
-            "w": 8,
-            "x": 0,
-            "y": 51
-          },
-          "id": 33,
-          "options": {
-            "displayMode": "gradient",
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "overflow": "ellipsis",
-              "placement": "bottom",
-              "showLegend": false
-            },
-            "maxVizHeight": 300,
-            "minVizHeight": 16,
-            "minVizWidth": 8,
-            "namePlacement": "auto",
-            "orientation": "horizontal",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "showUnfilled": true,
-            "sizing": "auto",
-            "valueMode": "color"
-          },
-          "pluginVersion": "13.1.0",
-          "targets": [
+          "id": 54,
+          "panels": [
             {
               "datasource": {
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "editorMode": "code",
-              "expr": "sum by (namespace) (\n  container_cpu_allocation * on(node) group_left() node_cpu_hourly_cost\n)\n+\nsum by (namespace) (\n  container_memory_allocation_bytes / 1024 / 1024 / 1024 * on(node) group_left() node_ram_hourly_cost\n)",
-              "instant": false,
-              "legendFormat": "{{namespace}}",
-              "range": true,
-              "refId": "A"
+              "description": "네임스페이스별 시간당 비용 (CPU 할당 x CPU 단가 + 메모리 할당 × RAM 단가)",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "continuous-GrYlRd"
+                  },
+                  "decimals": 2,
+                  "min": 0,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      }
+                    ]
+                  },
+                  "unit": "currencyUSD"
+                }
+              },
+              "gridPos": {
+                "h": 9,
+                "w": 8,
+                "x": 0,
+                "y": 30
+              },
+              "id": 33,
+              "options": {
+                "displayMode": "gradient",
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "overflow": "ellipsis",
+                  "placement": "bottom",
+                  "showLegend": false
+                },
+                "maxVizHeight": 300,
+                "minVizHeight": 16,
+                "minVizWidth": 8,
+                "namePlacement": "auto",
+                "orientation": "horizontal",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showUnfilled": true,
+                "sizing": "auto",
+                "valueMode": "color"
+              },
+              "pluginVersion": "13.1.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                  },
+                  "editorMode": "code",
+                  "expr": "sum by (namespace) (\n  container_cpu_allocation * on(node) group_left() node_cpu_hourly_cost\n)\n+\nsum by (namespace) (\n  container_memory_allocation_bytes / 1024 / 1024 / 1024 * on(node) group_left() node_ram_hourly_cost\n)",
+                  "instant": false,
+                  "legendFormat": "{{namespace}}",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "네임스페이스별 시간당 비용",
+              "type": "bargauge"
             }
           ],
-          "title": "네임스페이스별 시간당 비용",
-          "type": "bargauge"
+          "title": "비용 효율",
+          "type": "row"
         }
       ],
       "preload": false,
@@ -1679,7 +1779,5 @@ data:
         ]
       },
       "timezone": "browser",
-      "title": "SoundCloud dashboard",
-      "version": 8,
-      "uid": "adj7dvc"
+      "title": "SoundCloud dashboard"
     }
