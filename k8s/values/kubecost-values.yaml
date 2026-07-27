@@ -8,6 +8,12 @@ global:
   grafana:
     enabled: false       
 
+prometheus:
+  server:
+    global:
+      external_labels:
+        cluster_id: "soundcloud-prod-eks"
+        
 kubecostProductConfigs:
   clusterName: "soundcloud-prod-eks" 
 
