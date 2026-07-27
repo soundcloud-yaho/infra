@@ -32,6 +32,24 @@ resource "aws_eks_addon" "ebs_csi_driver" {
   service_account_role_arn    = aws_iam_role.ebs_csi_driver.arn
   resolve_conflicts_on_create = "OVERWRITE"
   resolve_conflicts_on_update = "OVERWRITE"
+
+  configuration_values = jsonencode({
+    controller = {
+      replicaCount = 2
+      topologySpreadConstraints = [
+        {
+          maxSkew           = 1
+          topologyKey       = "topology.kubernetes.io/zone"
+          whenUnsatisfiable = "DoNotSchedule"
+          labelSelector = {
+            matchLabels = {
+              "app" = "ebs-csi-controller"
+          }
+         }
+        }
+      ]
+    }
+  })
 }
 
 data "aws_iam_policy_document" "efs_csi_assume_role" {
@@ -68,4 +86,21 @@ resource "aws_eks_addon" "efs_csi_driver" {
   service_account_role_arn    = aws_iam_role.efs_csi_driver.arn
   resolve_conflicts_on_create = "OVERWRITE"
   resolve_conflicts_on_update = "OVERWRITE"
+  configuration_values = jsonencode({
+    controller = {
+      replicaCount = 2
+      topologySpreadConstraints = [
+        {
+          maxSkew           = 1
+          topologyKey       = "topology.kubernetes.io/zone"
+          whenUnsatisfiable = "DoNotSchedule"
+          labelSelector = {
+            matchLabels = {
+              "app" = "efs-csi-controller"
+            }
+          }
+        }
+      ]
+    }
+  })
 }

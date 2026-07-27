@@ -233,4 +233,14 @@ resource "aws_eks_addon" "coredns" {
   cluster_name = aws_eks_cluster.this.name
   addon_name   = "coredns"
   depends_on   = [aws_eks_node_group.system]
+
+  configuration_values = jsonencode({
+    replicaCount = 2
+    topologySpreadConstraints = [{
+      maxSkew           = 1
+      topologyKey       = "topology.kubernetes.io/zone"
+      whenUnsatisfiable = "DoNotSchedule"
+      labelSelector = { matchLabels = { "k8s-app" = "kube-dns" } }
+    }]
+  })
 }
