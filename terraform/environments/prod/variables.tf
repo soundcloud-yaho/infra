@@ -79,7 +79,7 @@ variable "system_instance_types" {
 variable "system_desired_size" {
   description = "System 노드그룹 desired 노드 수"
   type        = number
-  default     = 2
+  default     = 4
 }
 variable "system_min_size" {
   description = "System 노드그룹 최소 노드 수"
@@ -89,7 +89,7 @@ variable "system_min_size" {
 variable "system_max_size" {
   description = "System 노드그룹 최대 노드 수"
   type        = number
-  default     = 3
+  default     = 4
 }
 # ---------- AI 노드그룹 ----------
 variable "ai_instance_types" {

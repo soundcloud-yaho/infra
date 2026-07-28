@@ -218,7 +218,6 @@ resource "aws_eks_node_group" "worker" {
   depends_on = [aws_iam_role_policy_attachment.node]
 }
 
-# ---------- 필수 애드온 ----------
 resource "aws_eks_addon" "vpc_cni" {
   cluster_name = aws_eks_cluster.this.name
   addon_name   = "vpc-cni"

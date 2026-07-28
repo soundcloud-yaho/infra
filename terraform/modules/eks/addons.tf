@@ -104,3 +104,52 @@ resource "aws_eks_addon" "efs_csi_driver" {
     }
   })
 }
+
+# ===== Kubecost =====
+locals {
+  kubecost_bucket_name  = "project-sc-cost"
+  kubecost_sa_name      = "kubecost-cost-analyzer"
+  kubecost_sa_namespace = "kubecost"
+}
+
+data "aws_iam_policy_document" "kubecost_assume_role" {
+  statement {
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+    effect  = "Allow"
+
+    condition {
+      test     = "StringEquals"
+      variable = "${replace(aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}:sub"
+      values   = ["system:serviceaccount:${local.kubecost_sa_namespace}:${local.kubecost_sa_name}"]
+    }
+
+    principals {
+      identifiers = [aws_iam_openid_connect_provider.this.arn]
+      type        = "Federated"
+    }
+  }
+}
+
+resource "aws_iam_role" "kubecost" {
+  name               = "${var.cluster_name}-kubecost"
+  assume_role_policy = data.aws_iam_policy_document.kubecost_assume_role.json
+}
+
+data "aws_iam_policy_document" "kubecost_s3" {
+  statement {
+    effect    = "Allow"
+    actions   = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"]
+    resources = ["arn:aws:s3:::${local.kubecost_bucket_name}/*"]
+  }
+  statement {
+    effect    = "Allow"
+    actions   = ["s3:ListBucket"]
+    resources = ["arn:aws:s3:::${local.kubecost_bucket_name}"]
+  }
+}
+
+resource "aws_iam_role_policy" "kubecost_s3" {
+  name   = "${var.cluster_name}-kubecost-s3"
+  role   = aws_iam_role.kubecost.name
+  policy = data.aws_iam_policy_document.kubecost_s3.json
+}
