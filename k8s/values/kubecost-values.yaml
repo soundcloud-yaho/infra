@@ -5,6 +5,7 @@ global:
     fqdn: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
   grafana:
     enabled: false
+    proxy: false
   federatedStorage:
     config: |-
       type: S3
