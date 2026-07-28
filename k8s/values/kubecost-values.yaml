@@ -39,3 +39,14 @@ serviceMonitor:
     enabled: true
     additionalLabels:
       release: kube-prometheus-stack
+persistentVolume:
+  size: 32Gi
+  enabled: true
+  storageClass: "efs-sc"
+
+finopsagent:
+  persistence:
+    storageClass: "efs-sc"
+    accessModes:
+      - ReadWriteMany
+    size: 8Gi
