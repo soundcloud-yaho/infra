@@ -5,6 +5,13 @@ global:
     fqdn: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
   grafana:
     enabled: false
+  federatedStorage:
+    config: |-
+      type: S3
+      config:
+        bucket: project-sc-cost
+        region: ap-northeast-2
+
 
 prometheus:
   server:
@@ -20,13 +27,6 @@ serviceAccount:
   name: "kubecost-cost-analyzer"
   annotations:
     eks.amazonaws.com/role-arn: arn:aws:iam::201243087060:role/soundcloud-prod-eks-kubecost
-
-federatedStorage:
-  config: |-
-    type: S3
-    config:
-      bucket: project-sc-cost
-      region: ap-northeast-2
 
 nodeSelector:
   role: system
