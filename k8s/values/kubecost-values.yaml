@@ -1,22 +1,32 @@
-# 모드B: 번들 Prometheus/Grafana 끄고 윤주 kube-prometheus-stack 재사용
-
 global:
   clusterId: "soundcloud-prod-eks"
   prometheus:
-    enabled: false        
+    enabled: false
     fqdn: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
   grafana:
-    enabled: false       
+    enabled: false
 
 prometheus:
   server:
     global:
       external_labels:
         cluster_id: "soundcloud-prod-eks"
-        
-kubecostProductConfigs:
-  clusterName: "soundcloud-prod-eks" 
 
+kubecostProductConfigs:
+  clusterName: "soundcloud-prod-eks"
+
+serviceAccount:
+  create: true
+  name: "kubecost-cost-analyzer"
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::201243087060:role/soundcloud-prod-eks-kubecost
+
+federatedStorage:
+  config: |-
+    type: S3
+    config:
+      bucket: project-sc-cost
+      region: ap-northeast-2
 
 nodeSelector:
   role: system
