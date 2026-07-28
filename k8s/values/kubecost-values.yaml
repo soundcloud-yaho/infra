@@ -12,6 +12,7 @@ global:
       config:
         bucket: project-sc-cost
         region: ap-northeast-2
+        endpoint: s3.ap-northeast-2.amazonaws.com
 
 
 prometheus:
@@ -46,4 +47,9 @@ persistentVolume:
   storageClass: "efs-sc"
 
 finopsagent:
-  enabled: false
+  enabled: true
+  persistence:
+    storageClass: "efs-sc"
+    accessModes:
+      - ReadWriteMany
+    size: 8Gi
