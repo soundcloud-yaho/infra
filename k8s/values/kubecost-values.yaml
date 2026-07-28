@@ -48,6 +48,9 @@ persistentVolume:
 
 finopsagent:
   enabled: true
+  serviceAccount:
+    create: true
+    name: "kubecost-cost-analyzer"
   persistence:
     storageClass: "efs-sc"
     accessModes:
