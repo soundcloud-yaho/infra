@@ -37,7 +37,7 @@ data:
             "x": 0,
             "y": 0
           },
-          "id": 63,
+          "id": 80,
           "panels": [],
           "title": "선제 스케일링",
           "type": "row"
@@ -50,7 +50,7 @@ data:
             "x": 0,
             "y": 1
           },
-          "id": 64,
+          "id": 81,
           "title": "예측 검증",
           "type": "row"
         },
@@ -136,7 +136,7 @@ data:
                   {
                     "id": "color",
                     "value": {
-                      "fixedColor": "light-green",
+                      "fixedColor": "green",
                       "mode": "fixed"
                     }
                   }
@@ -151,7 +151,7 @@ data:
                   {
                     "id": "color",
                     "value": {
-                      "fixedColor": "super-light-yellow",
+                      "fixedColor": "yellow",
                       "mode": "fixed"
                     }
                   }
@@ -223,7 +223,7 @@ data:
             "x": 0,
             "y": 11
           },
-          "id": 65,
+          "id": 82,
           "title": "스케일링 반응",
           "type": "row"
         },
@@ -421,7 +421,7 @@ data:
                   "viz": false
                 },
                 "insertNulls": false,
-                "lineInterpolation": "linear",
+                "lineInterpolation": "stepBefore",
                 "lineWidth": 1,
                 "pointSize": 5,
                 "scaleDistribution": {
@@ -506,7 +506,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "count by (label_karpenter_sh_nodepool) (kube_node_labels)",
+              "expr": "count(kube_node_labels{job=\"kube-state-metrics\"})",
               "instant": false,
               "legendFormat": "현재 노드 수",
               "range": true,
@@ -630,7 +630,7 @@ data:
             "x": 0,
             "y": 21
           },
-          "id": 66,
+          "id": 83,
           "panels": [],
           "title": "SLO 상태",
           "type": "row"
@@ -643,7 +643,7 @@ data:
             "x": 0,
             "y": 22
           },
-          "id": 67,
+          "id": 84,
           "title": "인프라 영역",
           "type": "row"
         },
@@ -737,7 +737,7 @@ data:
             "x": 0,
             "y": 23
           },
-          "id": 53,
+          "id": 67,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -848,7 +848,7 @@ data:
             "x": 8,
             "y": 23
           },
-          "id": 54,
+          "id": 68,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -913,7 +913,7 @@ data:
                   "viz": false
                 },
                 "insertNulls": false,
-                "lineInterpolation": "linear",
+                "lineInterpolation": "stepBefore",
                 "lineWidth": 1,
                 "pointSize": 5,
                 "scaleDistribution": {
@@ -970,7 +970,7 @@ data:
             "x": 16,
             "y": 23
           },
-          "id": 55,
+          "id": 69,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -998,7 +998,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "count by (label_karpenter_sh_nodepool) (kube_node_labels)",
+              "expr": "count(kube_node_labels{job=\"kube-state-metrics\"})",
               "instant": false,
               "legendFormat": "현재 노드 수",
               "range": true,
@@ -1016,7 +1016,7 @@ data:
             "x": 0,
             "y": 32
           },
-          "id": 68,
+          "id": 85,
           "title": "서비스 영역",
           "type": "row"
         },
@@ -1110,7 +1110,7 @@ data:
             "x": 0,
             "y": 33
           },
-          "id": 56,
+          "id": 70,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -1221,7 +1221,7 @@ data:
             "x": 8,
             "y": 33
           },
-          "id": 57,
+          "id": 71,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -1325,7 +1325,7 @@ data:
             "x": 16,
             "y": 33
           },
-          "id": 58,
+          "id": 72,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -1449,7 +1449,7 @@ data:
             "x": 0,
             "y": 42
           },
-          "id": 59,
+          "id": 73,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -1559,7 +1559,7 @@ data:
             "x": 8,
             "y": 42
           },
-          "id": 60,
+          "id": 74,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -1629,7 +1629,7 @@ data:
             "x": 16,
             "y": 42
           },
-          "id": 61,
+          "id": 75,
           "options": {
             "colorMode": "value",
             "graphMode": "area",
@@ -1673,8 +1673,20 @@ data:
             "x": 0,
             "y": 51
           },
-          "id": 69,
+          "id": 86,
           "panels": [],
+          "title": "비용 효율",
+          "type": "row"
+        },
+        {
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 52
+          },
+          "id": 87,
           "title": "비용 효율",
           "type": "row"
         },
@@ -1707,9 +1719,9 @@ data:
             "h": 9,
             "w": 8,
             "x": 0,
-            "y": 52
+            "y": 53
           },
-          "id": 49,
+          "id": 76,
           "options": {
             "displayMode": "gradient",
             "legend": {
@@ -1752,6 +1764,340 @@ data:
           ],
           "title": "네임스페이스별 시간당 비용",
           "type": "bargauge"
+        },
+        {
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 62
+          },
+          "id": 88,
+          "title": "spot 사용 비용 효율",
+          "type": "row"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "stepBefore",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            }
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 8,
+            "x": 0,
+            "y": 63
+          },
+          "id": 77,
+          "options": {
+            "annotations": {
+              "clustering": -1,
+              "multiLane": false
+            },
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "enableFacetedFilter": false,
+              "overflow": "ellipsis",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "13.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "count(\r\n  node_total_hourly_cost\r\n  * on(node) group_left()\r\n  kube_node_labels{job=\"kubecost-cost-analyzer\", label_eks_amazonaws_com_capacityType!=\"ON_DEMAND\"}\r\n)",
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Spot 노드 수 변화",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "spot 노드 사용 실제 비용 vs on-demand 사용 가정 비용 (t3.medium)",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "stepBefore",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "currencyUSD"
+            }
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 8,
+            "x": 8,
+            "y": 63
+          },
+          "id": 79,
+          "options": {
+            "annotations": {
+              "clustering": -1,
+              "multiLane": false
+            },
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "enableFacetedFilter": false,
+              "overflow": "ellipsis",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "13.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "sum(\r\n  node_total_hourly_cost\r\n  * on(node) group_left()\r\n  kube_node_labels{job=\"kubecost-cost-analyzer\", label_eks_amazonaws_com_capacityType!=\"ON_DEMAND\"}\r\n)",
+              "legendFormat": "실제 비용 (spot)",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "count(\r\n  node_total_hourly_cost\r\n  * on(node) group_left()\r\n  kube_node_labels{job=\"kubecost-cost-analyzer\", label_eks_amazonaws_com_capacityType!=\"ON_DEMAND\"}\r\n) * 0.052",
+              "instant": false,
+              "legendFormat": "가정 비용 (on-demand)",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "실제 비용 vs 가정 비용",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "(가정 비용) - (실제 비용)",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "stepBefore",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "currencyUSD"
+            }
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 8,
+            "x": 16,
+            "y": 63
+          },
+          "id": 78,
+          "options": {
+            "annotations": {
+              "clustering": -1,
+              "multiLane": false
+            },
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "enableFacetedFilter": false,
+              "overflow": "ellipsis",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "13.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "(\r\n  count(\r\n    node_total_hourly_cost\r\n    * on(node) group_left()\r\n    kube_node_labels{job=\"kubecost-cost-analyzer\", label_eks_amazonaws_com_capacityType!=\"ON_DEMAND\"}\r\n  ) * 0.052\r\n)\r\n-\r\n(\r\n  sum(\r\n    node_total_hourly_cost\r\n    * on(node) group_left()\r\n    kube_node_labels{job=\"kubecost-cost-analyzer\", label_eks_amazonaws_com_capacityType!=\"ON_DEMAND\"}\r\n  )\r\n)",
+              "legendFormat": "절감액 ($/hr)",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "절감액",
+          "type": "timeseries"
         }
       ],
       "preload": false,
@@ -1773,7 +2119,6 @@ data:
             "description": "백엔드 파드 갯수",
             "hide": 2,
             "includeAll": false,
-            "label": "",
             "multi": false,
             "name": "podcount",
             "options": [],
