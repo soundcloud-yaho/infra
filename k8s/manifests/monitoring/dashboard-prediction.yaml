@@ -30,178 +30,16 @@ data:
       "liveNow": false,
       "panels": [
         {
-          "collapsed": true,
+          "collapsed": false,
           "gridPos": {
             "h": 1,
             "w": 24,
             "x": 0,
             "y": 0
           },
-          "id": 49,
-          "panels": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "description": "NeuralProphet 예측 RPS(1시간 내 피크)와 실측 RPS 비교",
-              "fieldConfig": {
-                "defaults": {
-                  "color": {
-                    "mode": "palette-classic"
-                  },
-                  "custom": {
-                    "axisBorderShow": false,
-                    "axisCenteredZero": false,
-                    "axisColorMode": "text",
-                    "axisLabel": "",
-                    "axisPlacement": "auto",
-                    "axisSoftMin": 0,
-                    "barAlignment": 0,
-                    "barWidthFactor": 0.6,
-                    "drawStyle": "line",
-                    "fillOpacity": 0,
-                    "gradientMode": "none",
-                    "hideFrom": {
-                      "legend": false,
-                      "tooltip": false,
-                      "viz": false
-                    },
-                    "insertNulls": false,
-                    "lineInterpolation": "linear",
-                    "lineWidth": 1,
-                    "pointSize": 5,
-                    "scaleDistribution": {
-                      "type": "linear"
-                    },
-                    "showPoints": "auto",
-                    "showValues": false,
-                    "spanNulls": false,
-                    "stacking": {
-                      "group": "A",
-                      "mode": "none"
-                    },
-                    "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  },
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "color": "green",
-                        "value": 0
-                      },
-                      {
-                        "color": "red",
-                        "value": 80
-                      }
-                    ]
-                  },
-                  "unit": "reqps"
-                },
-                "overrides": [
-                  {
-                    "matcher": {
-                      "id": "byName",
-                      "options": "예측 RPS",
-                      "scope": "series"
-                    },
-                    "properties": [
-                      {
-                        "id": "custom.lineStyle",
-                        "value": {
-                          "dash": [
-                            10,
-                            10
-                          ],
-                          "fill": "dash"
-                        }
-                      },
-                      {
-                        "id": "color",
-                        "value": {
-                          "fixedColor": "light-green",
-                          "mode": "fixed"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "matcher": {
-                      "id": "byName",
-                      "options": "실측 RPS"
-                    },
-                    "properties": [
-                      {
-                        "id": "color",
-                        "value": {
-                          "fixedColor": "super-light-yellow",
-                          "mode": "fixed"
-                        }
-                      }
-                    ]
-                  }
-                ]
-              },
-              "gridPos": {
-                "h": 9,
-                "w": 8,
-                "x": 0,
-                "y": 1
-              },
-              "id": 35,
-              "options": {
-                "annotations": {
-                  "clustering": -1,
-                  "multiLane": false
-                },
-                "legend": {
-                  "calcs": [],
-                  "displayMode": "list",
-                  "enableFacetedFilter": false,
-                  "overflow": "ellipsis",
-                  "placement": "bottom",
-                  "showLegend": true
-                },
-                "tooltip": {
-                  "hideZeros": false,
-                  "mode": "single",
-                  "sort": "none"
-                }
-              },
-              "pluginVersion": "13.1.0",
-              "targets": [
-                {
-                  "datasource": {
-                    "type": "prometheus",
-                    "uid": "prometheus"
-                  },
-                  "editorMode": "builder",
-                  "expr": "worldcup_predicted_rps_peak{target=\"keda\"}",
-                  "instant": false,
-                  "legendFormat": "예측 RPS",
-                  "range": true,
-                  "refId": "A"
-                },
-                {
-                  "datasource": {
-                    "type": "prometheus",
-                    "uid": "prometheus"
-                  },
-                  "editorMode": "builder",
-                  "expr": "worldcup_current_rps{target=\"keda\"}",
-                  "instant": false,
-                  "legendFormat": "실측 RPS",
-                  "range": true,
-                  "refId": "B"
-                }
-              ],
-              "title": "예측 RPS vs 실측 RPS",
-              "type": "timeseries"
-            }
-          ],
-          "title": "실시간 트래픽",
+          "id": 63,
+          "panels": [],
+          "title": "선제 스케일링",
           "type": "row"
         },
         {
@@ -212,8 +50,181 @@ data:
             "x": 0,
             "y": 1
           },
-          "id": 50,
-          "title": "선제 스케일링",
+          "id": 64,
+          "title": "예측 검증",
+          "type": "row"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "NeuralProphet 예측 RPS(1시간 내 피크)와 실측 RPS 비교",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "axisSoftMin": 0,
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "reqps"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "예측 RPS",
+                  "scope": "series"
+                },
+                "properties": [
+                  {
+                    "id": "custom.lineStyle",
+                    "value": {
+                      "dash": [
+                        10,
+                        10
+                      ],
+                      "fill": "dash"
+                    }
+                  },
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "light-green",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "실측 RPS"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "super-light-yellow",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 8,
+            "x": 0,
+            "y": 2
+          },
+          "id": 62,
+          "options": {
+            "annotations": {
+              "clustering": -1,
+              "multiLane": false
+            },
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "enableFacetedFilter": false,
+              "overflow": "ellipsis",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "13.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "builder",
+              "expr": "worldcup_predicted_rps_peak{target=\"keda\"}",
+              "instant": false,
+              "legendFormat": "예측 RPS",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "builder",
+              "expr": "worldcup_current_rps{target=\"keda\"}",
+              "instant": false,
+              "legendFormat": "실측 RPS",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "예측 RPS vs 실측 RPS",
+          "type": "timeseries"
+        },
+        {
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 11
+          },
+          "id": 65,
+          "title": "스케일링 반응",
           "type": "row"
         },
         {
@@ -330,9 +341,9 @@ data:
             "h": 9,
             "w": 8,
             "x": 0,
-            "y": 2
+            "y": 12
           },
-          "id": 24,
+          "id": 50,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -465,9 +476,9 @@ data:
             "h": 9,
             "w": 8,
             "x": 8,
-            "y": 2
+            "y": 12
           },
-          "id": 25,
+          "id": 51,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -571,9 +582,9 @@ data:
             "h": 9,
             "w": 8,
             "x": 16,
-            "y": 2
+            "y": 12
           },
-          "id": 28,
+          "id": 52,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -613,7 +624,14 @@ data:
         },
         {
           "collapsed": false,
-          "id": 51,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 21
+          },
+          "id": 66,
+          "panels": [],
           "title": "SLO 상태",
           "type": "row"
         },
@@ -623,9 +641,9 @@ data:
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 0
+            "y": 22
           },
-          "id": 52,
+          "id": 67,
           "title": "인프라 영역",
           "type": "row"
         },
@@ -671,7 +689,7 @@ data:
                   "mode": "none"
                 },
                 "thresholdsStyle": {
-                  "mode": "off"
+                  "mode": "dashed"
                 }
               },
               "max": 100,
@@ -689,7 +707,7 @@ data:
                   },
                   {
                     "color": "red",
-                    "value": 90
+                    "value": 85
                   }
                 ]
               },
@@ -717,9 +735,9 @@ data:
             "h": 9,
             "w": 8,
             "x": 0,
-            "y": 1
+            "y": 23
           },
-          "id": 40,
+          "id": 53,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -762,7 +780,7 @@ data:
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "description": "system, ai 노드 메모리 사용량",
+          "description": "system, ai 노드 메모리 사용률",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -799,7 +817,7 @@ data:
                   "mode": "none"
                 },
                 "thresholdsStyle": {
-                  "mode": "off"
+                  "mode": "dashed"
                 }
               },
               "max": 100,
@@ -812,8 +830,12 @@ data:
                     "value": 0
                   },
                   {
+                    "color": "#EAB839",
+                    "value": 75
+                  },
+                  {
                     "color": "red",
-                    "value": 80
+                    "value": 90
                   }
                 ]
               },
@@ -824,9 +846,9 @@ data:
             "h": 9,
             "w": 8,
             "x": 8,
-            "y": 1
+            "y": 23
           },
-          "id": 42,
+          "id": 54,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -946,9 +968,9 @@ data:
             "h": 9,
             "w": 8,
             "x": 16,
-            "y": 1
+            "y": 23
           },
-          "id": 45,
+          "id": 55,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -992,9 +1014,9 @@ data:
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 10
+            "y": 32
           },
-          "id": 53,
+          "id": 68,
           "title": "서비스 영역",
           "type": "row"
         },
@@ -1040,7 +1062,7 @@ data:
                   "mode": "none"
                 },
                 "thresholdsStyle": {
-                  "mode": "off"
+                  "mode": "dashed"
                 }
               },
               "max": 100,
@@ -1054,7 +1076,7 @@ data:
                   },
                   {
                     "color": "#EAB839",
-                    "value": 70
+                    "value": 75
                   },
                   {
                     "color": "red",
@@ -1086,9 +1108,9 @@ data:
             "h": 9,
             "w": 8,
             "x": 0,
-            "y": 11
+            "y": 33
           },
-          "id": 44,
+          "id": 56,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -1131,7 +1153,7 @@ data:
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "description": "worker, spot 노드 메모리 사용량",
+          "description": "worker, spot 노드 메모리 사용률",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -1168,7 +1190,7 @@ data:
                   "mode": "none"
                 },
                 "thresholdsStyle": {
-                  "mode": "off"
+                  "mode": "dashed"
                 }
               },
               "max": 100,
@@ -1181,8 +1203,12 @@ data:
                     "value": 0
                   },
                   {
-                    "color": "red",
+                    "color": "#EAB839",
                     "value": 80
+                  },
+                  {
+                    "color": "red",
+                    "value": 90
                   }
                 ]
               },
@@ -1193,9 +1219,9 @@ data:
             "h": 9,
             "w": 8,
             "x": 8,
-            "y": 11
+            "y": 33
           },
-          "id": 47,
+          "id": 57,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -1297,9 +1323,9 @@ data:
             "h": 9,
             "w": 8,
             "x": 16,
-            "y": 11
+            "y": 33
           },
-          "id": 38,
+          "id": 58,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -1392,7 +1418,7 @@ data:
                   "mode": "none"
                 },
                 "thresholdsStyle": {
-                  "mode": "off"
+                  "mode": "dashed"
                 }
               },
               "max": 100,
@@ -1405,8 +1431,12 @@ data:
                     "value": 0
                   },
                   {
+                    "color": "#EAB839",
+                    "value": 70
+                  },
+                  {
                     "color": "red",
-                    "value": 80
+                    "value": 85
                   }
                 ]
               },
@@ -1417,9 +1447,9 @@ data:
             "h": 9,
             "w": 8,
             "x": 0,
-            "y": 20
+            "y": 42
           },
-          "id": 43,
+          "id": 59,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -1447,8 +1477,8 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum(container_memory_working_set_bytes{namespace=\"app\", pod=~\"backend.*\", container!=\"\", container!=\"POD\"})\r\n/\r\nsum(container_spec_memory_limit_bytes{namespace=\"app\", pod=~\"backend.*\", container!=\"\", container!=\"POD\"})\r\n* 100",
-              "legendFormat": "평균 사용률",
+              "expr": "sum(container_memory_working_set_bytes{namespace=\"app\", pod=~\"backend.*\", container!=\"\", container!=\"POD\"})\r\n/\r\nsum(kube_pod_container_resource_limits{namespace=\"app\", pod=~\"backend.*\", resource=\"memory\", unit=\"byte\"})\r\n* 100",
+              "legendFormat": "파드 메모리 사용률 (${podcount}개)",
               "range": true,
               "refId": "A"
             }
@@ -1498,7 +1528,7 @@ data:
                   "mode": "none"
                 },
                 "thresholdsStyle": {
-                  "mode": "off"
+                  "mode": "dashed"
                 }
               },
               "max": 100,
@@ -1513,6 +1543,10 @@ data:
                   {
                     "color": "red",
                     "value": 80
+                  },
+                  {
+                    "color": "#EAB839",
+                    "value": 95
                   }
                 ]
               },
@@ -1523,9 +1557,9 @@ data:
             "h": 9,
             "w": 8,
             "x": 8,
-            "y": 20
+            "y": 42
           },
-          "id": 48,
+          "id": 60,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -1553,7 +1587,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "topk(1,\r\n  container_memory_working_set_bytes{namespace=\"app\", pod=~\"backend.*\", container!=\"\", container!=\"POD\"}\r\n  /\r\n  container_spec_memory_limit_bytes{namespace=\"app\", pod=~\"backend.*\", container!=\"\", container!=\"POD\"}\r\n) * 100",
+              "expr": "topk(1,\r\n  sum by (pod) (container_memory_working_set_bytes{namespace=\"app\", pod=~\"backend.*\", container!=\"\", container!=\"POD\"})\r\n  /\r\n  sum by (pod) (kube_pod_container_resource_limits{namespace=\"app\", pod=~\"backend.*\", resource=\"memory\", unit=\"byte\"})\r\n) * 100",
               "legendFormat": "{{pod}}",
               "range": true,
               "refId": "A"
@@ -1571,44 +1605,10 @@ data:
           "fieldConfig": {
             "defaults": {
               "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "showValues": false,
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "dashed"
-                }
+                "mode": "continuous-GrYlRd"
               },
               "thresholds": {
-                "mode": "absolute",
+                "mode": "percentage",
                 "steps": [
                   {
                     "color": "green",
@@ -1627,27 +1627,25 @@ data:
             "h": 9,
             "w": 8,
             "x": 16,
-            "y": 20
+            "y": 42
           },
-          "id": 39,
+          "id": 61,
           "options": {
-            "annotations": {
-              "clustering": -1,
-              "multiLane": false
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
             },
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "enableFacetedFilter": false,
-              "overflow": "ellipsis",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
           },
           "pluginVersion": "13.1.0",
           "targets": [
@@ -1657,7 +1655,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum(rate(http_requests_total{status=~\"5..\"}[5m])) / sum(rate(http_requests_total[5m])) * 100",
+              "expr": "(\r\n  sum(rate(http_requests_total{status=~\"5..\"}[5m]))\r\n  or\r\n  vector(0)\r\n)\r\n/\r\nsum(rate(http_requests_total[5m]))\r\n* 100",
               "instant": false,
               "legendFormat": "5xx 비율",
               "range": true,
@@ -1665,101 +1663,134 @@ data:
             }
           ],
           "title": "에러율",
-          "type": "timeseries"
+          "type": "stat"
         },
         {
-          "collapsed": true,
+          "collapsed": false,
           "gridPos": {
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 29
+            "y": 51
           },
-          "id": 54,
-          "panels": [
+          "id": 69,
+          "panels": [],
+          "title": "비용 효율",
+          "type": "row"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "네임스페이스별 시간당 비용 (CPU 할당 x CPU 단가 + 메모리 할당 × RAM 단가)",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "continuous-GrYlRd"
+              },
+              "decimals": 2,
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              },
+              "unit": "currencyUSD"
+            }
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 8,
+            "x": 0,
+            "y": 52
+          },
+          "id": 49,
+          "options": {
+            "displayMode": "gradient",
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "overflow": "ellipsis",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "maxVizHeight": 300,
+            "minVizHeight": 16,
+            "minVizWidth": 8,
+            "namePlacement": "auto",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showUnfilled": true,
+            "sizing": "auto",
+            "valueMode": "color"
+          },
+          "pluginVersion": "13.1.0",
+          "targets": [
             {
               "datasource": {
                 "type": "prometheus",
                 "uid": "prometheus"
               },
-              "description": "네임스페이스별 시간당 비용 (CPU 할당 x CPU 단가 + 메모리 할당 × RAM 단가)",
-              "fieldConfig": {
-                "defaults": {
-                  "color": {
-                    "mode": "continuous-GrYlRd"
-                  },
-                  "decimals": 2,
-                  "min": 0,
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "color": "green",
-                        "value": 0
-                      }
-                    ]
-                  },
-                  "unit": "currencyUSD"
-                }
-              },
-              "gridPos": {
-                "h": 9,
-                "w": 8,
-                "x": 0,
-                "y": 30
-              },
-              "id": 33,
-              "options": {
-                "displayMode": "gradient",
-                "legend": {
-                  "calcs": [],
-                  "displayMode": "list",
-                  "overflow": "ellipsis",
-                  "placement": "bottom",
-                  "showLegend": false
-                },
-                "maxVizHeight": 300,
-                "minVizHeight": 16,
-                "minVizWidth": 8,
-                "namePlacement": "auto",
-                "orientation": "horizontal",
-                "reduceOptions": {
-                  "calcs": [
-                    "lastNotNull"
-                  ],
-                  "fields": "",
-                  "values": false
-                },
-                "showUnfilled": true,
-                "sizing": "auto",
-                "valueMode": "color"
-              },
-              "pluginVersion": "13.1.0",
-              "targets": [
-                {
-                  "datasource": {
-                    "type": "prometheus",
-                    "uid": "prometheus"
-                  },
-                  "editorMode": "code",
-                  "expr": "sum by (namespace) (\n  container_cpu_allocation * on(node) group_left() node_cpu_hourly_cost\n)\n+\nsum by (namespace) (\n  container_memory_allocation_bytes / 1024 / 1024 / 1024 * on(node) group_left() node_ram_hourly_cost\n)",
-                  "instant": false,
-                  "legendFormat": "{{namespace}}",
-                  "range": true,
-                  "refId": "A"
-                }
-              ],
-              "title": "네임스페이스별 시간당 비용",
-              "type": "bargauge"
+              "editorMode": "code",
+              "expr": "sum by (namespace) (\n  container_cpu_allocation * on(node) group_left() node_cpu_hourly_cost\n)\n+\nsum by (namespace) (\n  container_memory_allocation_bytes / 1024 / 1024 / 1024 * on(node) group_left() node_ram_hourly_cost\n)",
+              "instant": false,
+              "legendFormat": "{{namespace}}",
+              "range": true,
+              "refId": "A"
             }
           ],
-          "title": "비용 효율",
-          "type": "row"
+          "title": "네임스페이스별 시간당 비용",
+          "type": "bargauge"
         }
       ],
       "preload": false,
       "refresh": "5s",
       "schemaVersion": 42,
+      "templating": {
+        "list": [
+          {
+            "allowCustomValue": true,
+            "current": {
+              "text": "1",
+              "value": "1"
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "definition": "query_result(count(kube_pod_info{namespace=\"app\", pod=~\"backend.*\"}))",
+            "description": "백엔드 파드 갯수",
+            "hide": 2,
+            "includeAll": false,
+            "label": "",
+            "multi": false,
+            "name": "podcount",
+            "options": [],
+            "query": {
+              "qryType": 3,
+              "query": "query_result(count(kube_pod_info{namespace=\"app\", pod=~\"backend.*\"}))",
+              "refId": "PrometheusVariableQueryEditor-VariableQuery"
+            },
+            "refresh": 2,
+            "regex": "/(\\d+)/",
+            "regexApplyTo": "value",
+            "skipUrlSync": false,
+            "sort": 0,
+            "type": "query"
+          }
+        ]
+      },
       "time": {
         "from": "now-1h",
         "to": "now"
