@@ -8,7 +8,7 @@ metadata:
     component: train
 spec:
   # CronJob 스케줄: ai/neuralprophet/train.py 를 일 1회 실행
-  schedule: "0 1 * * *"  # 매일 01:00 (timeZone과 함께 KST 기준)
+  schedule: "0 * * * *"  # 매일 01:00 (timeZone과 함께 KST 기준)
   timeZone: Asia/Seoul  # K8s 1.27+ CronJob 타임존 → train.py TRAIN_TIMEZONE과 동일
   concurrencyPolicy: Forbid  # 이전 학습 Job이 끝나기 전 새 Job 생성 금지 (PVC 동시 쓰기 방지)
   successfulJobsHistoryLimit: 3  # 완료 Job 히스토리 보관 개수
