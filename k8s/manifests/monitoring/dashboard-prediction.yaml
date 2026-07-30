@@ -11,6 +11,98 @@ data:
       "annotations": {
         "list": [
           {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "enable": true,
+            "filter": {
+              "exclude": false,
+              "ids": [
+                97
+              ]
+            },
+            "hide": false,
+            "iconColor": "super-light-red",
+            "name": "Pod Pending",
+            "tagKeys": "pending",
+            "target": {
+              "expr": "kube_pod_status_phase{namespace=\"app\", pod=~\"backend.*\", phase=\"Pending\"} == 1",
+              "interval": "",
+              "refId": "Anno"
+            },
+            "titleFormat": "{{pod}} Pending"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "enable": true,
+            "filter": {
+              "exclude": false,
+              "ids": [
+                97
+              ]
+            },
+            "hide": false,
+            "iconColor": "super-light-orange",
+            "name": "Pod CrashLoopBackOff",
+            "tagKeys": "CrashLoopBackOff",
+            "target": {
+              "expr": "kube_pod_container_status_waiting_reason{namespace=\"app\", pod=~\"backend.*\", reason=\"CrashLoopBackOff\"} == 1",
+              "interval": "",
+              "refId": "Anno"
+            },
+            "titleFormat": "{{pod}} CrashLoopBackOff"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "enable": true,
+            "filter": {
+              "exclude": false,
+              "ids": [
+                97
+              ]
+            },
+            "hide": false,
+            "iconColor": "super-light-yellow",
+            "name": "Pod OOMKilled",
+            "tagKeys": "OOMKilled",
+            "target": {
+              "expr": "kube_pod_container_status_terminated_reason{namespace=\"app\", pod=~\"backend.*\", reason=\"OOMKilled\"} == 1",
+              "interval": "",
+              "refId": "Anno"
+            },
+            "titleFormat": "{{pod}} OOMKilled"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "enable": true,
+            "filter": {
+              "exclude": false,
+              "ids": [
+                97
+              ]
+            },
+            "hide": false,
+            "iconColor": "super-light-purple",
+            "name": "Pod Restart",
+            "tagKeys": "Restarted",
+            "target": {
+              "expr": "increase(kube_pod_container_status_restarts_total{namespace=\"app\", pod=~\"backend.*\"}[1m]) > 0",
+              "interval": "",
+              "refId": "Anno"
+            },
+            "titleFormat": "{{pod}} Restarted"
+          },
+          {
             "builtIn": 1,
             "datasource": {
               "type": "grafana",
@@ -21,6 +113,29 @@ data:
             "iconColor": "rgba(0, 211, 255, 1)",
             "name": "Annotations & Alerts",
             "type": "dashboard"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "enable": true,
+            "filter": {
+              "exclude": false,
+              "ids": [
+                97
+              ]
+            },
+            "hide": false,
+            "iconColor": "super-light-green",
+            "name": "Pod Unknown",
+            "tagKeys": "Unknown",
+            "target": {
+              "expr": "kube_pod_status_phase{namespace=\"app\", pod=~\"backend.*\", phase=\"Unknown\"} == 1",
+              "interval": "",
+              "refId": "Anno"
+            },
+            "titleFormat": "{{pod}} Unknown"
           }
         ]
       },
@@ -37,7 +152,7 @@ data:
             "x": 0,
             "y": 0
           },
-          "id": 80,
+          "id": 98,
           "panels": [],
           "title": "선제 스케일링",
           "type": "row"
@@ -50,7 +165,7 @@ data:
             "x": 0,
             "y": 1
           },
-          "id": 81,
+          "id": 99,
           "title": "예측 검증",
           "type": "row"
         },
@@ -223,7 +338,7 @@ data:
             "x": 0,
             "y": 11
           },
-          "id": 82,
+          "id": 100,
           "title": "스케일링 반응",
           "type": "row"
         },
@@ -630,7 +745,7 @@ data:
             "x": 0,
             "y": 21
           },
-          "id": 83,
+          "id": 101,
           "panels": [],
           "title": "SLO 상태",
           "type": "row"
@@ -643,7 +758,7 @@ data:
             "x": 0,
             "y": 22
           },
-          "id": 84,
+          "id": 102,
           "title": "인프라 영역",
           "type": "row"
         },
@@ -737,7 +852,7 @@ data:
             "x": 0,
             "y": 23
           },
-          "id": 67,
+          "id": 82,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -772,7 +887,7 @@ data:
               "refId": "A"
             }
           ],
-          "title": "노드 CPU 사용률",
+          "title": "인프라 노드 CPU",
           "type": "timeseries"
         },
         {
@@ -848,7 +963,7 @@ data:
             "x": 8,
             "y": 23
           },
-          "id": 68,
+          "id": 83,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -882,7 +997,7 @@ data:
               "refId": "A"
             }
           ],
-          "title": "노드 메모리",
+          "title": "인프라 노드 메모리",
           "type": "timeseries"
         },
         {
@@ -970,7 +1085,7 @@ data:
             "x": 16,
             "y": 23
           },
-          "id": 69,
+          "id": 84,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -1016,7 +1131,7 @@ data:
             "x": 0,
             "y": 32
           },
-          "id": 85,
+          "id": 103,
           "title": "서비스 영역",
           "type": "row"
         },
@@ -1110,7 +1225,7 @@ data:
             "x": 0,
             "y": 33
           },
-          "id": 70,
+          "id": 85,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -1145,7 +1260,7 @@ data:
               "refId": "A"
             }
           ],
-          "title": "노드 CPU 사용률",
+          "title": "서비스 노드 CPU",
           "type": "timeseries"
         },
         {
@@ -1221,7 +1336,7 @@ data:
             "x": 8,
             "y": 33
           },
-          "id": 71,
+          "id": 86,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -1255,7 +1370,7 @@ data:
               "refId": "A"
             }
           ],
-          "title": "노드 메모리",
+          "title": "서비스 노드 메모리",
           "type": "timeseries"
         },
         {
@@ -1325,7 +1440,7 @@ data:
             "x": 16,
             "y": 33
           },
-          "id": 72,
+          "id": 87,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -1381,7 +1496,7 @@ data:
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "description": "backend 파드 메모리 사용량",
+          "description": "backend 파드 CPU 사용률",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -1449,7 +1564,7 @@ data:
             "x": 0,
             "y": 42
           },
-          "id": 73,
+          "id": 97,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -1477,13 +1592,25 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum(container_memory_working_set_bytes{namespace=\"app\", pod=~\"backend.*\", container!=\"\", container!=\"POD\"})\r\n/\r\nsum(kube_pod_container_resource_limits{namespace=\"app\", pod=~\"backend.*\", resource=\"memory\", unit=\"byte\"})\r\n* 100",
-              "legendFormat": "파드 메모리 사용률 (${podcount}개)",
+              "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"app\", pod=~\"backend.*\", container!=\"\", container!=\"POD\"}[5m]))\r\n/\r\nsum(kube_pod_container_resource_limits{namespace=\"app\", pod=~\"backend.*\", resource=\"cpu\"})\r\n* 100",
+              "legendFormat": "파드 CPU 사용률 평균 (${podcount}개)",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "topk(1,\r\n  sum by (pod) (rate(container_cpu_usage_seconds_total{namespace=\"app\", pod=~\"backend.*\", container!=\"\", container!=\"POD\"}[5m]))\r\n  /\r\n  sum by (pod) (kube_pod_container_resource_limits{namespace=\"app\", pod=~\"backend.*\", resource=\"cpu\"})\r\n) * 100",
+              "instant": false,
+              "legendFormat": "최대 사용 파드 {{pod}}",
+              "range": true,
+              "refId": "B"
             }
           ],
-          "title": "파드 메모리 평균",
+          "title": "백엔드 파드 CPU",
           "type": "timeseries"
         },
         {
@@ -1491,7 +1618,7 @@ data:
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "description": "backend 파드 중 최대 메모리 사용률",
+          "description": "backend 파드 메모리 사용률",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -1541,12 +1668,12 @@ data:
                     "value": 0
                   },
                   {
-                    "color": "red",
-                    "value": 80
+                    "color": "#EAB839",
+                    "value": 70
                   },
                   {
-                    "color": "#EAB839",
-                    "value": 95
+                    "color": "red",
+                    "value": 85
                   }
                 ]
               },
@@ -1559,7 +1686,7 @@ data:
             "x": 8,
             "y": 42
           },
-          "id": 74,
+          "id": 88,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -1587,13 +1714,25 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "topk(1,\r\n  sum by (pod) (container_memory_working_set_bytes{namespace=\"app\", pod=~\"backend.*\", container!=\"\", container!=\"POD\"})\r\n  /\r\n  sum by (pod) (kube_pod_container_resource_limits{namespace=\"app\", pod=~\"backend.*\", resource=\"memory\", unit=\"byte\"})\r\n) * 100",
-              "legendFormat": "{{pod}}",
+              "expr": "sum(container_memory_working_set_bytes{namespace=\"app\", pod=~\"backend.*\", container!=\"\", container!=\"POD\"})\r\n/\r\nsum(kube_pod_container_resource_limits{namespace=\"app\", pod=~\"backend.*\", resource=\"memory\", unit=\"byte\"})\r\n* 100",
+              "legendFormat": "파드 메모리 사용률 평균 (${podcount}개)",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "topk(1,\r\n  sum by (pod) (container_memory_working_set_bytes{namespace=\"app\", pod=~\"backend.*\", container!=\"\", container!=\"POD\"})\r\n  /\r\n  sum by (pod) (kube_pod_container_resource_limits{namespace=\"app\", pod=~\"backend.*\", resource=\"memory\", unit=\"byte\"})\r\n) * 100",
+              "instant": false,
+              "legendFormat": "최대 사용 파드 {{pod}}",
+              "range": true,
+              "refId": "B"
             }
           ],
-          "title": "최대 메모리 사용률 파드",
+          "title": "백엔드 파드 메모리",
           "type": "timeseries"
         },
         {
@@ -1629,7 +1768,7 @@ data:
             "x": 16,
             "y": 42
           },
-          "id": 75,
+          "id": 90,
           "options": {
             "colorMode": "value",
             "graphMode": "area",
@@ -1673,9 +1812,9 @@ data:
             "x": 0,
             "y": 51
           },
-          "id": 86,
+          "id": 104,
           "panels": [],
-          "title": "비용 효율",
+          "title": "비용",
           "type": "row"
         },
         {
@@ -1686,7 +1825,7 @@ data:
             "x": 0,
             "y": 52
           },
-          "id": 87,
+          "id": 105,
           "title": "비용 효율",
           "type": "row"
         },
@@ -1721,7 +1860,7 @@ data:
             "x": 0,
             "y": 53
           },
-          "id": 76,
+          "id": 93,
           "options": {
             "displayMode": "gradient",
             "legend": {
@@ -1773,7 +1912,7 @@ data:
             "x": 0,
             "y": 62
           },
-          "id": 88,
+          "id": 106,
           "title": "spot 사용 비용 효율",
           "type": "row"
         },
@@ -1842,7 +1981,7 @@ data:
             "x": 0,
             "y": 63
           },
-          "id": 77,
+          "id": 94,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -1946,7 +2085,7 @@ data:
             "x": 8,
             "y": 63
           },
-          "id": 79,
+          "id": 95,
           "options": {
             "annotations": {
               "clustering": -1,
@@ -2062,7 +2201,7 @@ data:
             "x": 16,
             "y": 63
           },
-          "id": 78,
+          "id": 96,
           "options": {
             "annotations": {
               "clustering": -1,
