@@ -81,12 +81,12 @@ jobs:
 
           sed -i \
             "s|image: .*backend:.*|image: ${IMAGE}|g" \
-            k8s/manifests/ai/sync-cronjob.yaml
+            k8s/manifests/backend/sync-cronjob.yaml
 
           echo "변경된 Backend 이미지:"
           grep -R "image:.*backend:" \
             k8s/manifests/backend/deployment.yaml \
-            k8s/manifests/ai/sync-cronjob.yaml
+            k8s/manifests/backend/sync-cronjob.yaml
 
       - name: Update AI Image
         if: steps.variables.outputs.application == 'ai'
@@ -131,7 +131,4 @@ jobs:
             - 실행 Workflow: `${{ github.workflow }}`
 
             해당 PR이 master에 병합되면 ArgoCD가 변경된 Manifest를 감지하여 EKS에 반영합니다.
-          labels: |
-            deployment
-            automated
           base: master
