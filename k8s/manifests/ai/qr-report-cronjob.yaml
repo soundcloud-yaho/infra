@@ -5,7 +5,7 @@ metadata:
   name: quantile-recommend
   namespace: ai
 spec:
-  schedule: "0 3 * * *"
+  schedule: "0 17 * * *"
   timeZone: "Asia/Seoul"
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
