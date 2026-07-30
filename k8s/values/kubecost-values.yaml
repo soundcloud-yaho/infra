@@ -14,7 +14,6 @@ global:
         region: ap-northeast-2
         endpoint: s3.ap-northeast-2.amazonaws.com
 
-
 prometheus:
   server:
     global:
@@ -41,6 +40,7 @@ serviceMonitor:
     enabled: true
     additionalLabels:
       release: kube-prometheus-stack
+
 persistentVolume:
   size: 32Gi
   enabled: true
@@ -51,8 +51,26 @@ finopsagent:
   serviceAccount:
     create: true
     name: "kubecost-cost-analyzer"
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: topology.kubernetes.io/zone
+                operator: In
+                values: ["ap-northeast-2c"]
   persistence:
     storageClass: "efs-sc"
     accessModes:
       - ReadWriteMany
     size: 8Gi
+
+forecasting:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: topology.kubernetes.io/zone
+                operator: In
+                values: ["ap-northeast-2c"]
