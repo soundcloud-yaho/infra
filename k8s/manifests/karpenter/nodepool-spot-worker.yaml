@@ -19,7 +19,7 @@ spec:
           values: ["spot"]
         - key: karpenter.k8s.aws/instance-family
           operator: In
-          values: ["c5", "c6i", "m5", "m6i"]
+          values: ["c5", "c6i", "c5a", "c6a"]
         - key: karpenter.k8s.aws/instance-size
           operator: In
           values: ["large", "xlarge"]

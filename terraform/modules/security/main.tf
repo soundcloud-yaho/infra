@@ -65,6 +65,7 @@ resource "aws_security_group" "eks_node" {
   }
 
   tags = { Name = "${var.project_name}-${var.environment}-eks-node-sg" }
+  "karpenter.sh/discovery" = "soundcloud-prod-eks"
 }
 
 # ---------- Aurora SG: EKS Node에서 5432만 허용 ----------
@@ -88,6 +89,7 @@ resource "aws_security_group" "aurora" {
   }
 
   tags = { Name = "${var.project_name}-${var.environment}-aurora-sg" }
+  tags = { karpenter.sh/discovery = "${var.project_name}-${var.environment}-aurora-sg" }
 }
 
 # ---------- AWS Load Balancer Controller IRSA ----------
