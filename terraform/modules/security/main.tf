@@ -64,7 +64,12 @@ resource "aws_security_group" "eks_node" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = { Name = "${var.project_name}-${var.environment}-eks-node-sg" }
+  # karpenter.sh/discovery: EC2NodeClass securityGroupSelectorTerms가 이 태그로
+  # 클러스터 SG + Node SG를 함께 찾아 부착한다 (Aurora/ALB 체인에 필수)
+  tags = {
+    Name                     = "${var.project_name}-${var.environment}-eks-node-sg"
+    "karpenter.sh/discovery" = "${var.project_name}-${var.environment}-eks"
+  }
 }
 
 # ---------- Aurora SG: EKS Node에서 5432만 허용 ----------
