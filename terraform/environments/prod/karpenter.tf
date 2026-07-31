@@ -6,3 +6,7 @@ module "karpenter" {
   oidc_provider_arn         = module.eks.oidc_provider_arn
   oidc_issuer               = module.eks.oidc_issuer
 }
+
+resource "aws_iam_service_linked_role" "spot" {
+  aws_service_name = "spot.amazonaws.com"
+}
