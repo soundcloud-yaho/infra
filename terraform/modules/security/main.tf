@@ -93,6 +93,7 @@ resource "aws_security_group" "aurora" {
   }
 
   tags = { Name = "${var.project_name}-${var.environment}-aurora-sg" }
+  tags = { karpenter.sh/discovery = "${var.project_name}-${var.environment}-aurora-sg" }
 }
 
 # ---------- AWS Load Balancer Controller IRSA ----------

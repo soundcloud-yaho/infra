@@ -45,7 +45,7 @@ system_desired_size   = 4
 system_min_size       = 2
 system_max_size       = 4
 
-ai_instance_types = ["m5.large"]
+ai_instance_types = ["t3.medium"]
 ai_desired_size   = 1
 ai_min_size       = 1
 ai_max_size       = 2
