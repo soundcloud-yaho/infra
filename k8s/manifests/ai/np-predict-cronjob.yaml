@@ -71,7 +71,7 @@ spec:
                   value: neuralprophet  # --pushgateway-instance: Pushgateway instance 라벨
                 # 스케일 상수 — infra/k8s/manifests/backend/keda-scaledobject.yaml 보험 트리거와 동기화
                 - name: RPS_PER_POD
-                  value: "300"
+                  value: "250"
                 - name: HEADROOM_FACTOR
                   value: "1.2"
                 - name: BASELINE_PODS
