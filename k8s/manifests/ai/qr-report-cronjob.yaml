@@ -24,7 +24,7 @@ spec:
               effect: NoSchedule
           containers:
             - name: quantile-recommend
-              image: 201243087060.dkr.ecr.ap-northeast-2.amazonaws.com/soundcloud-prod/ai:d851cb2
+              image: 201243087060.dkr.ecr.ap-northeast-2.amazonaws.com/soundcloud-prod/ai:155c6b7
               command: ["python", "-m", "Segmented_Quantile.recommend"]
               env:
                 - name: PROMETHEUS_URL
