@@ -64,8 +64,8 @@ spec:
         query: (sum(rate(http_requests_total{namespace="app",service="backend"}[5m])) * 1.2) / 250
         threshold: "1"
         activationThreshold: "0"
-    # 보험 트리거: CPU utilization 70% 초과 시 scale-out
+    # 보험 트리거: CPU utilization 50% 초과 시 scale-out
     - type: cpu
       metricType: Utilization
       metadata:
-        value: "70"
+        value: "50"
