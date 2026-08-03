@@ -6,6 +6,28 @@ metadata:
   annotations:
     eks.amazonaws.com/role-arn: arn:aws:iam::201243087060:role/soundcloud-prod-eks-spot-price-exporter
 ---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: spot-price-exporter-node-reader
+rules:
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: spot-price-exporter-node-reader
+subjects:
+  - kind: ServiceAccount
+    name: spot-price-exporter
+    namespace: ai
+roleRef:
+  kind: ClusterRole
+  name: spot-price-exporter-node-reader
+  apiGroup: rbac.authorization.k8s.io
+---
 apiVersion: batch/v1
 kind: CronJob
 metadata:
