@@ -22,6 +22,10 @@ prometheus:
 
 kubecostProductConfigs:
   clusterName: "soundcloud-prod-eks"
+  awsSpotDataRegion: "ap-northeast-2"
+  awsSpotDataBucket: "project-sc-cost"
+  awsSpotDataPrefix: "spot-data-feed"
+  projectID: "201243087060"
 
 serviceAccount:
   create: true
