@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: spot-price-exporter
+  namespace: ai
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::201243087060:role/soundcloud-prod-eks-spot-price-exporter
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: spot-price-exporter
+  namespace: ai
+spec:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          serviceAccountName: spot-price-exporter
+          restartPolicy: OnFailure
+          containers:
+            - name: spot-price-exporter
+              image: "201243087060.dkr.ecr.ap-northeast-2.amazonaws.com/soundcloud-prod/ai:<SHA태그>"
+              command: ["python3", "spot_price_exporter/main.py"]
+              env:
+                - name: AWS_REGION
+                  value: "ap-northeast-2"
+                - name: PUSHGATEWAY_URL
+                  value: "http://pushgateway-prometheus-pushgateway.monitoring.svc:9091"
+              resources:
+                requests:
+                  cpu: "50m"
+                  memory: "64Mi"
+                limits:
+                  cpu: "100m"
+                  memory: "128Mi"

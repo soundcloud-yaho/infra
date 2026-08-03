@@ -135,6 +135,7 @@ resource "aws_iam_role" "kubecost" {
   assume_role_policy = data.aws_iam_policy_document.kubecost_assume_role.json
 }
 
+
 data "aws_iam_policy_document" "kubecost_s3" {
   statement {
     effect    = "Allow"
@@ -154,7 +155,60 @@ resource "aws_iam_role_policy" "kubecost_s3" {
   policy = data.aws_iam_policy_document.kubecost_s3.json
 }
 
+resource "aws_s3_bucket_ownership_controls" "kubecost_bucket" {
+  bucket = local.kubecost_bucket_name
+
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
 resource "aws_spot_datafeed_subscription" "kubecost" {
   bucket = local.kubecost_bucket_name
   prefix = "spot-data-feed"
+
+  depends_on = [aws_s3_bucket_ownership_controls.kubecost_bucket]
+}
+
+
+locals {
+  spot_price_exporter_sa_name      = "spot-price-exporter"
+  spot_price_exporter_sa_namespace = "ai"
+}
+
+data "aws_iam_policy_document" "spot_price_exporter_assume_role" {
+  statement {
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+    effect  = "Allow"
+
+    condition {
+      test     = "StringEquals"
+      variable = "${replace(aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}:sub"
+      values   = ["system:serviceaccount:${local.spot_price_exporter_sa_namespace}:${local.spot_price_exporter_sa_name}"]
+    }
+
+    principals {
+      identifiers = [aws_iam_openid_connect_provider.this.arn]
+      type        = "Federated"
+    }
+  }
+}
+
+resource "aws_iam_role" "spot_price_exporter" {
+  name               = "${var.cluster_name}-spot-price-exporter"
+  assume_role_policy = data.aws_iam_policy_document.spot_price_exporter_assume_role.json
+}
+
+data "aws_iam_policy_document" "spot_price_exporter_ec2" {
+  statement {
+    effect    = "Allow"
+    actions   = ["ec2:DescribeSpotPriceHistory"]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_role_policy" "spot_price_exporter_ec2" {
+  name   = "${var.cluster_name}-spot-price-exporter-ec2"
+  role   = aws_iam_role.spot_price_exporter.name
+  policy = data.aws_iam_policy_document.spot_price_exporter_ec2.json
 }
