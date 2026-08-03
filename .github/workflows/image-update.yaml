@@ -98,7 +98,7 @@ jobs:
             "s|image: .*soundcloud-prod/ai:.*|image: ${IMAGE}|g" \
             k8s/manifests/ai/np-train-cronjob.yaml \
             k8s/manifests/ai/np-predict-cronjob.yaml \
-            k8s/manifests/ai/qr-report-cronjob.yaml
+            k8s/manifests/ai/qr-report-cronjob.yaml \
             k8s/manifests/ai/spot-price-exporter.yaml
           echo "변경된 AI 이미지:"
           grep -R "image:.*soundcloud-prod/ai:" \
