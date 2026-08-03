@@ -153,3 +153,8 @@ resource "aws_iam_role_policy" "kubecost_s3" {
   role   = aws_iam_role.kubecost.name
   policy = data.aws_iam_policy_document.kubecost_s3.json
 }
+
+resource "aws_spot_datafeed_subscription" "kubecost" {
+  bucket = local.kubecost_bucket_name
+  prefix = "spot-data-feed"
+}
