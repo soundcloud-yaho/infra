@@ -24,7 +24,7 @@ spec:
     name: backend
   pollingInterval: 30
   cooldownPeriod: 300
-  minReplicaCount: 1
+  minReplicaCount: 2
   maxReplicaCount: 20
   fallback:
     failureThreshold: 3
@@ -57,11 +57,12 @@ spec:
         query: worldcup_recommended_pods{target="keda",job="neuralprophet-predict"}
         threshold: "1"
         activationThreshold: "0"
-    # 보험 트리거: 실측 RPS 기반 Pod 수 (HEADROOM=1.2, RPS_PER_POD=250)
+    # 보험 트리거: 실측 RPS 기반 Pod 수 (HEADROOM=1.2, RPS_PER_POD=150)
+    # 750 RPS 목표: ceil(750×1.2/150)=6 Pod
     - type: prometheus
       metadata:
         serverAddress: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
-        query: (sum(rate(http_requests_total{namespace="app",service="backend"}[5m])) * 1.2) / 250
+        query: (sum(rate(http_requests_total{namespace="app",service="backend"}[5m])) * 1.2) / 150
         threshold: "1"
         activationThreshold: "0"
     # 보험 트리거: CPU utilization 50% 초과 시 scale-out
