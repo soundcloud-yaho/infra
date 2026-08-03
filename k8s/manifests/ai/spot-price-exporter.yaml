@@ -25,7 +25,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: spot-price-exporter
-              image: "201243087060.dkr.ecr.ap-northeast-2.amazonaws.com/soundcloud-prod/ai:ad148e8"
+              image: "201243087060.dkr.ecr.ap-northeast-2.amazonaws.com/soundcloud-prod/ai:3dc5b7b"
               command: ["python3", "spot_price_exporter/main.py"]
               env:
                 - name: AWS_REGION
