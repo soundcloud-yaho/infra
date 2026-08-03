@@ -45,7 +45,7 @@ spec:
             periodSeconds: 10
           resources:
             requests:
-              cpu: "1000m"    # 파드당 1코어 보장 = RPS_PER_POD=250의 전제 조건
+              cpu: "1000m"    # 파드당 1코어 보장; RPS_PER_POD=150은 여유 운전(총량 750 RPS≈6 Pod)
               memory: "512Mi"
             limits:
               cpu: "1500m"    # large 노드 allocatable(~1.9코어) 이내 버스트 허용
