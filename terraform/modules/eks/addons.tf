@@ -205,6 +205,13 @@ data "aws_iam_policy_document" "spot_price_exporter_ec2" {
     actions   = ["ec2:DescribeSpotPriceHistory"]
     resources = ["*"]
   }
+  statement {
+    # Pricing API도 리소스 단위 지정이 불가능한 조회 전용 API
+    effect    = "Allow"
+    actions   = ["pricing:GetProducts"]
+    resources = ["*"]
+  }
+
 }
 
 resource "aws_iam_role_policy" "spot_price_exporter_ec2" {
