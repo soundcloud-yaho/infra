@@ -17,7 +17,6 @@ data:
             },
             "enable": true,
             "filter": {
-              "exclude": false,
               "ids": [
                 104
               ]
@@ -40,7 +39,6 @@ data:
             },
             "enable": true,
             "filter": {
-              "exclude": false,
               "ids": [
                 104
               ]
@@ -63,7 +61,6 @@ data:
             },
             "enable": true,
             "filter": {
-              "exclude": false,
               "ids": [
                 104
               ]
@@ -86,7 +83,6 @@ data:
             },
             "enable": true,
             "filter": {
-              "exclude": false,
               "ids": [
                 104
               ]
@@ -121,7 +117,6 @@ data:
             },
             "enable": true,
             "filter": {
-              "exclude": false,
               "ids": [
                 104
               ]
@@ -146,14 +141,7 @@ data:
       "panels": [
         {
           "collapsed": false,
-          "gridPos": {
-            "h": 1,
-            "w": 24,
-            "x": 0,
-            "y": 0
-          },
           "id": 121,
-          "panels": [],
           "title": "선제 스케일링",
           "type": "row"
         },
@@ -163,7 +151,7 @@ data:
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 1
+            "y": 0
           },
           "id": 122,
           "title": "예측 검증",
@@ -278,7 +266,7 @@ data:
             "h": 9,
             "w": 6,
             "x": 0,
-            "y": 2
+            "y": 1
           },
           "id": 117,
           "options": {
@@ -444,7 +432,7 @@ data:
             "h": 9,
             "w": 6,
             "x": 6,
-            "y": 2
+            "y": 1
           },
           "id": 118,
           "options": {
@@ -579,7 +567,7 @@ data:
             "h": 9,
             "w": 6,
             "x": 12,
-            "y": 2
+            "y": 1
           },
           "id": 119,
           "options": {
@@ -620,121 +608,8 @@ data:
           "type": "timeseries"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "description": "동시 처리 중인 HTTP 요청 수",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "showValues": false,
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "min": 0,
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "short"
-            }
-          },
-          "gridPos": {
-            "h": 9,
-            "w": 6,
-            "x": 18,
-            "y": 2
-          },
-          "id": 120,
-          "options": {
-            "annotations": {
-              "clustering": -1,
-              "multiLane": false
-            },
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "enableFacetedFilter": false,
-              "overflow": "ellipsis",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "13.1.0",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "editorMode": "code",
-              "expr": "sum(http_requests_inprogress)",
-              "instant": false,
-              "legendFormat": "처리 중인 요청 수",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "활성 연결자 수",
-          "type": "timeseries"
-        },
-        {
           "collapsed": false,
-          "gridPos": {
-            "h": 1,
-            "w": 24,
-            "x": 0,
-            "y": 11
-          },
           "id": 123,
-          "panels": [],
           "title": "SLO 상태",
           "type": "row"
         },
@@ -744,7 +619,7 @@ data:
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 12
+            "y": 0
           },
           "id": 124,
           "title": "인프라 영역",
@@ -838,7 +713,7 @@ data:
             "h": 9,
             "w": 8,
             "x": 0,
-            "y": 13
+            "y": 1
           },
           "id": 98,
           "options": {
@@ -949,7 +824,7 @@ data:
             "h": 9,
             "w": 8,
             "x": 8,
-            "y": 13
+            "y": 1
           },
           "id": 99,
           "options": {
@@ -1075,7 +950,7 @@ data:
             "h": 9,
             "w": 7,
             "x": 16,
-            "y": 13
+            "y": 1
           },
           "id": 100,
           "options": {
@@ -1121,7 +996,7 @@ data:
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 22
+            "y": 10
           },
           "id": 125,
           "title": "서비스 영역",
@@ -1215,7 +1090,7 @@ data:
             "h": 9,
             "w": 7,
             "x": 0,
-            "y": 23
+            "y": 11
           },
           "id": 101,
           "options": {
@@ -1326,7 +1201,7 @@ data:
             "h": 9,
             "w": 7,
             "x": 7,
-            "y": 23
+            "y": 11
           },
           "id": 102,
           "options": {
@@ -1397,7 +1272,7 @@ data:
             "h": 6,
             "w": 3,
             "x": 14,
-            "y": 23
+            "y": 11
           },
           "id": 106,
           "options": {
@@ -1500,7 +1375,7 @@ data:
             "h": 9,
             "w": 7,
             "x": 17,
-            "y": 23
+            "y": 11
           },
           "id": 103,
           "options": {
@@ -1580,7 +1455,7 @@ data:
             "h": 6,
             "w": 3,
             "x": 14,
-            "y": 29
+            "y": 17
           },
           "id": 111,
           "options": {
@@ -1691,7 +1566,7 @@ data:
             "h": 9,
             "w": 7,
             "x": 0,
-            "y": 32
+            "y": 20
           },
           "id": 104,
           "options": {
@@ -1813,7 +1688,7 @@ data:
             "h": 9,
             "w": 7,
             "x": 7,
-            "y": 32
+            "y": 20
           },
           "id": 105,
           "options": {
@@ -1869,6 +1744,112 @@ data:
             "type": "prometheus",
             "uid": "prometheus"
           },
+          "description": "동시 처리 중인 HTTP 요청 수",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            }
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 7,
+            "x": 17,
+            "y": 20
+          },
+          "id": 120,
+          "options": {
+            "annotations": {
+              "clustering": -1,
+              "multiLane": false
+            },
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "enableFacetedFilter": false,
+              "overflow": "ellipsis",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "13.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "sum(http_requests_inprogress)",
+              "instant": false,
+              "legendFormat": "처리 중인 요청 수",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "동시 처리 요청량",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -1891,7 +1872,7 @@ data:
             "h": 6,
             "w": 3,
             "x": 14,
-            "y": 35
+            "y": 23
           },
           "id": 112,
           "options": {
@@ -1933,14 +1914,7 @@ data:
         },
         {
           "collapsed": false,
-          "gridPos": {
-            "h": 1,
-            "w": 24,
-            "x": 0,
-            "y": 41
-          },
           "id": 126,
-          "panels": [],
           "title": "비용",
           "type": "row"
         },
@@ -1950,7 +1924,7 @@ data:
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 42
+            "y": 0
           },
           "id": 127,
           "title": "비용 효율",
@@ -1985,7 +1959,7 @@ data:
             "h": 9,
             "w": 6,
             "x": 0,
-            "y": 43
+            "y": 1
           },
           "id": 107,
           "options": {
@@ -2094,7 +2068,7 @@ data:
             "h": 9,
             "w": 6,
             "x": 6,
-            "y": 43
+            "y": 1
           },
           "id": 108,
           "options": {
@@ -2138,7 +2112,7 @@ data:
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "description": "spot 노드 사용 실제 비용 vs on-demand 사용 가정 비용 (t3.medium)",
+          "description": "spot 노드 사용 실제 비용 vs on-demand 사용 가정 비용",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -2198,7 +2172,7 @@ data:
             "h": 9,
             "w": 6,
             "x": 12,
-            "y": 43
+            "y": 1
           },
           "id": 109,
           "options": {
@@ -2228,7 +2202,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum(\r\n  node_total_hourly_cost\r\n  * on(node) group_left()\r\n  kube_node_labels{job=\"kubecost-cost-analyzer\", label_eks_amazonaws_com_capacityType!=\"ON_DEMAND\"}\r\n)",
+              "expr": "worldcup_spot_realtime_price_usd",
               "legendFormat": "실제 비용 (spot)",
               "range": true,
               "refId": "A"
@@ -2239,7 +2213,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "count(\r\n  node_total_hourly_cost\r\n  * on(node) group_left()\r\n  kube_node_labels{job=\"kubecost-cost-analyzer\", label_eks_amazonaws_com_capacityType!=\"ON_DEMAND\"}\r\n) * 0.052",
+              "expr": "sum(worldcup_ondemand_realtime_price_usd)",
               "instant": false,
               "legendFormat": "가정 비용 (on-demand)",
               "range": true,
@@ -2314,7 +2288,7 @@ data:
             "h": 9,
             "w": 6,
             "x": 18,
-            "y": 43
+            "y": 1
           },
           "id": 110,
           "options": {
@@ -2344,7 +2318,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "(\r\n  count(\r\n    node_total_hourly_cost\r\n    * on(node) group_left()\r\n    kube_node_labels{job=\"kubecost-cost-analyzer\", label_eks_amazonaws_com_capacityType!=\"ON_DEMAND\"}\r\n  ) * 0.052\r\n)\r\n-\r\n(\r\n  sum(\r\n    node_total_hourly_cost\r\n    * on(node) group_left()\r\n    kube_node_labels{job=\"kubecost-cost-analyzer\", label_eks_amazonaws_com_capacityType!=\"ON_DEMAND\"}\r\n  )\r\n)",
+              "expr": "(\r\n  sum(worldcup_ondemand_realtime_price_usd) - sum(worldcup_spot_realtime_price_usd)\r\n)\r\n/\r\nsum(worldcup_ondemand_realtime_price_usd)",
               "legendFormat": "절감액 ($/hr)",
               "range": true,
               "refId": "A"
