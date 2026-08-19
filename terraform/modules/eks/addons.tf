@@ -219,3 +219,50 @@ resource "aws_iam_role_policy" "spot_price_exporter_ec2" {
   role   = aws_iam_role.spot_price_exporter.name
   policy = data.aws_iam_policy_document.spot_price_exporter_ec2.json
 }
+
+locals {
+  yace_sa_name      = "yace"
+  yace_sa_namespace = "monitoring"
+}
+
+data "aws_iam_policy_document" "yace_assume_role" {
+  statement {
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+    effect  = "Allow"
+
+    condition {
+      test     = "StringEquals"
+      variable = "${replace(aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}:sub"
+      values   = ["system:serviceaccount:${local.yace_sa_namespace}:${local.yace_sa_name}"]
+    }
+
+    principals {
+      identifiers = [aws_iam_openid_connect_provider.this.arn]
+      type        = "Federated"
+    }
+  }
+}
+
+resource "aws_iam_role" "yace" {
+  name               = "${var.cluster_name}-yace"
+  assume_role_policy = data.aws_iam_policy_document.yace_assume_role.json
+}
+
+data "aws_iam_policy_document" "yace_cloudwatch" {
+  statement {
+    effect    = "Allow"
+    actions   = ["cloudwatch:GetMetricData", "cloudwatch:ListMetrics"]
+    resources = ["*"]
+  }
+  statement {
+    effect    = "Allow"
+    actions   = ["tag:GetResources"]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_role_policy" "yace_cloudwatch" {
+  name   = "${var.cluster_name}-yace-cloudwatch"
+  role   = aws_iam_role.yace.name
+  policy = data.aws_iam_policy_document.yace_cloudwatch.json
+}
