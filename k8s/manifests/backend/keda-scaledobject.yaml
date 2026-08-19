@@ -50,15 +50,12 @@ spec:
               periodSeconds: 60
           selectPolicy: Max
   triggers:
-    # 선제 트리거: NeuralProphet이 Pushgateway에 push한 권장 Pod 수
     - type: prometheus
       metadata:
         serverAddress: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
         query: worldcup_recommended_pods{target="keda",job="neuralprophet-predict"}
         threshold: "1"
         activationThreshold: "0"
-    # 보험 트리거: 실측 RPS 기반 Pod 수 (HEADROOM=1.2, RPS_PER_POD=150)
-    # 750 RPS 목표: ceil(750×1.2/150)=6 Pod
     - type: prometheus
       metadata:
         serverAddress: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
