@@ -25,3 +25,8 @@ output "efs_csi_driver_role_arn" {
   description = "EFS CSI Driver IRSA role ARN - 디버깅/확인용"
   value       = aws_iam_role.efs_csi_driver.arn
 }
+
+output "yace_role_arn" {
+  description = "YACE IRSA role ARN"
+  value       = aws_iam_role.yace.arn
+}
