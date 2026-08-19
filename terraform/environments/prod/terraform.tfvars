@@ -38,7 +38,7 @@ database_subnet_cidrs = [
 # Compute Configuration
 # =====================================================
 
-cluster_version = "1.33"
+cluster_version = "1.34"
 
 system_instance_types = ["t3.medium"]
 system_desired_size   = 4

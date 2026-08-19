@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: yace-config
+  namespace: monitoring
+data:
+  config.yml: |
+    apiVersion: v1alpha1
+    discovery:
+      jobs:
+        - type: AWS/ApplicationELB
+          regions:
+            - ap-northeast-2
+          metrics:
+            - name: RequestCount
+              statistics: [Sum]
+              period: 60
+              length: 300
+            - name: HTTPCode_ELB_5XX_Count
+              statistics: [Sum]
+              period: 60
+              length: 300

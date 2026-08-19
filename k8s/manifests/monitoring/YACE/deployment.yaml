@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yace
+  namespace: monitoring
+  labels:
+    app: yace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yace
+  template:
+    metadata:
+      labels:
+        app: yace
+    spec:
+      serviceAccountName: yace
+      nodeSelector:
+        role: system
+      containers:
+        - name: yace
+          image: ghcr.io/nerdswords/yet-another-cloudwatch-exporter:v0.61.0
+          args:
+            - "--config.file=/config/config.yml"
+          ports:
+            - name: metrics
+              containerPort: 5000
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          volumeMounts:
+            - name: config
+              mountPath: /config
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 15
+      volumes:
+        - name: config
+          configMap:
+            name: yace-config
