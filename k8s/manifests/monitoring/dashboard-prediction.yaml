@@ -314,7 +314,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "builder",
-              "expr": "worldcup_current_rps{target=\"keda\"}",
+              "expr": "sum(rate(http_requests_total{namespace=\"app\",service=\"backend\"}[1m]))",
               "instant": false,
               "legendFormat": "실측 RPS",
               "range": true,
@@ -2336,7 +2336,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "(\r\n  sum(worldcup_ondemand_realtime_price_usd) - sum(worldcup_spot_realtime_price_usd)\r\n)\r\n/\r\nsum(worldcup_ondemand_realtime_price_usd)",
+              "expr": "sum(worldcup_ondemand_realtime_price_usd) - sum( worldcup_spot_realtime_price_usd)",
               "legendFormat": "절감액 ($/hr)",
               "range": true,
               "refId": "A"
