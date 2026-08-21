@@ -1,0 +1,27 @@
+# [App] 댓글 서비스 — k8s/manifests/comment/ 경로 감시
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: comment
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/soundcloud-yaho/infra.git
+    targetRevision: master
+    path: k8s/manifests/comment
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: app
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      name: comment
+      jsonPointers:
+        - /spec/replicas

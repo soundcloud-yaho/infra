@@ -4,11 +4,11 @@ metadata:
   name: backend
   namespace: app
   annotations:
-    alb.ingress.kubernetes.io/scheme: internet-facing    
-    alb.ingress.kubernetes.io/target-type: ip             
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
-    alb.ingress.kubernetes.io/ssl-redirect: "443"           
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:201243087060:certificate/fd98807c-18dc-483a-9747-f9fcf53d0e56  
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:201243087060:certificate/fd98807c-18dc-483a-9747-f9fcf53d0e56
     alb.ingress.kubernetes.io/healthcheck-path: /readyz
     alb.ingress.kubernetes.io/healthcheck-interval-seconds: "15"
 spec:
@@ -17,10 +17,47 @@ spec:
     - host: api.rubao.store
       http:
         paths:
-          - path: /
-            pathType: Prefix      
+          # 회원가입, 로그인, 토큰 확인
+          - path: /auth
+            pathType: Prefix
             backend:
               service:
-                name: backend      
+                name: member
+                port:
+                  number: 8080
+
+          # 팀 즐겨찾기
+          - path: /favorites
+            pathType: Prefix
+            backend:
+              service:
+                name: member
+                port:
+                  number: 8080
+
+          # 경기별 댓글
+          - path: /comments
+            pathType: Prefix
+            backend:
+              service:
+                name: comment
+                port:
+                  number: 8080
+
+          # 승부예측
+          - path: /predictions
+            pathType: Prefix
+            backend:
+              service:
+                name: prediction
+                port:
+                  number: 8080
+
+          # 기존 경기·팀 조회 및 나머지 API
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
                 port:
                   number: 8080

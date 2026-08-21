@@ -1,0 +1,57 @@
+# [Member] FastAPI Deployment — 회원 인증 및 즐겨찾기 서비스
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: member
+  namespace: app
+  labels:
+    app: member
+spec:
+  # replicas는 KEDA ScaledObject(member)가 HPA를 통해 관리한다. 초기값 1.
+  replicas: 1
+  selector:
+    matchLabels:
+      app: member
+  template:
+    metadata:
+      labels:
+        app: member
+    spec:
+      nodeSelector:
+        role: worker
+      containers:
+        - name: member
+          # ECR 생성 및 이미지 빌드 후 실제 태그로 변경
+          image: 201243087060.dkr.ecr.ap-northeast-2.amazonaws.com/soundcloud-prod/member:latest
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: member-config     # APP_PORT, DB 설정, JWT_ALGORITHM, JWT_EXPIRE_MINUTES
+            - secretRef:
+                name: aurora-db-secret  # DB_PASSWORD
+            - secretRef:
+                name: jwt-secret        # JWT_SECRET_KEY
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"

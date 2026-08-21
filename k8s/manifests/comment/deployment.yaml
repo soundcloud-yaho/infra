@@ -1,0 +1,57 @@
+# [Comment] FastAPI Deployment — KEDA가 replicas를 관리하며 DB/JWT Secret을 별도 주입
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: comment
+  namespace: app
+  labels:
+    app: comment
+spec:
+  # replicas는 KEDA ScaledObject(comment)가 HPA를 통해 관리한다. 초기값 1.
+  replicas: 1
+  selector:
+    matchLabels:
+      app: comment
+  template:
+    metadata:
+      labels:
+        app: comment
+    spec:
+      nodeSelector:
+        role: worker
+      containers:
+        - name: comment
+          # ECR 생성 및 이미지 빌드 후 실제 태그로 변경
+          image: 201243087060.dkr.ecr.ap-northeast-2.amazonaws.com/soundcloud-prod/comment:latest
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: comment-config        # APP_PORT, DB_HOST, DB_PORT, DB_NAME, DB_USER, JWT_ALGORITHM
+            - secretRef:
+                name: aurora-db-secret      # DB_PASSWORD
+            - secretRef:
+                name: jwt-secret            # JWT_SECRET_KEY
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
