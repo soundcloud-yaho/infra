@@ -2336,7 +2336,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "expr": "sum(worldcup_ondemand_realtime_price_usd) - sum( worldcup_spot_realtime_price_usd)",
+              "expr": "sum(worldcup_ondemand_realtime_price_usd) - sum( worldcup_spot_realtime_price_usd)",
               "legendFormat": "절감액 ($/hr)",
               "range": true,
               "refId": "A"
