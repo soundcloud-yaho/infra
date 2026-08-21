@@ -1,0 +1,17 @@
+# [Comment] ClusterIP Service — ALB Ingress의 /comments 경로 연결점
+apiVersion: v1
+kind: Service
+metadata:
+  name: comment
+  namespace: app
+  labels:
+    app: comment
+spec:
+  type: ClusterIP
+  selector:
+    app: comment
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+      protocol: TCP

@@ -1,0 +1,57 @@
+# [Prediction] FastAPI Deployment — KEDA가 replicas를 관리하며 DB/JWT Secret을 별도 주입
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prediction
+  namespace: app
+  labels:
+    app: prediction
+spec:
+  # replicas는 KEDA ScaledObject(prediction)가 HPA를 통해 관리한다. 초기값 1.
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prediction
+  template:
+    metadata:
+      labels:
+        app: prediction
+    spec:
+      nodeSelector:
+        role: worker
+      containers:
+        - name: prediction
+          # ECR 생성 및 이미지 빌드 후 실제 태그로 변경
+          image: 201243087060.dkr.ecr.ap-northeast-2.amazonaws.com/soundcloud-prod/prediction:latest
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: prediction-config  # APP_PORT, DB 설정, JWT_ALGORITHM, MATCHES_SERVICE_URL
+            - secretRef:
+                name: aurora-db-secret   # DB_PASSWORD
+            - secretRef:
+                name: jwt-secret         # JWT_SECRET_KEY
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"

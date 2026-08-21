@@ -67,7 +67,10 @@ app_port = 8080
 
 ecr_repository_names = [
   "backend",
-  "ai"
+  "ai",
+  "member",
+  "comment",
+  "prediction",
 ]
 
 # =====================================================

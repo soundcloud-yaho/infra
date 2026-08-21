@@ -45,6 +45,21 @@ output "ai_repository_url" {
   value       = module.ecr.ai_repository_url
 }
 
+output "member_repository_url" {
+  description = "Member ECR Repository URL"
+  value       = module.ecr.member_repository_url
+}
+
+output "comment_repository_url" {
+  description = "Comment ECR Repository URL"
+  value       = module.ecr.comment_repository_url
+}
+
+output "prediction_repository_url" {
+  description = "Prediction ECR Repository URL"
+  value       = module.ecr.prediction_repository_url
+}
+
 output "aurora_writer_endpoint" {
   description = "Aurora Writer Endpoint"
   value       = module.database.writer_endpoint

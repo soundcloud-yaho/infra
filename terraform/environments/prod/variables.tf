@@ -154,6 +154,14 @@ variable "app_port" {
 variable "ecr_repository_names" {
   description = "ECR Repository 이름 목록"
   type        = list(string)
+
+  default = [
+    "backend",
+    "ai",
+    "member",
+    "comment",
+    "prediction",
+  ]
 }
 
 # =====================================================
