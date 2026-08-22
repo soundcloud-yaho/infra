@@ -34,6 +34,11 @@ variable "availability_zones" {
   type        = list(string)
 }
 
+variable "primary_availability_zone" {
+  description = "RDS와 EKS workload node를 배치할 단일 가용 영역"
+  type        = string
+}
+
 variable "public_subnet_cidrs" {
   description = "퍼블릭 서브넷 CIDR 목록"
   type        = list(string)
@@ -166,7 +171,7 @@ variable "ecr_repository_names" {
 
 # =====================================================
 # Database Configuration
-# Aurora PostgreSQL 설정
+# RDS PostgreSQL 설정
 # =====================================================
 
 variable "database_name" {
@@ -181,12 +186,12 @@ variable "master_username" {
 
 
 variable "db_engine_version" {
-  description = "Aurora PostgreSQL Engine Version"
+  description = "RDS PostgreSQL Engine Version"
   type        = string
 }
 
 variable "db_instance_class" {
-  description = "Aurora Instance Class"
+  description = "RDS PostgreSQL Instance Class"
   type        = string
 }
 

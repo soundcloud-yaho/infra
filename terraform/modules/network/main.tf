@@ -3,7 +3,7 @@
 
 resource "aws_vpc" "this" {
   cidr_block           = var.vpc_cidr
-  enable_dns_support   = true # Aurora 엔드포인트/EKS 내부 DNS 해석에 필수
+  enable_dns_support   = true # RDS endpoint/EKS 내부 DNS 해석에 필수
   enable_dns_hostnames = true
 
   tags = { Name = "${var.project_name}-${var.environment}-vpc" }
@@ -35,14 +35,15 @@ resource "aws_subnet" "private" {
   cidr_block        = var.private_subnet_cidrs[count.index]
   availability_zone = var.availability_zones[count.index]
 
-  tags = {
+  tags = merge({
     Name                              = "${var.project_name}-${var.environment}-private-${var.availability_zones[count.index]}"
-    "kubernetes.io/role/internal-elb" = "1"              # 내부용 LB 서브넷 식별
-    "karpenter.sh/discovery"          = var.cluster_name # Karpenter가 노드 띄울 서브넷 자동 발견
-  }
+    "kubernetes.io/role/internal-elb" = "1"
+    }, var.availability_zones[count.index] == var.primary_availability_zone ? {
+    "karpenter.sh/discovery" = var.cluster_name
+  } : {})
 }
 
-# ---------- DB Subnet (Aurora 전용, 인터넷 경로 없음) ----------
+# ---------- DB Subnet (RDS 전용, 인터넷 경로 없음) ----------
 resource "aws_subnet" "db" {
   count             = length(var.availability_zones)
   vpc_id            = aws_vpc.this.id

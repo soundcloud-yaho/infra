@@ -24,6 +24,11 @@ variable "availability_zones" {
   default     = ["ap-northeast-2a", "ap-northeast-2c"]
 }
 
+variable "primary_availability_zone" {
+  description = "EKS workload node와 RDS instance를 배치할 단일 가용 영역"
+  type        = string
+}
+
 variable "public_subnet_cidrs" {
   description = "퍼블릭 서브넷 CIDR - ALB, NAT Gateway 배치"
   type        = list(string)

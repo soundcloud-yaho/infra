@@ -24,7 +24,7 @@ spec:
     name: backend
   pollingInterval: 30
   cooldownPeriod: 300
-  minReplicaCount: 3
+  minReplicaCount: 1
   maxReplicaCount: 20
   fallback:
     failureThreshold: 3

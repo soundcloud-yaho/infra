@@ -35,19 +35,8 @@ resource "aws_eks_addon" "ebs_csi_driver" {
 
   configuration_values = jsonencode({
     controller = {
-      replicaCount = 2
-      topologySpreadConstraints = [
-        {
-          maxSkew           = 1
-          topologyKey       = "topology.kubernetes.io/zone"
-          whenUnsatisfiable = "DoNotSchedule"
-          labelSelector = {
-            matchLabels = {
-              "app" = "ebs-csi-controller"
-          }
-         }
-        }
-      ]
+      replicaCount              = 1
+      topologySpreadConstraints = []
     }
   })
 }
@@ -88,19 +77,8 @@ resource "aws_eks_addon" "efs_csi_driver" {
   resolve_conflicts_on_update = "OVERWRITE"
   configuration_values = jsonencode({
     controller = {
-      replicaCount = 2
-      topologySpreadConstraints = [
-        {
-          maxSkew           = 1
-          topologyKey       = "topology.kubernetes.io/zone"
-          whenUnsatisfiable = "DoNotSchedule"
-          labelSelector = {
-            matchLabels = {
-              "app" = "efs-csi-controller"
-            }
-          }
-        }
-      ]
+      replicaCount              = 1
+      topologySpreadConstraints = []
     }
   })
 }

@@ -18,6 +18,8 @@ availability_zones = [
   "ap-northeast-2c"
 ]
 
+primary_availability_zone = "ap-northeast-2a"
+
 public_subnet_cidrs = [
   "10.0.1.0/24",
   "10.0.2.0/24"
@@ -41,9 +43,9 @@ database_subnet_cidrs = [
 cluster_version = "1.34"
 
 system_instance_types = ["t3.medium"]
-system_desired_size   = 4
+system_desired_size   = 2
 system_min_size       = 2
-system_max_size       = 4
+system_max_size       = 2
 
 ai_instance_types = ["t3.medium"]
 ai_desired_size   = 1
@@ -80,6 +82,6 @@ ecr_repository_names = [
 database_name     = "worldcup"
 master_username   = "postgres"
 db_engine_version = "16.6"
-db_instance_class = "db.t4g.medium"
+db_instance_class = "db.t4g.small"
 
 enable_nat_gateway = true

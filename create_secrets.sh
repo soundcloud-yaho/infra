@@ -1,6 +1,6 @@
 #!/bin/bash
 # [스크립트] K8s Secret 생성 자동화
-# Aurora 비밀번호 → AWS Secrets Manager 자동 조회
+# RDS 비밀번호 → AWS Secrets Manager 자동 조회
 # secrets.md 값 → secrets.tfvars 작성필요.
 # 사용법: cd /infra && ./create_secrets.sh
 
@@ -45,15 +45,15 @@ fi
 
 echo "[ OK ] secrets.tfvars 읽기 완료"
 
-# ── 2. Aurora 비밀번호 자동 조회 ──────────────────────
-echo "[2/4] Aurora 비밀번호 AWS Secrets Manager에서 조회 중..."
+# ── 2. RDS 비밀번호 자동 조회 ─────────────────────────
+echo "[2/4] RDS 비밀번호 AWS Secrets Manager에서 조회 중..."
 cd "${TF_DIR}"
 
-SECRET_ARN=$(terraform output -raw aurora_master_user_secret_arn 2>/dev/null || echo "")
+SECRET_ARN=$(terraform output -raw database_master_user_secret_arn 2>/dev/null || echo "")
 cd -
 
 if [ -z "${SECRET_ARN}" ]; then
-  echo "[ FAIL ] aurora_master_user_secret_arn 조회 실패"
+  echo "[ FAIL ] database_master_user_secret_arn 조회 실패"
   exit 1
 fi
 
@@ -63,11 +63,11 @@ DB_PASSWORD=$(aws secretsmanager get-secret-value \
   --output text | python3 -c "import sys,json; print(json.load(sys.stdin)['password'])")
 
 if [ -z "${DB_PASSWORD}" ]; then
-  echo "[ FAIL ] Aurora 비밀번호 조회 실패"
+  echo "[ FAIL ] RDS 비밀번호 조회 실패"
   exit 1
 fi
 
-echo "[ OK ] Aurora 비밀번호 자동 조회 완료"
+echo "[ OK ] RDS 비밀번호 자동 조회 완료"
 
 # ── 3. Secret 생성 ────────────────────────────────────
 echo ""
