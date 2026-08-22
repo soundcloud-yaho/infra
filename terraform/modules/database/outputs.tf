@@ -1,18 +1,14 @@
-# [Database] 모듈 출력 값 - backend의 K8s Secret 생성 시 사용
-output "writer_endpoint" {
-  description = "쓰기 전용 - 동기화 CronJob이 사용"
-  value       = aws_rds_cluster.this.endpoint
-}
-output "reader_endpoint" {
-  description = "읽기 전용 - FastAPI가 사용 (reader 0개면 writer로 자동 연결됨)"
-  value       = aws_rds_cluster.this.reader_endpoint
+# [Database] 모듈 출력 값
+output "database_host" {
+  description = "단일 RDS PostgreSQL instance hostname"
+  value       = aws_db_instance.this.address
 }
 output "database_name" {
-  description = "DB 이름 - K8s Secret의 DB_NAME 값"
-  value       = aws_rds_cluster.this.database_name
+  description = "초기 생성한 PostgreSQL database 이름"
+  value       = aws_db_instance.this.db_name
 }
 output "master_user_secret_arn" {
-  description = "Aurora 마스터 비밀번호 Secret ARN - K8s Secret 생성 시 참조"
-  value       = aws_rds_cluster.this.master_user_secret[0].secret_arn
+  description = "RDS master password를 관리하는 Secrets Manager Secret ARN"
+  value       = aws_db_instance.this.master_user_secret[0].secret_arn
   sensitive   = true
 }

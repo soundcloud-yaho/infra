@@ -15,14 +15,8 @@ grafana:
 
 prometheus:
   prometheusSpec:
-    replicas: 2
-    topologySpreadConstraints:
-      - maxSkew: 1
-        topologyKey: topology.kubernetes.io/zone
-        whenUnsatisfiable: DoNotSchedule
-        labelSelector:
-          matchLabels:
-            app.kubernetes.io/name: prometheus
+    replicas: 1
+    topologySpreadConstraints: []
     serviceMonitorSelectorNilUsesHelmValues: false
     retention: 45d
     storageSpec:

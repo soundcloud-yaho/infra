@@ -27,7 +27,7 @@ resource "aws_eks_cluster" "this" {
   role_arn = aws_iam_role.cluster.arn
 
   vpc_config {
-    subnet_ids              = var.private_subnet_ids
+    subnet_ids              = var.cluster_subnet_ids
     endpoint_public_access  = true
     endpoint_private_access = true
   }
@@ -145,7 +145,7 @@ resource "aws_eks_node_group" "system" {
   cluster_name    = aws_eks_cluster.this.name
   node_group_name = "system"
   node_role_arn   = aws_iam_role.node.arn
-  subnet_ids      = var.private_subnet_ids
+  subnet_ids      = var.node_subnet_ids
   capacity_type   = "ON_DEMAND"
 
   launch_template {
@@ -169,7 +169,7 @@ resource "aws_eks_node_group" "ai" {
   cluster_name    = aws_eks_cluster.this.name
   node_group_name = "${var.cluster_name}-ai"
   node_role_arn   = aws_iam_role.node.arn
-  subnet_ids      = var.private_subnet_ids
+  subnet_ids      = var.node_subnet_ids
   capacity_type   = "ON_DEMAND"
 
   launch_template {
@@ -199,7 +199,7 @@ resource "aws_eks_node_group" "worker" {
   cluster_name    = aws_eks_cluster.this.name
   node_group_name = "${var.cluster_name}-worker"
   node_role_arn   = aws_iam_role.node.arn
-  subnet_ids      = var.private_subnet_ids
+  subnet_ids      = var.node_subnet_ids
   capacity_type   = "ON_DEMAND"
 
   launch_template {
@@ -234,12 +234,7 @@ resource "aws_eks_addon" "coredns" {
   depends_on   = [aws_eks_node_group.system]
 
   configuration_values = jsonencode({
-    replicaCount = 2
-    topologySpreadConstraints = [{
-      maxSkew           = 1
-      topologyKey       = "topology.kubernetes.io/zone"
-      whenUnsatisfiable = "DoNotSchedule"
-      labelSelector = { matchLabels = { "k8s-app" = "kube-dns" } }
-    }]
+    replicaCount              = 1
+    topologySpreadConstraints = []
   })
 }

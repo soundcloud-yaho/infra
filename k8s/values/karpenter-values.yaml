@@ -11,15 +11,10 @@ serviceAccount:
 nodeSelector:
   role: system
 
-replicas: 2
+replicas: 1
 
-topologySpreadConstraints:
-  - maxSkew: 1
-    topologyKey: topology.kubernetes.io/zone
-    whenUnsatisfiable: DoNotSchedule
-    labelSelector:
-      matchLabels:
-        app.kubernetes.io/name: karpenter
+affinity: null
+topologySpreadConstraints: []
 
 controller:
   resources:

@@ -55,26 +55,10 @@ finopsagent:
   serviceAccount:
     create: true
     name: "kubecost-cost-analyzer"
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              - key: topology.kubernetes.io/zone
-                operator: In
-                values: ["ap-northeast-2c"]
   persistence:
     storageClass: "efs-sc"
     accessModes:
       - ReadWriteMany
     size: 8Gi
 
-forecasting:
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              - key: topology.kubernetes.io/zone
-                operator: In
-                values: ["ap-northeast-2c"]
+forecasting: {}

@@ -60,18 +60,13 @@ output "prediction_repository_url" {
   value       = module.ecr.prediction_repository_url
 }
 
-output "aurora_writer_endpoint" {
-  description = "Aurora Writer Endpoint"
-  value       = module.database.writer_endpoint
+output "database_host" {
+  description = "단일 RDS PostgreSQL Instance Host"
+  value       = module.database.database_host
 }
 
-output "aurora_reader_endpoint" {
-  description = "Aurora Reader Endpoint"
-  value       = module.database.reader_endpoint
-}
-
-output "aurora_master_user_secret_arn" {
-  description = "Aurora Master User Secret ARN"
+output "database_master_user_secret_arn" {
+  description = "RDS Master User Secret ARN"
   value       = module.database.master_user_secret_arn
   sensitive   = true
 }

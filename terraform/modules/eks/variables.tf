@@ -10,8 +10,13 @@ variable "cluster_version" {
   default     = "1.33"
 }
 
-variable "private_subnet_ids" {
-  description = "워커 노드가 배치될 프라이빗 서브넷 ID - network 모듈 output에서 전달"
+variable "cluster_subnet_ids" {
+  description = "EKS control plane ENI용 private subnet ID 목록"
+  type        = list(string)
+}
+
+variable "node_subnet_ids" {
+  description = "Managed Node Group을 배치할 single-AZ private subnet ID 목록"
   type        = list(string)
 }
 
@@ -84,4 +89,3 @@ variable "eks_node_sg_id" {
   description = "EKS 노드에 추가로 붙일 보안그룹 ID (ALB→Node→Aurora SG 체인용)"
   type        = string
 }
-
