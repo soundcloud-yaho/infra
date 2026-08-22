@@ -2344,6 +2344,189 @@ data:
           ],
           "title": "절감액",
           "type": "timeseries"
+        },
+        {
+          "collapsed": false,
+          "gridPos": { "h": 1, "w": 24, "x": 0, "y": 52 },
+          "id": 128,
+          "title": "유휴 자원",
+          "type": "row"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "description": "네임스페이스별 request 대비 평시/피크 usage 및 유휴율",
+          "fieldConfig": {
+            "defaults": {
+              "custom": { "align": "auto", "cellOptions": { "type": "auto" } },
+              "unit": "short"
+            }
+          },
+          "gridPos": { "h": 9, "w": 12, "x": 0, "y": 53 },
+          "id": 129,
+          "options": { "showHeader": true },
+          "pluginVersion": "13.1.0",
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
+              "editorMode": "code",
+              "expr": "sum by (namespace) (kube_pod_container_resource_requests{resource=\"cpu\", namespace!=\"\"})",
+              "format": "table",
+              "instant": true,
+              "legendFormat": "request",
+              "refId": "A"
+            },
+            {
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
+              "editorMode": "code",
+              "expr": "quantile_over_time(0.5, (sum by (namespace) (rate(container_cpu_usage_seconds_total{namespace!=\"\", container!=\"\", container!=\"POD\"}[5m])))[7d:5m])",
+              "format": "table",
+              "instant": true,
+              "legendFormat": "usage_median",
+              "refId": "B"
+            },
+            {
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
+              "editorMode": "code",
+              "expr": "quantile_over_time(0.95, (sum by (namespace) (rate(container_cpu_usage_seconds_total{namespace!=\"\", container!=\"\", container!=\"POD\"}[5m])))[7d:5m])",
+              "format": "table",
+              "instant": true,
+              "legendFormat": "usage_p95",
+              "refId": "C"
+            }
+          ],
+          "title": "네임스페이스별 낭비 탐지 (request/평시usage/피크usage)",
+          "transformations": [
+            {
+              "id": "joinByField",
+              "options": { "byField": "namespace", "mode": "outer" }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": { "Time": true, "Time 1": true, "Time 2": true, "Time 3": true },
+                "renameByName": {
+                  "Value #A": "request (core)",
+                  "Value #B": "평시 usage (core)",
+                  "Value #C": "피크 usage (core)"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "유휴율(평시,%)",
+                "mode": "binary",
+                "binary": { "left": "request (core)", "operator": "-", "right": "평시 usage (core)" }
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "description": "네임스페이스별 유휴 비용 시계열 (request 초과 예약분 - 실사용 usage) x core당 단가",
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "drawStyle": "line",
+                "fillOpacity": 20,
+                "lineWidth": 1,
+                "stacking": { "group": "A", "mode": "normal" }
+              },
+              "unit": "currencyUSD"
+            }
+          },
+          "gridPos": { "h": 9, "w": 12, "x": 12, "y": 53 },
+          "id": 130,
+          "options": {
+            "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true },
+            "tooltip": { "mode": "single" }
+          },
+          "pluginVersion": "13.1.0",
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
+              "editorMode": "code",
+              "expr": "(\n  sum by (namespace) (kube_pod_container_resource_requests{resource=\"cpu\", namespace!=\"\"})\n  -\n  sum by (namespace) (rate(container_cpu_usage_seconds_total{namespace!=\"\", container!=\"\", container!=\"POD\"}[5m]))\n)\n*\n(sum(worldcup_ondemand_realtime_price_usd) / sum(kube_node_status_capacity{resource=\"cpu\"}))",
+              "legendFormat": "{{namespace}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "네임스페이스별 유휴 비용",
+          "type": "timeseries"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "description": "클러스터 전체 유휴 비용 (현재 시점)",
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "thresholds" },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "green", "value": 0 },
+                  { "color": "yellow", "value": 0.05 },
+                  { "color": "red", "value": 0.2 }
+                ]
+              },
+              "unit": "currencyUSD"
+            }
+          },
+          "gridPos": { "h": 9, "w": 6, "x": 0, "y": 62 },
+          "id": 131,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+            "textMode": "value_and_name"
+          },
+          "pluginVersion": "13.1.0",
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
+              "editorMode": "code",
+              "expr": "sum(\n  (\n    sum by (namespace) (kube_pod_container_resource_requests{resource=\"cpu\", namespace!=\"\"})\n    -\n    sum by (namespace) (rate(container_cpu_usage_seconds_total{namespace!=\"\", container!=\"\", container!=\"POD\"}[5m]))\n  )\n  *\n  (sum(worldcup_ondemand_realtime_price_usd) / sum(kube_node_status_capacity{resource=\"cpu\"}))\n)",
+              "instant": true,
+              "legendFormat": "클러스터 총 유휴 비용",
+              "refId": "A"
+            }
+          ],
+          "title": "클러스터 총 유휴 비용",
+          "type": "stat"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "description": "파드가 request조차 하지 않은 노드상의 순수 미할당 여유 자원을 비용으로 환산 (시계열)",
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": { "drawStyle": "line", "fillOpacity": 15, "lineWidth": 1 },
+              "unit": "currencyUSD"
+            }
+          },
+          "gridPos": { "h": 9, "w": 18, "x": 6, "y": 62 },
+          "id": 132,
+          "options": {
+            "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true },
+            "tooltip": { "mode": "single" }
+          },
+          "pluginVersion": "13.1.0",
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
+              "editorMode": "code",
+              "expr": "(\n  sum(kube_node_status_capacity{resource=\"cpu\"})\n  -\n  sum(kube_pod_container_resource_requests{resource=\"cpu\", namespace!=\"\"})\n)\n*\n(sum(worldcup_ondemand_realtime_price_usd) / sum(kube_node_status_capacity{resource=\"cpu\"}))",
+              "legendFormat": "노드 미할당 여유 비용",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "유휴 노드 비용",
+          "type": "timeseries"
         }
       ],
       "preload": false,
