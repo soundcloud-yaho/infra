@@ -46,7 +46,7 @@ serviceMonitor:
       release: kube-prometheus-stack
 
 persistentVolume:
-  size: 32Gi
+  size: 5Gi
   enabled: true
   storageClass: "gp3"
 
@@ -59,6 +59,6 @@ finopsagent:
     storageClass: "gp3"
     accessModes:
       - ReadWriteOnce
-    size: 8Gi
+    size: 5Gi
 
 forecasting: {}
