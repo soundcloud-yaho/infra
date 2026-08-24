@@ -23,7 +23,7 @@ variable "kms_key_arn" {
 variable "db_engine_version" {
   description = "RDS PostgreSQL engine version"
   type        = string
-  default     = "16.6"
+  default     = "17.11"
 }
 variable "parameter_group_family" {
   description = "RDS PostgreSQL parameter group family"

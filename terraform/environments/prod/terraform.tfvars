@@ -81,7 +81,7 @@ ecr_repository_names = [
 
 database_name     = "worldcup"
 master_username   = "postgres"
-db_engine_version = "16.6"
+db_engine_version = "17.11"
 db_instance_class = "db.t4g.small"
 
 enable_nat_gateway = true
