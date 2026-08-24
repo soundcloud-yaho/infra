@@ -50,7 +50,7 @@ fi
 if [ -z "${TAILSCALE_AUTH_KEY}" ] || \
    [ -z "${SLACK_WEBHOOK_URL}" ] || \
    [ -z "${GRAFANA_ADMIN_PASSWORD}" ] || \
-   [ -z "${FOOTBALL_DATA_API_KEY}" ]; then
+   [ -z "${FOOTBALL_DATA_API_KEY}" ] || \
    [ -z "${JWT_SECRET_KEY}" ]; then
   echo "[ FAIL ] secrets.tfvars에 누락된 값이 있습니다."
   exit 1
