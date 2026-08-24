@@ -148,7 +148,7 @@ echo "[4/4] 생성된 Secret 확인..."
 echo ""
 
 for NS_SECRET in \
-  "app/aurora-db-secret" \
+  "app/rds-db-secret" \
   "app/football-api-secret" \
   "app/rds-db-secret" \
   "app/jwt-secret" \

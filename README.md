@@ -15,8 +15,8 @@ Sound_Cloud 팀의 인프라 레포. **FIFA 월드컵 2026 서비스**를 대상
   │
   └─ Route 53 (API 도메인) → ALB (Public subnet)
                                   └─ FastAPI Pod (Private subnet, target-type: ip)
-                                        ├─ SELECT → Aurora Reader (DB subnet)
-                                        └─ (동기화 CronJob) UPSERT → Aurora Writer
+                                        ├─ SELECT → RDS PostgreSQL (DB subnet)
+                                        └─ (동기화 CronJob) UPSERT → 동일 RDS PostgreSQL
 
 외부 데이터:
   동기화 CronJob → NAT Gateway → football-data.org (1시간 폴링)
@@ -60,8 +60,8 @@ terraform/
     network/     VPC, 3계층 서브넷(Public/Private/DB), NAT GW, ELB 태그, karpenter.sh/discovery 태그
     eks/         EKS 클러스터, 관리형 노드그룹 3개(System/AI/Worker), OIDC 프로바이더
     karpenter/   컨트롤러 IRSA Role, 노드 IAM Role, SQS 인터럽션 큐, EventBridge 규칙 4종
-    security/    SG 체인(ALB→EKS→Aurora), LB Controller IRSA, KMS(Aurora 암호화)
-    database/    Aurora PostgreSQL(Writer+Reader), 파라미터 그룹(KST 타임존)
+    security/    SG 체인(ALB→EKS→RDS), LB Controller IRSA, KMS(RDS 암호화)
+    database/    단일 RDS PostgreSQL, 파라미터 그룹(KST 타임존)
     ecr/         이미지 저장소 2개 — backend, ai
     frontend/    S3(정적 호스팅), CloudFront, OAC, CI 배포 IAM 정책
   environments/
@@ -90,14 +90,24 @@ frontend (독립)
 | `karpenter_interruption_queue` | karpenter-values.yaml settings |
 | `karpenter_node_role_name` | ec2nodeclass.yaml spec.role |
 | `lb_controller_role_arn` | aws-lb-controller-values.yaml |
-| `aurora_writer_endpoint` | K8s Secret (동기화 CronJob용) |
-| `aurora_reader_endpoint` | K8s Secret (FastAPI용) |
-| `aurora_master_user_secret_arn` | Secrets Manager 자동 관리 |
+| `database_host` | 모든 애플리케이션 ConfigMap의 `DB_HOST` endpoint |
+| `database_master_user_secret_arn` | Secrets Manager 자동 관리 |
 | `ecr_repository_urls` | CI 워크플로우, deployment.yaml |
 | `frontend_bucket_name` | frontend CI s3 sync |
 | `frontend_cloudfront_distribution_id` | frontend CI invalidation |
 
 **apply는 로컬 수동으로만.** CI(`terraform-plan.yaml`)는 PR에 plan 결과만 코멘트하고 apply하지 않는다.
+
+### 단일 RDS 논리 데이터베이스 초기화
+
+단일 RDS 인스턴스에서 서비스별로 `worldcup`, `member`, `comment`, `prediction` 데이터베이스를 사용한다.
+`create_secrets.sh` 실행 후 EKS 내부의 일회성 Job으로 없는 데이터베이스만 생성한다.
+
+```bash
+./scripts/rds-init-databases.sh
+```
+
+RDS가 Private subnet에 있으므로 로컬에서 직접 `psql`로 접속하지 않고, RDS 접근 권한이 있는 Worker 노드에서 Job을 실행한다.
 
 ---
 
@@ -188,7 +198,7 @@ AWS Spot 회수 2분 전 통보
 ```
 인터넷 → ALB SG (80/443)
            → EKS Node SG (app_port만)
-             → Aurora SG (5432만)
+             → RDS SG (5432만)
 ```
 
 각 SG가 이전 SG를 소스로 참조 — IP 변경에도 자동 추적.
@@ -204,7 +214,7 @@ Pod가 AWS API를 호출할 수 있게 ServiceAccount 단위로 IAM 권한 부�
 
 ### KMS
 
-Aurora 저장 데이터를 고객 관리형 KMS 키로 암호화. key rotation 활성화(1년 주기 자동 교체).
+RDS 저장 데이터를 고객 관리형 KMS 키로 암호화. key rotation 활성화(1년 주기 자동 교체).
 
 ---
 
@@ -225,16 +235,16 @@ aws dynamodb create-table \
 curl -o terraform/modules/security/lb_controller_policy.json \
   https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/main/docs/install/iam_policy.json
 
-# 3. DB 비밀번호 환경변수 주입 (tfvars에 평문 저장 금지)
-export TF_VAR_db_master_password='비밀번호'
+# 3. Terraform 적용
+terraform -chdir=terraform/environments/prod init
+terraform -chdir=terraform/environments/prod apply
 
-# 4. Terraform 적용
-cd terraform/environments/prod
-terraform init
-terraform apply
+# 4. K8s Secret 생성 및 Terraform output 반영
+./create_secrets.sh
+./outputs_scripts.sh
 
-# 5. output 값을 k8s/values/*.yaml에 복사
-terraform output
+# 5. 서비스별 논리 데이터베이스 초기화
+./scripts/rds-init-databases.sh
 
 # 6. ArgoCD 수동 설치 (1회)
 helm install argocd argo/argo-cd -n argocd --create-namespace

@@ -29,7 +29,7 @@ spec:
             - configMapRef:
                 name: prediction-config  # APP_PORT, DB 설정, JWT_ALGORITHM, MATCHES_SERVICE_URL
             - secretRef:
-                name: rds-db-secret   # DB_PASSWORD
+                name: rds-db-secret      # DB_PASSWORD
             - secretRef:
                 name: jwt-secret         # JWT_SECRET_KEY
           livenessProbe:
