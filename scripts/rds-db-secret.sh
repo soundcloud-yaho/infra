@@ -10,7 +10,7 @@ AWS_REGION="${AWS_REGION:-ap-northeast-2}"
 
 SECRET_ARN="$(
   terraform -chdir="${TERRAFORM_DIR}" \
-    output -raw master_user_secret_arn
+    output -raw database_master_user_secret_arn
 )"
 
 DB_PASSWORD="$(
@@ -22,7 +22,7 @@ DB_PASSWORD="$(
   jq -er '.password'
 )"
 
-kubectl create secret generic aurora-db-secret \
+kubectl create secret generic rds-db-secret \
   --namespace=app \
   --from-literal="DB_PASSWORD=${DB_PASSWORD}" \
   --dry-run=client \
@@ -31,4 +31,4 @@ kubectl apply -f -
 
 unset DB_PASSWORD
 
-echo "aurora-db-secret 적용 완료"
+echo "rds-db-secret 적용 완료"
