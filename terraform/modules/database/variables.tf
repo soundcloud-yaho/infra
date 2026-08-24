@@ -28,7 +28,7 @@ variable "db_engine_version" {
 variable "parameter_group_family" {
   description = "RDS PostgreSQL parameter group family"
   type        = string
-  default     = "postgres16"
+  default     = "postgres17"
 }
 variable "database_name" {
   description = "초기 생성할 PostgreSQL database 이름"

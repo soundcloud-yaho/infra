@@ -74,7 +74,7 @@ variable "allowed_http_cidrs" {
 variable "cluster_version" {
   description = "EKS Kubernetes 버전"
   type        = string
-  default     = "1.33"
+  default     = "1.34"
 }
 variable "system_instance_types" {
   description = "System 노드그룹 인스턴스 타입"
@@ -84,7 +84,7 @@ variable "system_instance_types" {
 variable "system_desired_size" {
   description = "System 노드그룹 desired 노드 수"
   type        = number
-  default     = 4
+  default     = 2
 }
 variable "system_min_size" {
   description = "System 노드그룹 최소 노드 수"
@@ -94,7 +94,7 @@ variable "system_min_size" {
 variable "system_max_size" {
   description = "System 노드그룹 최대 노드 수"
   type        = number
-  default     = 4
+  default     = 2
 }
 # ---------- AI 노드그룹 ----------
 variable "ai_instance_types" {

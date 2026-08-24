@@ -7,7 +7,7 @@ variable "cluster_name" {
 variable "cluster_version" {
   description = "EKS 버전 - apply 전 aws eks describe-addon-versions 등으로 최신 지원 버전 확인"
   type        = string
-  default     = "1.33"
+  default     = "1.34"
 }
 
 variable "cluster_subnet_ids" {
