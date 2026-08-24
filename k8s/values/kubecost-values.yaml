@@ -58,7 +58,7 @@ finopsagent:
   persistence:
     storageClass: "gp3"
     accessModes:
-      - ReadWriteMany
+      - ReadWriteOnce
     size: 8Gi
 
 forecasting: {}
