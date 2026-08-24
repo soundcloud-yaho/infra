@@ -24,6 +24,7 @@ if [ ! -f "${SECRETS_FILE}" ]; then
   echo "  tailscale_auth_key     = \"tskey-auth-xxxx\""
   echo "  slack_webhook_url      = \"https://hooks.slack.com/...\""
   echo "  grafana_admin_password = \"your-password\""
+  echo "  football_data_api_key  = \"your-football-data-api-key\""
   exit 1
 fi
 
@@ -34,11 +35,14 @@ SLACK_WEBHOOK_URL=$(grep slack_webhook_url "${SECRETS_FILE}" | \
   sed 's/.*= *"//' | sed 's/".*//')
 GRAFANA_ADMIN_PASSWORD=$(grep grafana_admin_password "${SECRETS_FILE}" | \
   sed 's/.*= *"//' | sed 's/".*//')
+FOOTBALL_DATA_API_KEY=$(grep football_data_api_key "${SECRETS_FILE}" | \
+  sed 's/.*= *"//' | sed 's/".*//')
 
 # 값 검증
 if [ -z "${TAILSCALE_AUTH_KEY}" ] || \
    [ -z "${SLACK_WEBHOOK_URL}" ] || \
-   [ -z "${GRAFANA_ADMIN_PASSWORD}" ]; then
+   [ -z "${GRAFANA_ADMIN_PASSWORD}" ] || \
+   [ -z "${FOOTBALL_DATA_API_KEY}" ]; then
   echo "[ FAIL ] secrets.tfvars에 누락된 값이 있습니다."
   exit 1
 fi
@@ -86,6 +90,13 @@ kubectl create secret generic aurora-db-secret \
   --dry-run=client -o yaml | kubectl apply -f -
 echo "[ OK ] aurora-db-secret (app)"
 
+# football-api-secret (app)
+kubectl create secret generic football-api-secret \
+  --from-literal=FOOTBALL_DATA_API_KEY="${FOOTBALL_DATA_API_KEY}" \
+  --namespace=app \
+  --dry-run=client -o yaml | kubectl apply -f -
+echo "[ OK ] football-api-secret (app)"
+
 # tailscale-auth (tailscale)
 kubectl create secret generic tailscale-auth \
   --from-literal=TS_AUTHKEY="${TAILSCALE_AUTH_KEY}" \
@@ -115,6 +126,7 @@ echo ""
 
 for NS_SECRET in \
   "app/aurora-db-secret" \
+  "app/football-api-secret" \
   "tailscale/tailscale-auth" \
   "ai/slack-webhook" \
   "monitoring/grafana-admin-secret"; do

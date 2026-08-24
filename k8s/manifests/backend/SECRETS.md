@@ -10,6 +10,13 @@ kubectl create secret generic aurora-db-secret \
   --namespace=app \
   --from-literal=DB_PASSWORD='<실제 비번으로 교체>'
 
+## football-api-secret (namespace: app)
+football-data.org 경기 동기화 API 키. sync-matches CronJob이 사용.
+
+kubectl create secret generic football-api-secret \
+  --namespace=app \
+  --from-literal=FOOTBALL_DATA_API_KEY='<실제 API 키로 교체>'
+
 ## tailscale-auth (namespace: tailscale)
 Tailscale 인증키. subnet router 파드가 tailnet 로그인에 사용.
 
