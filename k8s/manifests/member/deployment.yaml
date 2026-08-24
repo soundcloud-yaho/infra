@@ -29,7 +29,7 @@ spec:
             - configMapRef:
                 name: member-config     # APP_PORT, DB 설정, JWT_ALGORITHM, JWT_EXPIRE_MINUTES
             - secretRef:
-                name: aurora-db-secret  # DB_PASSWORD
+                name: rds-db-secret  # DB_PASSWORD
             - secretRef:
                 name: jwt-secret        # JWT_SECRET_KEY
           livenessProbe:

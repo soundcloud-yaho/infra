@@ -29,7 +29,7 @@ spec:
             - configMapRef:
                 name: comment-config        # APP_PORT, DB_HOST, DB_PORT, DB_NAME, DB_USER, JWT_ALGORITHM
             - secretRef:
-                name: aurora-db-secret      # DB_PASSWORD
+                name: rds-db-secret      # DB_PASSWORD
             - secretRef:
                 name: jwt-secret            # JWT_SECRET_KEY
           livenessProbe:

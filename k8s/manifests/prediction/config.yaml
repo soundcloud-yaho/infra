@@ -7,9 +7,9 @@ metadata:
 data:
   APP_NAME: "Prediction Service"
   APP_PORT: "8080"
-  DB_HOST: "soundcloud-prod-aurora.cluster-cf42qiw2429n.ap-northeast-2.rds.amazonaws.com"
+  DB_HOST: "soundcloud-prod-postgres.cf42qiw2429n.ap-northeast-2.rds.amazonaws.com"
   DB_PORT: "5432"
-  DB_NAME: "prediction"
+  DB_NAME: "worldcup"
   DB_USER: "postgres"
   JWT_ALGORITHM: "HS256"
   MATCHES_SERVICE_URL: "http://backend:8080"
