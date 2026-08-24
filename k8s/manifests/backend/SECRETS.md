@@ -3,10 +3,10 @@
 이 값들은 비밀이라 git에 올리지 않는다. root-app apply 전에 아래 명령어로 클러스터에 직접 생성
 실제 값은 이 문서에 적지 않는다 — 명령어 형태만 기록
 
-## aurora-db-secret (namespace: app)
+## rds-db-secret (namespace: app)
 DB 비밀번호. backend Deployment + sync-matches CronJob이 사용.
 
-kubectl create secret generic aurora-db-secret \
+kubectl create secret generic rds-db-secret \
   --namespace=app \
   --from-literal=DB_PASSWORD='<실제 비번으로 교체>'
 
@@ -43,7 +43,7 @@ kubectl create secret generic grafana-admin-secret \
 - tailscale-state (namespace: tailscale) — tailscale 파드가 TS_KUBE_SECRET으로 자동 생성. rbac.yaml의 secret 권한으로 가능.
 
 ---------------------------
-### scripts/aurora-db-secret.sh
+### scripts/rds-db-secret.sh
 실행 환경에 따라 바꿀 수 있게 환경 변수를 썼습니다
 
 ### 전제 조건
@@ -65,15 +65,15 @@ kubectl create secret generic grafana-admin-secret \
 cd ~/project03/infra
 
 # 최초 1회 실행 권한 부여
-chmod +x scripts/aurora-db-secret.sh
+chmod +x scripts/rds-db-secret.sh
 
 # 스크립트 실행
-./scripts/aurora-db-secret.sh
+./scripts/rds-db-secret.sh
 
 # 정상 작동 확인 // 데이터가 1이면 DB_PASSWORD 키가 생성된 것
-kubectl get secret aurora-db-secret -n app
+kubectl get secret rds-db-secret -n app
 # NAME               TYPE     DATA
-# aurora-db-secret   Opaque   1
+# rds-db-secret   Opaque   1
 ---------------------------
 # secret값이 변경된 경우에 재시작 // pod가 올라올 때까지 최대 180초 대기 
 kubectl rollout restart deployment/backend -n app

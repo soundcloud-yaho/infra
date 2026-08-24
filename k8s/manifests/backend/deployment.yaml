@@ -28,7 +28,7 @@ spec:
             - configMapRef:
                 name: db-config       # DB_WRITER_HOST, DB_READER_HOST, DB_USER, DB_NAME, DB_PORT
             - secretRef:
-                name: aurora-db-secret  # DB_PASSWORD
+                name: rds-db-secret  # DB_PASSWORD
           livenessProbe:
             httpGet:
               path: /healthz

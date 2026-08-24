@@ -1,4 +1,4 @@
-# [CD] Backend 또는 AI 이미지가 ECR에 Push되면
+# [CD] Backend, AI, Member, Comment, Prediction 이미지가 ECR에 Push되면
 # Kubernetes Manifest의 이미지 태그를 변경하고 Pull Request를 생성
 
 name: Update Application Image
@@ -8,8 +8,10 @@ on:
     types:
       - update-backend-image
       - update-ai-image
+      - update-member-image
+      - update-comment-image
+      - update-prediction-image
 
-  # 처음 테스트할 때 Actions 화면에서 직접 실행 가능
   workflow_dispatch:
     inputs:
       application:
@@ -19,6 +21,9 @@ on:
         options:
           - backend
           - ai
+          - member
+          - comment
+          - prediction
 
       image_tag:
         description: "ECR 이미지 태그"
@@ -56,10 +61,14 @@ jobs:
             IMAGE_TAG="${{ inputs.image_tag }}"
           fi
 
-          if [ "$APPLICATION" != "backend" ] && [ "$APPLICATION" != "ai" ]; then
-            echo "지원하지 않는 application입니다: $APPLICATION"
-            exit 1
-          fi
+          case "$APPLICATION" in
+            backend|ai|member|comment|prediction)
+              ;;
+            *)
+              echo "지원하지 않는 application입니다: $APPLICATION"
+              exit 1
+              ;;
+          esac
 
           if [ -z "$IMAGE_TAG" ]; then
             echo "image_tag 값이 비어 있습니다."
@@ -100,9 +109,52 @@ jobs:
             k8s/manifests/ai/np-predict-cronjob.yaml \
             k8s/manifests/ai/qr-report-cronjob.yaml \
             k8s/manifests/ai/spot-price-exporter.yaml
+
           echo "변경된 AI 이미지:"
           grep -R "image:.*soundcloud-prod/ai:" \
             k8s/manifests/ai/
+
+      - name: Update Member Image
+        if: steps.variables.outputs.application == 'member'
+        shell: bash
+        run: |
+          IMAGE="${{ env.ECR_PREFIX }}/member:${{ steps.variables.outputs.image_tag }}"
+
+          sed -i \
+            "s|image: .*soundcloud-prod/member:.*|image: ${IMAGE}|g" \
+            k8s/manifests/member/deployment.yaml
+
+          echo "변경된 Member 이미지:"
+          grep "image:.*soundcloud-prod/member:" \
+            k8s/manifests/member/deployment.yaml
+
+      - name: Update Comment Image
+        if: steps.variables.outputs.application == 'comment'
+        shell: bash
+        run: |
+          IMAGE="${{ env.ECR_PREFIX }}/comment:${{ steps.variables.outputs.image_tag }}"
+
+          sed -i \
+            "s|image: .*soundcloud-prod/comment:.*|image: ${IMAGE}|g" \
+            k8s/manifests/comment/deployment.yaml
+
+          echo "변경된 Comment 이미지:"
+          grep "image:.*soundcloud-prod/comment:" \
+            k8s/manifests/comment/deployment.yaml
+
+      - name: Update Prediction Image
+        if: steps.variables.outputs.application == 'prediction'
+        shell: bash
+        run: |
+          IMAGE="${{ env.ECR_PREFIX }}/prediction:${{ steps.variables.outputs.image_tag }}"
+
+          sed -i \
+            "s|image: .*soundcloud-prod/prediction:.*|image: ${IMAGE}|g" \
+            k8s/manifests/prediction/deployment.yaml
+
+          echo "변경된 Prediction 이미지:"
+          grep "image:.*soundcloud-prod/prediction:" \
+            k8s/manifests/prediction/deployment.yaml
 
       - name: Check Changed Files
         shell: bash

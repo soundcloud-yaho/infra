@@ -1,5 +1,5 @@
-# [CI/CD] Terraform을 실행하여 AWS 인프라(VPC, EKS, IAM, Aurora, ACM, ECR 등)를 실제 생성 및 변경
-# Apply 후 Output 값을 k8s/values/*.yaml에 수동 반영하고, 이후 ArgoCD가 Git 변경을 자동 배포
+# [CI/CD] Terraform으로 AWS 인프라 생성 및 변경
+# 인프라 생성 후 EKS에 JWT 및 RDS Secret 등록
 
 name: Terraform Apply
 
@@ -53,3 +53,57 @@ jobs:
 
       - name: Terraform Output
         run: terraform output
+
+      - name: Configure EKS Access
+        run: |
+          CLUSTER_NAME=$(terraform output -json | jq -r '.eks_cluster_name.value // .cluster_name.value // empty')
+
+          if [ -z "${CLUSTER_NAME}" ]; then
+            echo "EKS 클러스터 이름을 Terraform output에서 찾지 못했습니다."
+            exit 1
+          fi
+
+          aws eks update-kubeconfig \
+            --region "${AWS_REGION}" \
+            --name "${CLUSTER_NAME}"
+
+      - name: Create JWT Secret
+        env:
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+        run: |
+          if [ -z "${JWT_SECRET_KEY}" ]; then
+            echo "JWT_SECRET_KEY가 GitHub Secrets에 등록되지 않았습니다."
+            exit 1
+          fi
+
+          kubectl create namespace app \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+          kubectl create secret generic jwt-secret \
+            --from-literal=JWT_SECRET_KEY="${JWT_SECRET_KEY}" \
+            --namespace=app \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Create RDS Database Secret
+        run: |
+          SECRET_ARN=$(terraform output -raw database_master_user_secret_arn)
+
+          if [ -z "${SECRET_ARN}" ]; then
+            echo "RDS Secret ARN을 찾지 못했습니다."
+            exit 1
+          fi
+
+          DB_PASSWORD=$(aws secretsmanager get-secret-value \
+            --secret-id "${SECRET_ARN}" \
+            --query SecretString \
+            --output text | jq -r '.password')
+
+          if [ -z "${DB_PASSWORD}" ] || [ "${DB_PASSWORD}" = "null" ]; then
+            echo "RDS 비밀번호 조회에 실패했습니다."
+            exit 1
+          fi
+
+          kubectl create secret generic rds-db-secret \
+            --from-literal=DB_PASSWORD="${DB_PASSWORD}" \
+            --namespace=app \
+            --dry-run=client -o yaml | kubectl apply -f -
