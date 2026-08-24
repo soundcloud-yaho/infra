@@ -50,8 +50,8 @@ kubectl create secret generic grafana-admin-secret \
 
 - `terraform`, `aws`, `kubectl`, `jq` 설치
 - AWS CLI 인증 완료
-- EKS와 Aurora가 Terraform으로 생성된 상태
-- Terraform state에 `master_user_secret_arn` output 존재
+- EKS와 RDS가 Terraform으로 생성된 상태
+- Terraform state에 `database_master_user_secret_arn` output 존재
 - 실행 IAM 주체에 다음 권한 필요
   - `secretsmanager:GetSecretValue`
   - 필요 시 `kms:Decrypt`
