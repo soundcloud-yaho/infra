@@ -17,14 +17,6 @@ output "oidc_issuer" {
   description = "https:// 제거된 issuer - IRSA 신뢰 정책 조건에 사용"
   value       = replace(aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "") 
 }
-output "ebs_csi_driver_role_arn" {
-  description = "EBS CSI Driver IRSA role ARN - 디버깅/확인용"
-  value       = aws_iam_role.ebs_csi_driver.arn
-}
-output "efs_csi_driver_role_arn" {
-  description = "EFS CSI Driver IRSA role ARN - 디버깅/확인용"
-  value       = aws_iam_role.efs_csi_driver.arn
-}
 
 output "yace_role_arn" {
   description = "YACE IRSA role ARN"

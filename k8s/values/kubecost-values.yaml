@@ -48,7 +48,7 @@ serviceMonitor:
 persistentVolume:
   size: 32Gi
   enabled: true
-  storageClass: "efs-sc"
+  storageClass: "gp3"
 
 finopsagent:
   enabled: true
@@ -56,7 +56,7 @@ finopsagent:
     create: true
     name: "kubecost-cost-analyzer"
   persistence:
-    storageClass: "efs-sc"
+    storageClass: "gp3"
     accessModes:
       - ReadWriteMany
     size: 8Gi
