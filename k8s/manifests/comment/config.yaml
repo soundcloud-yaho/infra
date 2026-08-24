@@ -9,6 +9,6 @@ data:
   APP_PORT: "8080"
   DB_HOST: "CHANGEME_DATABASE_HOST"
   DB_PORT: "5432"
-  DB_NAME: "worldcup"
+  DB_NAME: "comment"
   DB_USER: "postgres"
   JWT_ALGORITHM: "HS256"
