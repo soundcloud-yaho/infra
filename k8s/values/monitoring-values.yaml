@@ -29,6 +29,7 @@ prometheus:
               storage: 30Gi
     nodeSelector:
       role: system
+      topology.kubernetes.io/zone: ap-northeast-2a  # 2a 고정
   service:
     type: ClusterIP
 
