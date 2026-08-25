@@ -24,6 +24,7 @@ if [ ! -f "${SECRETS_FILE}" ]; then
   echo "  tailscale_auth_key     = \"tskey-auth-xxxx\""
   echo "  slack_webhook_url      = \"https://hooks.slack.com/...\""
   echo "  grafana_admin_password = \"your-password\""
+  echo "  football_data_api_key  = \"your-football-data-api-key\""
   echo "  jwt_secret_key         = \"your-jwt-secret-key\""
   exit 1
 fi
@@ -38,6 +39,9 @@ SLACK_WEBHOOK_URL=$(grep slack_webhook_url "${SECRETS_FILE}" | \
 GRAFANA_ADMIN_PASSWORD=$(grep grafana_admin_password "${SECRETS_FILE}" | \
   sed 's/.*= *"//' | sed 's/".*//')
 
+FOOTBALL_DATA_API_KEY=$(grep football_data_api_key "${SECRETS_FILE}" | \
+  sed 's/.*= *"//' | sed 's/".*//' || true)
+
 if [ -z "${JWT_SECRET_KEY:-}" ]; then
   JWT_SECRET_KEY=$(grep jwt_secret_key "${SECRETS_FILE}" | \
     sed 's/.*= *"//' | sed 's/".*//' || true)
@@ -47,6 +51,7 @@ fi
 if [ -z "${TAILSCALE_AUTH_KEY}" ] || \
    [ -z "${SLACK_WEBHOOK_URL}" ] || \
    [ -z "${GRAFANA_ADMIN_PASSWORD}" ] || \
+   [ -z "${FOOTBALL_DATA_API_KEY}" ] || \
    [ -z "${JWT_SECRET_KEY}" ]; then
   echo "[ FAIL ] secrets.tfvars에 누락된 값이 있습니다."
   exit 1
@@ -106,6 +111,14 @@ kubectl create secret generic jwt-secret \
 
 echo "[ OK ] jwt-secret (app)"
 
+# football-api-secret (app)
+kubectl create secret generic football-api-secret \
+  --from-literal=FOOTBALL_DATA_API_KEY="${FOOTBALL_DATA_API_KEY}" \
+  --namespace=app \
+  --dry-run=client -o yaml | kubectl apply -f -
+
+echo "[ OK ] football-api-secret (app)"
+
 # tailscale-auth (tailscale)
 kubectl create secret generic tailscale-auth \
   --from-literal=TS_AUTHKEY="${TAILSCALE_AUTH_KEY}" \
@@ -139,6 +152,7 @@ echo ""
 for NS_SECRET in \
   "app/rds-db-secret" \
   "app/jwt-secret" \
+  "app/football-api-secret" \
   "tailscale/tailscale-auth" \
   "ai/slack-webhook" \
   "monitoring/grafana-admin-secret"; do
