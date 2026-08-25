@@ -22,7 +22,7 @@ spec:
       containers:
         - name: member
           # ECR 생성 및 이미지 빌드 후 실제 태그로 변경
-          image: 201243087060.dkr.ecr.ap-northeast-2.amazonaws.com/soundcloud-prod/member:3816261
+          image: 201243087060.dkr.ecr.ap-northeast-2.amazonaws.com/soundcloud-prod/member:da33d83
           ports:
             - containerPort: 8080
           envFrom:
