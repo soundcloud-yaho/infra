@@ -1,6 +1,6 @@
 # worldcup-infra
 
-Sound_Cloud 팀의 인프라 레포. **FIFA 월드컵 2026 서비스**를 대상으로 FinOps 기반 멀티 리전 EKS 플랫폼을 구현한다.
+Sound_Cloud 팀의 인프라 레포. **FIFA 월드컵 2026 서비스**를 대상으로 서울 리전 단일 AZ의 FinOps 기반 EKS 플랫폼을 구현한다.
 
 클러스터 밖(Terraform)과 클러스터 안(K8s 매니페스트, ArgoCD 감시 대상)을 한 레포에서 관리하되 폴더로 완전히 분리한다.
 
@@ -61,7 +61,7 @@ terraform/
     eks/         EKS 클러스터, 관리형 노드그룹 3개(System/AI/Worker), OIDC 프로바이더
     karpenter/   컨트롤러 IRSA Role, 노드 IAM Role, SQS 인터럽션 큐, EventBridge 규칙 4종
     security/    SG 체인(ALB→EKS→RDS), LB Controller IRSA, KMS(RDS 암호화)
-    database/    단일 RDS PostgreSQL, 파라미터 그룹(KST 타임존)
+    database/    단일 AZ RDS PostgreSQL 인스턴스, 파라미터 그룹(KST 타임존)
     ecr/         이미지 저장소 2개 — backend, ai
     frontend/    S3(정적 호스팅), CloudFront, OAC, CI 배포 IAM 정책
   environments/
@@ -81,7 +81,7 @@ frontend (독립)
 
 ### outputs.tf — 두 트랙을 잇는 접점
 
-`environments/prod/outputs.tf`의 값을 `k8s/values/*.yaml`에 수동으로 복사한다.
+`environments/prod/outputs.tf`의 값을 `k8s/values/*.yaml`과 애플리케이션 매니페스트에 반영한다.
 
 | output 키 | 용도 |
 |---|---|
@@ -90,13 +90,13 @@ frontend (독립)
 | `karpenter_interruption_queue` | karpenter-values.yaml settings |
 | `karpenter_node_role_name` | ec2nodeclass.yaml spec.role |
 | `lb_controller_role_arn` | aws-lb-controller-values.yaml |
-| `database_host` | 모든 애플리케이션 ConfigMap의 `DB_HOST` endpoint |
-| `database_master_user_secret_arn` | Secrets Manager 자동 관리 |
+| `database_host` | 애플리케이션이 사용하는 단일 RDS PostgreSQL endpoint |
+| `database_master_user_secret_arn` | RDS가 Secrets Manager에서 자동 관리하는 마스터 사용자 Secret ARN |
 | `ecr_repository_urls` | CI 워크플로우, deployment.yaml |
 | `frontend_bucket_name` | frontend CI s3 sync |
 | `frontend_cloudfront_distribution_id` | frontend CI invalidation |
 
-**apply는 로컬 수동으로만.** CI(`terraform-plan.yaml`)는 PR에 plan 결과만 코멘트하고 apply하지 않는다.
+Terraform은 로컬에서 직접 적용하거나 수동 실행하는 `terraform-apply.yaml` 워크플로로 적용한다.
 
 ### 단일 RDS 논리 데이터베이스 초기화
 
@@ -216,6 +216,23 @@ Pod가 AWS API를 호출할 수 있게 ServiceAccount 단위로 IAM 권한 부�
 
 RDS 저장 데이터를 고객 관리형 KMS 키로 암호화. key rotation 활성화(1년 주기 자동 교체).
 
+### RDS DB Secret
+
+RDS 마스터 비밀번호는 Terraform 코드나 `tfvars`에 평문으로 저장하지 않는다.
+RDS가 Secrets Manager에서 비밀번호를 자동 관리하고, `create_secrets.sh`가
+`database_master_user_secret_arn` 출력으로 비밀번호를 조회해 Kubernetes
+`app/rds-db-secret`의 `DB_PASSWORD` 키로 생성한다.
+
+### Football API Secret
+
+football-data.org API 키는 Git에 저장하지 않고 `terraform/environments/prod/secrets.tfvars`에서 관리한다.
+`create_secrets.sh`는 `football_data_api_key` 값을 Kubernetes `app/football-api-secret`의
+`FOOTBALL_DATA_API_KEY` 키로 생성하며, 경기 동기화 CronJob이 이를 환경변수로 주입받는다.
+
+```hcl
+football_data_api_key = "your-football-data-api-key"
+```
+
 ---
 
 ## 사전 준비 (Bootstrap)
@@ -239,12 +256,17 @@ curl -o terraform/modules/security/lb_controller_policy.json \
 terraform -chdir=terraform/environments/prod init
 terraform -chdir=terraform/environments/prod apply
 
-# 4. K8s Secret 생성 및 Terraform output 반영
-./create_secrets.sh
-./outputs_scripts.sh
+# 4. Terraform output 확인
+terraform -chdir=terraform/environments/prod output
 
-# 5. 서비스별 논리 데이터베이스 초기화
-./scripts/rds-init-databases.sh
+# 5. Secret 값 파일 준비 및 Kubernetes Secret 생성
+cp secrets.tfvars.example terraform/environments/prod/secrets.tfvars
+# terraform/environments/prod/secrets.tfvars에 실제 값을 입력
+./create_secrets.sh
+
+# RDS 및 Football API Secret 생성 확인
+kubectl get secret rds-db-secret -n app
+kubectl get secret football-api-secret -n app
 
 # 6. ArgoCD 수동 설치 (1회)
 helm install argocd argo/argo-cd -n argocd --create-namespace

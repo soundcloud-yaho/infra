@@ -41,6 +41,9 @@ GRAFANA_ADMIN_PASSWORD=$(grep grafana_admin_password "${SECRETS_FILE}" | \
 FOOTBALL_DATA_API_KEY=$(grep football_data_api_key "${SECRETS_FILE}" | \
   sed 's/.*= *"//' | sed 's/".*//')
 
+FOOTBALL_DATA_API_KEY=$(grep football_data_api_key "${SECRETS_FILE}" | \
+  sed 's/.*= *"//' | sed 's/".*//' || true)
+
 if [ -z "${JWT_SECRET_KEY:-}" ]; then
   JWT_SECRET_KEY=$(grep jwt_secret_key "${SECRETS_FILE}" | \
     sed 's/.*= *"//' | sed 's/".*//' || true)
@@ -152,6 +155,7 @@ for NS_SECRET in \
   "app/football-api-secret" \
   "app/rds-db-secret" \
   "app/jwt-secret" \
+  "app/football-api-secret" \
   "tailscale/tailscale-auth" \
   "ai/slack-webhook" \
   "monitoring/grafana-admin-secret"; do
