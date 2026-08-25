@@ -1,64 +1,25 @@
 # [Network] VPC, 3계층 서브넷(Public/Private/DB), NAT 1개, ELB/Karpenter 태그
-# 핵심: 서브넷 태그가 없으면 ALB 자동생성과 Karpenter 노드 배치가 전부 실패한다
+# 핵심: 서브넷 태그가 없으면 ALB 자동생성과 Karpenter 노드 배치가 실패한다
 
 resource "aws_vpc" "this" {
   cidr_block           = var.vpc_cidr
-  enable_dns_support   = true # RDS endpoint/EKS 내부 DNS 해석에 필수
+  enable_dns_support   = true
   enable_dns_hostnames = true
 
-  tags = { Name = "${var.project_name}-${var.environment}-vpc" }
+  tags = {
+    Name = "${var.project_name}-${var.environment}-vpc"
+  }
 }
 
 resource "aws_internet_gateway" "this" {
   vpc_id = aws_vpc.this.id
-  tags   = { Name = "${var.project_name}-${var.environment}-igw" }
-}
-
-# ---------- Public Subnet (ALB, NAT 배치) ----------
-resource "aws_subnet" "public" {
-  count                   = length(var.availability_zones)
-  vpc_id                  = aws_vpc.this.id
-  cidr_block              = var.public_subnet_cidrs[count.index]
-  availability_zone       = var.availability_zones[count.index]
-  map_public_ip_on_launch = true
 
   tags = {
-    Name                     = "${var.project_name}-${var.environment}-public-${var.availability_zones[count.index]}"
-    "kubernetes.io/role/elb" = "1" # LB Controller가 인터넷용 ALB를 놓을 서브넷 식별 태그
+    Name = "${var.project_name}-${var.environment}-igw"
   }
 }
 
-# ---------- Private Subnet (EKS 워커 노드) ----------
-resource "aws_subnet" "private" {
-  count             = length(var.availability_zones)
-  vpc_id            = aws_vpc.this.id
-  cidr_block        = var.private_subnet_cidrs[count.index]
-  availability_zone = var.availability_zones[count.index]
-
-  tags = merge({
-    Name                              = "${var.project_name}-${var.environment}-private-${var.availability_zones[count.index]}"
-    "kubernetes.io/role/internal-elb" = "1"
-    }, var.availability_zones[count.index] == var.primary_availability_zone ? {
-    "karpenter.sh/discovery" = var.cluster_name
-  } : {})
-}
-
-# ---------- DB Subnet (RDS 전용, 인터넷 경로 없음) ----------
-resource "aws_subnet" "db" {
-  count             = length(var.availability_zones)
-  vpc_id            = aws_vpc.this.id
-  cidr_block        = var.database_subnet_cidrs[count.index]
-  availability_zone = var.availability_zones[count.index]
-
-  tags = { Name = "${var.project_name}-${var.environment}-db-${var.availability_zones[count.index]}" }
-}
-
-# ---------- NAT Gateway (1개 - 비용 절약. 프로덕션이면 AZ당 1개) ----------
-resource "aws_eip" "nat" {
-  domain = "vpc"
-  tags   = { Name = "${var.project_name}-${var.environment}-nat-eip" }
-}
-
+# ---------- Public Subnet: ALB, NAT 배치 ----------
 resource "aws_subnet" "public" {
   count                   = length(var.availability_zones)
   vpc_id                  = aws_vpc.this.id
@@ -75,15 +36,71 @@ resource "aws_subnet" "public" {
   }
 }
 
-# ---------- 라우팅 ----------
-# Public: 인터넷으로 직행
+# ---------- Private Subnet: EKS 워커 노드 ----------
+resource "aws_subnet" "private" {
+  count             = length(var.availability_zones)
+  vpc_id            = aws_vpc.this.id
+  cidr_block        = var.private_subnet_cidrs[count.index]
+  availability_zone = var.availability_zones[count.index]
+
+  tags = merge(
+    {
+      Name = "${var.project_name}-${var.environment}-private-${var.availability_zones[count.index]}"
+
+      "kubernetes.io/role/internal-elb" = "1"
+    },
+    var.availability_zones[count.index] == var.primary_availability_zone ? {
+      "karpenter.sh/discovery" = var.cluster_name
+    } : {}
+  )
+}
+
+# ---------- DB Subnet: RDS 전용 ----------
+resource "aws_subnet" "db" {
+  count             = length(var.availability_zones)
+  vpc_id            = aws_vpc.this.id
+  cidr_block        = var.database_subnet_cidrs[count.index]
+  availability_zone = var.availability_zones[count.index]
+
+  tags = {
+    Name = "${var.project_name}-${var.environment}-db-${var.availability_zones[count.index]}"
+  }
+}
+
+# ---------- NAT Gateway ----------
+resource "aws_eip" "nat" {
+  domain = "vpc"
+
+  tags = {
+    Name = "${var.project_name}-${var.environment}-nat-eip"
+  }
+}
+
+resource "aws_nat_gateway" "this" {
+  allocation_id = aws_eip.nat.id
+  subnet_id     = aws_subnet.public[0].id
+
+  tags = {
+    Name = "${var.project_name}-${var.environment}-nat"
+  }
+
+  depends_on = [
+    aws_internet_gateway.this
+  ]
+}
+
+# ---------- Public Routing ----------
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.this.id
+
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.this.id
   }
-  tags = { Name = "${var.project_name}-${var.environment}-rt-public" }
+
+  tags = {
+    Name = "${var.project_name}-${var.environment}-rt-public"
+  }
 }
 
 resource "aws_route_table_association" "public" {
@@ -92,14 +109,18 @@ resource "aws_route_table_association" "public" {
   route_table_id = aws_route_table.public.id
 }
 
-# Private: 아웃바운드만 NAT 경유 (동기화 CronJob의 football-data.org 호출 경로)
+# ---------- Private Routing ----------
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.this.id
+
   route {
     cidr_block     = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.this.id
   }
-  tags = { Name = "${var.project_name}-${var.environment}-rt-private" }
+
+  tags = {
+    Name = "${var.project_name}-${var.environment}-rt-private"
+  }
 }
 
 resource "aws_route_table_association" "private" {
@@ -108,10 +129,13 @@ resource "aws_route_table_association" "private" {
   route_table_id = aws_route_table.private.id
 }
 
-# DB: 인터넷 경로 자체가 없음 (VPC 내부 통신만 가능 = 가장 안쪽 금고)
+# ---------- DB Routing ----------
 resource "aws_route_table" "db" {
   vpc_id = aws_vpc.this.id
-  tags   = { Name = "${var.project_name}-${var.environment}-rt-db" }
+
+  tags = {
+    Name = "${var.project_name}-${var.environment}-rt-db"
+  }
 }
 
 resource "aws_route_table_association" "db" {
