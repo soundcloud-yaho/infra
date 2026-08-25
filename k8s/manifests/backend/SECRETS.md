@@ -1,51 +1,76 @@
 # 수동 생성 Secret 목록
 
-이 값들은 비밀이라 git에 올리지 않는다. root-app apply 전에 아래 명령어로 클러스터에 직접 생성
-실제 값은 이 문서에 적지 않는다 — 명령어 형태만 기록
+이 값들은 비밀이라 git에 올리지 않는다. root-app apply 전에 아래 명령어로 클러스터에 직접 생성한다.
+실제 값은 이 문서에 적지 않는다 — 명령어 형태만 기록한다.
 
 ## rds-db-secret (namespace: app)
+
 DB 비밀번호. backend Deployment + sync-matches CronJob이 사용.
 
+```bash
 kubectl create secret generic rds-db-secret \
   --namespace=app \
   --from-literal=DB_PASSWORD='<실제 비번으로 교체>'
+```
+
+## football-api-secret (namespace: app)
+
+football-data.org 경기 동기화 API 키. sync-matches CronJob이 사용.
+
+```bash
+kubectl create secret generic football-api-secret \
+  --namespace=app \
+  --from-literal=FOOTBALL_DATA_API_KEY='<실제 API 키로 교체>'
+```
 
 ## tailscale-auth (namespace: tailscale)
+
 Tailscale 인증키. subnet router 파드가 tailnet 로그인에 사용.
 
+```bash
 kubectl create secret generic tailscale-auth \
   --namespace=tailscale \
   --from-literal=TS_AUTHKEY='<실제 키로 교체>'
+```
 
 ## slack-webhook (namespace: ai)
+
 Quantile Regression 노드 사이징 권고 결과 전송용.
 
+```bash
 kubectl create secret generic slack-webhook \
   --namespace=ai \
   --from-literal=SLACK_WEBHOOK_URL='<실제 URL로 교체>'
+```
 
-## grafana adein 
+## grafana admin (namespace: monitoring)
+
+```bash
 kubectl create secret generic grafana-admin-secret \
   --namespace=monitoring \
   --from-literal=admin-user='admin' \
   --from-literal=admin-password='<실제 비번>'
+```
+
 ---
 
 ## 자동 생성되는 것 (참고, 수동 생성 불필요)
 
 - tailscale-state (namespace: tailscale) — tailscale 파드가 TS_KUBE_SECRET으로 자동 생성. rbac.yaml의 secret 권한으로 가능.
 
----------------------------
+---
+
 ### scripts/rds-db-secret.sh
-실행 환경에 따라 바꿀 수 있게 환경 변수를 썼습니다
+
+실행 환경에 따라 바꿀 수 있게 환경 변수를 사용한다.
 
 ### 전제 조건
 
 - `terraform`, `aws`, `kubectl`, `jq` 설치
 - AWS CLI 인증 완료
-- EKS와 Aurora가 Terraform으로 생성된 상태
-- Terraform state에 `master_user_secret_arn` output 존재
-- 실행 IAM 주체에 다음 권한 필요
+- EKS와 RDS가 Terraform으로 생성된 상태
+- Terraform state에 `database_master_user_secret_arn` output 존재
+- 실행 IAM 주체에 다음 권한 필요:
   - `secretsmanager:GetSecretValue`
   - 필요 시 `kms:Decrypt`
   - EKS kubeconfig 설정 시 `eks:DescribeCluster`
@@ -54,6 +79,8 @@ kubectl create secret generic grafana-admin-secret \
 - `app` Namespace가 미리 생성되어 있어야 함
 
 ### 실행
+
+```bash
 # 터미널 루트 이동
 cd ~/project03/infra
 
@@ -63,18 +90,24 @@ chmod +x scripts/rds-db-secret.sh
 # 스크립트 실행
 ./scripts/rds-db-secret.sh
 
-# 정상 작동 확인 // 데이터가 1이면 DB_PASSWORD 키가 생성된 것
+# 정상 작동 확인
 kubectl get secret rds-db-secret -n app
-# NAME               TYPE     DATA
+
+# NAME            TYPE     DATA
 # rds-db-secret   Opaque   1
----------------------------
-# secret값이 변경된 경우에 재시작 // pod가 올라올 때까지 최대 180초 대기 
+```
+
+### Secret 값 변경 시 backend 재시작
+
+```bash
 kubectl rollout restart deployment/backend -n app
+
 kubectl rollout status \
   deployment/backend \
   -n app \
   --timeout=180s
 
 # deployment "backend" successfully rolled out
-# or
+# 또는
 # error: timed out waiting for the condition
+```
