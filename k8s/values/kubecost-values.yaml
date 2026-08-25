@@ -35,6 +35,7 @@ serviceAccount:
 
 nodeSelector:
   role: system
+  topology.kubernetes.io/zone: ap-northeast-2a
 
 serviceMonitor:
   enabled: true
@@ -55,6 +56,9 @@ finopsagent:
   serviceAccount:
     create: true
     name: "kubecost-cost-analyzer"
+  nodeSelector:                                    
+    role: system
+    topology.kubernetes.io/zone: ap-northeast-2a
   persistence:
     storageClass: "gp3"
     accessModes:
