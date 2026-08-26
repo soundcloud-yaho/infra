@@ -1,0 +1,55 @@
+# rps-cleaner: ALB(YACE) 트래픽을 동적 임계치로 정제해 Pushgateway push
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: rps-cleaner
+  namespace: ai
+  labels:
+    app: rps-cleaner
+    component: preprocessing
+spec:
+  schedule: "*/2 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 60
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 60
+      template:
+        metadata:
+          labels:
+            app: rps-cleaner
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: rps-cleaner
+              image: 201243087060.dkr.ecr.ap-northeast-2.amazonaws.com/soundcloud-prod/ai:1f8aae6
+              workingDir: /app/threshold
+              command:
+                - python
+                - pipeline.py
+              env:
+                - name: PROMETHEUS_URL
+                  value: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
+                - name: PROMETHEUS_QUERY
+                  value: 'sum(rate(aws_applicationelb_request_count_sum{dimension_LoadBalancer="app/k8s-app-backend-5483e600d4/22efcf4cb50567d5"}[1m]))'
+                - name: LOOKBACK_MINUTES
+                  value: "22"
+                - name: PUSHGATEWAY_URL
+                  value: http://pushgateway-prometheus-pushgateway.monitoring.svc:9091
+                - name: PUSHGATEWAY_JOB
+                  value: rps-cleaner
+                - name: PUSHGATEWAY_INSTANCE
+                  value: rps-cleaner
+                - name: METRIC_NAME
+                  value: rps_cleaned
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 64Mi
+                limits:
+                  cpu: 200m
+                  memory: 128Mi
