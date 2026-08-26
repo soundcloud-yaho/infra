@@ -39,7 +39,7 @@ data:
           },
           "type": "row",
           "title": "예측 검증",
-          "collapsed": true,
+          "collapsed": false,
           "panels": [
             {
               "id": 117,
@@ -500,7 +500,7 @@ data:
           },
           "type": "row",
           "title": "정제",
-          "collapsed": true,
+          "collapsed": false,
           "panels": [
             {
               "id": 133,
@@ -852,7 +852,7 @@ data:
           },
           "type": "row",
           "title": "인프라 영역",
-          "collapsed": true,
+          "collapsed": false,
           "panels": [
             {
               "id": 98,
@@ -1229,7 +1229,7 @@ data:
           },
           "type": "row",
           "title": "서비스 영역",
-          "collapsed": true,
+          "collapsed": false,
           "panels": [
             {
               "id": 101,
@@ -2160,7 +2160,7 @@ data:
           },
           "type": "row",
           "title": "비용 효율",
-          "collapsed": true,
+          "collapsed": false,
           "panels": [
             {
               "id": 107,
@@ -2571,7 +2571,7 @@ data:
           },
           "type": "row",
           "title": "유휴 자원",
-          "collapsed": true,
+          "collapsed": false,
           "panels": [
             {
               "id": 129,
@@ -2635,7 +2635,7 @@ data:
                     "type": "prometheus",
                     "uid": "prometheus"
                   },
-                  "expr": "quantile_over_time(0.5, (sum by (namespace) (rate(container_cpu_usage_seconds_total{namespace!=\"\", container!=\"\", container!=\"POD\"}[5m])))[7d:5m])",
+                  "expr": "quantile_over_time(0.5, (sum by (namespace) (rate(container_cpu_usage_seconds_total{namespace!=\"\", container!=\"\", container!=\"POD\"}[5m])))[6h:5m])",
                   "legendFormat": "usage_median",
                   "instant": true,
                   "editorMode": "code"
@@ -2646,7 +2646,7 @@ data:
                     "type": "prometheus",
                     "uid": "prometheus"
                   },
-                  "expr": "quantile_over_time(0.95, (sum by (namespace) (rate(container_cpu_usage_seconds_total{namespace!=\"\", container!=\"\", container!=\"POD\"}[5m])))[7d:5m])",
+                  "expr": "quantile_over_time(0.95, (sum by (namespace) (rate(container_cpu_usage_seconds_total{namespace!=\"\", container!=\"\", container!=\"POD\"}[5m])))[6h:5m])",
                   "legendFormat": "usage_p95",
                   "instant": true,
                   "editorMode": "code"
@@ -2796,7 +2796,7 @@ data:
                     "type": "prometheus",
                     "uid": "prometheus"
                   },
-                  "expr": "(\n  sum by (namespace) (kube_pod_container_resource_requests{resource=\"cpu\", namespace!=\"\"})\n  -\n  sum by (namespace) (rate(container_cpu_usage_seconds_total{namespace!=\"\", container!=\"\", container!=\"POD\"}[5m]))\n)\n*\n(sum(worldcup_ondemand_realtime_price_usd) / sum(kube_node_status_capacity{resource=\"cpu\"}))",
+                  "expr": "(\n  sum by (namespace) (kube_pod_container_resource_requests{resource="cpu", namespace!=""}) - sum by (namespace) (rate(container_cpu_usage_seconds_total{namespace!="", container!="", container!="POD"}[5m]))) * on() group_left() (sum(worldcup_ondemand_realtime_price_usd) / sum(kube_node_status_capacity{resource="cpu"}))",
                   "legendFormat": "{{namespace}}",
                   "range": true,
                   "editorMode": "code"
@@ -2868,7 +2868,7 @@ data:
                     "type": "prometheus",
                     "uid": "prometheus"
                   },
-                  "expr": "sum(\n  (\n    sum by (namespace) (kube_pod_container_resource_requests{resource=\"cpu\", namespace!=\"\"})\n    -\n    sum by (namespace) (rate(container_cpu_usage_seconds_total{namespace!=\"\", container!=\"\", container!=\"POD\"}[5m]))\n  )\n  *\n  (sum(worldcup_ondemand_realtime_price_usd) / sum(kube_node_status_capacity{resource=\"cpu\"}))\n)",
+                  "expr": "sum(\n  (\n    sum by (namespace) (kube_pod_container_resource_requests{resource=\"cpu\", namespace!=\"\"})\n    -\n    sum by (namespace) (rate(container_cpu_usage_seconds_total{namespace!=\"\", container!=\"\", container!=\"POD\"}[5m]))\n  )\n  * on() group_left()\n  (sum(worldcup_ondemand_realtime_price_usd) / sum(kube_node_status_capacity{resource=\"cpu\"}))\n)",
                   "legendFormat": "클러스터 총 유휴 비용",
                   "instant": true,
                   "editorMode": "code"
@@ -2972,7 +2972,7 @@ data:
                     "type": "prometheus",
                     "uid": "prometheus"
                   },
-                  "expr": "(\n  sum(kube_node_status_capacity{resource=\"cpu\"})\n  -\n  sum(kube_pod_container_resource_requests{resource=\"cpu\", namespace!=\"\"})\n)\n*\n(sum(worldcup_ondemand_realtime_price_usd) / sum(kube_node_status_capacity{resource=\"cpu\"}))",
+                  "expr": "(\n  sum(kube_node_status_capacity{resource=\"cpu\"})\n  -\n  sum(kube_pod_container_resource_requests{resource=\"cpu\", namespace!=\"\"})\n)\n* on() group_left()\n(sum(worldcup_ondemand_realtime_price_usd) / sum(kube_node_status_capacity{resource=\"cpu\"}))",
                   "legendFormat": "노드 미할당 여유 비용",
                   "range": true,
                   "editorMode": "code"
