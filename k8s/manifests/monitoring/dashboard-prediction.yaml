@@ -758,7 +758,7 @@ data:
                       "mode": "none"
                     },
                     "thresholdsStyle": {
-                      "mode": "off"
+                      "mode": "dashed"
                     }
                   },
                   "thresholds": {
@@ -776,7 +776,23 @@ data:
                   },
                   "unit": "short"
                 },
-                "overrides": []
+                "overrides": [
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "정제 RPS"
+                    },
+                    "properties": [
+                      {
+                        "id": "color",
+                        "value": {
+                          "mode": "fixed",
+                          "fixedColor": "blue"
+                        }
+                      }
+                    ]
+                  }
+                ]
               },
               "options": {
                 "annotations": {
