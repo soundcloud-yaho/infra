@@ -15,8 +15,8 @@ data:
             - name: RequestCount
               statistics: [Sum]
               period: 60
-              length: 300
+              length: 60
             - name: HTTPCode_ELB_5XX_Count
               statistics: [Sum]
               period: 60
-              length: 300
+              length: 60
