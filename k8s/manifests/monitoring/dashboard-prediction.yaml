@@ -2796,7 +2796,7 @@ data:
                     "type": "prometheus",
                     "uid": "prometheus"
                   },
-                  "expr": "(\n  sum by (namespace) (kube_pod_container_resource_requests{resource="cpu", namespace!=""}) - sum by (namespace) (rate(container_cpu_usage_seconds_total{namespace!="", container!="", container!="POD"}[5m]))) * on() group_left() (sum(worldcup_ondemand_realtime_price_usd) / sum(kube_node_status_capacity{resource="cpu"}))",
+                  "expr": "(\n  sum by (namespace) (kube_pod_container_resource_requests{resource=\"cpu\", namespace!=\"\"}) - sum by (namespace) (rate(container_cpu_usage_seconds_total{namespace!=\"\", container!=\"\", container!=\"POD\"}[5m]))) * on() group_left() (sum(worldcup_ondemand_realtime_price_usd) / sum(kube_node_status_capacity{resource=\"cpu\"}))",
                   "legendFormat": "{{namespace}}",
                   "range": true,
                   "editorMode": "code"
