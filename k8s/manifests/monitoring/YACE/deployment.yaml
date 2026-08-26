@@ -23,6 +23,11 @@ spec:
           image: ghcr.io/nerdswords/yet-another-cloudwatch-exporter:v0.61.0
           args:
             - "--config.file=/config/config.yml"
+            - "--scraping-interval=60"   # 기본 300s(5분) -> 60s(1분)로 단축.
+                                          # CloudWatch ALB 메트릭 자체가 1분 단위 집계라
+                                          # 이 값과 맞춰야 부하테스트처럼 짧은 스파이크를
+                                          # 스크랩 주기가 놓치는 문제가 사라짐.
+                                          # decoupled-scraping은 이 버전에서 기본 활성화라 별도 지정 불필요.
           ports:
             - name: metrics
               containerPort: 5000
