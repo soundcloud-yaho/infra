@@ -19,10 +19,12 @@ data:
             statistics: [Sum]
             period: 60
             length: 300
+            delay: 180
           - name: HTTPCode_ELB_5XX_Count
             statistics: [Sum]
             period: 60
             length: 300
+            delay: 180
       - namespace: AWS/ApplicationELB
         name: backend-tg-metrics
         regions:
@@ -37,3 +39,4 @@ data:
             statistics: [Sum]
             period: 60
             length: 300
+            delay: 180
