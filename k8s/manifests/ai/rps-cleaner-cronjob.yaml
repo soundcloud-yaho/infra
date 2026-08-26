@@ -26,7 +26,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: rps-cleaner
-              image: 201243087060.dkr.ecr.ap-northeast-2.amazonaws.com/soundcloud-prod/ai:1f8aae6
+              image: 201243087060.dkr.ecr.ap-northeast-2.amazonaws.com/soundcloud-prod/ai:2d25af0
               workingDir: /app/threshold
               command:
                 - python
@@ -35,7 +35,7 @@ spec:
                 - name: PROMETHEUS_URL
                   value: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
                 - name: PROMETHEUS_QUERY
-                  value: 'sum(aws_applicationelb_request_count_sum{dimension_LoadBalancer="app/k8s-app-backend-5483e600d4/22efcf4cb50567d5", dimension_TargetGroup=""}) / 60'
+                  value: 'sum(rate(aws_applicationelb_request_count_sum{dimension_LoadBalancer="app/k8s-app-backend-5483e600d4/22efcf4cb50567d5"}[1m]))'
                 - name: LOOKBACK_MINUTES
                   value: "22"
                 - name: PUSHGATEWAY_URL
