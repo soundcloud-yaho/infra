@@ -19,12 +19,12 @@ data:
             statistics: [Sum]
             period: 60
             length: 300
-            delay: 180
+            # delay 제거: v0.61.0 로그에서 "delay가 무시됨"이라는 경고가 확인됨.
+            # scraping-interval=60으로 단축했으니 이 필드 없이도 충분히 최신 데이터를 가져옴.
           - name: HTTPCode_ELB_5XX_Count
             statistics: [Sum]
             period: 60
             length: 300
-            delay: 180
       - namespace: AWS/ApplicationELB
         name: backend-tg-metrics
         regions:
@@ -39,4 +39,3 @@ data:
             statistics: [Sum]
             period: 60
             length: 300
-            delay: 180
