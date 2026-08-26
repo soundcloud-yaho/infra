@@ -6,17 +6,34 @@ metadata:
 data:
   config.yml: |
     apiVersion: v1alpha1
-    discovery:
-      jobs:
-        - type: AWS/ApplicationELB
-          regions:
-            - ap-northeast-2
-          metrics:
-            - name: RequestCount
-              statistics: [Sum]
-              period: 60
-              length: 60
-            - name: HTTPCode_ELB_5XX_Count
-              statistics: [Sum]
-              period: 60
-              length: 60
+    static:
+      - namespace: AWS/ApplicationELB
+        name: backend-alb-metrics
+        regions:
+          - ap-northeast-2
+        dimensions:
+          - name: LoadBalancer
+            value: app/k8s-app-backend-5483e600d4/22efcf4cb50567d5
+        metrics:
+          - name: RequestCount
+            statistics: [Sum]
+            period: 60
+            length: 300
+          - name: HTTPCode_ELB_5XX_Count
+            statistics: [Sum]
+            period: 60
+            length: 300
+      - namespace: AWS/ApplicationELB
+        name: backend-tg-metrics
+        regions:
+          - ap-northeast-2
+        dimensions:
+          - name: LoadBalancer
+            value: app/k8s-app-backend-5483e600d4/22efcf4cb50567d5
+          - name: TargetGroup
+            value: targetgroup/k8s-app-backend-d012a4edbd/62586c85ba0829f9
+        metrics:
+          - name: RequestCount
+            statistics: [Sum]
+            period: 60
+            length: 300
