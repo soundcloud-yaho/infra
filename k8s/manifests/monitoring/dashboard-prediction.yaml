@@ -8,7 +8,6 @@ metadata:
 data:
   prediction-dashboard.json: |
     {
-      "uid": "worldcup-prediction-dashboard",
       "schemaVersion": 42,
       "title": "SoundCloud dashboard",
       "tags": [],
@@ -138,8 +137,7 @@ data:
                   {
                     "matcher": {
                       "id": "byName",
-                      "options": "실측 RPS",
-                      "scope": "series"
+                      "options": "실측 RPS"
                     },
                     "properties": [
                       {
@@ -507,8 +505,8 @@ data:
             {
               "id": 133,
               "gridPos": {
-                "h": 8,
-                "w": 8,
+                "h": 6,
+                "w": 6,
                 "x": 0,
                 "y": 0
               },
@@ -540,7 +538,7 @@ data:
               },
               "options": {
                 "colorMode": "value",
-                "graphMode": "area",
+                "graphMode": "none",
                 "justifyMode": "auto",
                 "orientation": "auto",
                 "percentChangeColorMode": "standard",
@@ -576,9 +574,9 @@ data:
             {
               "id": 134,
               "gridPos": {
-                "h": 8,
-                "w": 8,
-                "x": 8,
+                "h": 6,
+                "w": 6,
+                "x": 6,
                 "y": 0
               },
               "type": "stat",
@@ -608,7 +606,7 @@ data:
               },
               "options": {
                 "colorMode": "value",
-                "graphMode": "area",
+                "graphMode": "none",
                 "justifyMode": "auto",
                 "orientation": "auto",
                 "percentChangeColorMode": "standard",
@@ -644,9 +642,9 @@ data:
             {
               "id": 135,
               "gridPos": {
-                "h": 8,
-                "w": 8,
-                "x": 16,
+                "h": 6,
+                "w": 6,
+                "x": 12,
                 "y": 0
               },
               "type": "stat",
@@ -681,7 +679,7 @@ data:
               },
               "options": {
                 "colorMode": "value",
-                "graphMode": "area",
+                "graphMode": "none",
                 "justifyMode": "auto",
                 "orientation": "auto",
                 "percentChangeColorMode": "standard",
@@ -718,9 +716,9 @@ data:
               "id": 136,
               "gridPos": {
                 "h": 8,
-                "w": 8,
+                "w": 18,
                 "x": 0,
-                "y": 8
+                "y": 6
               },
               "type": "timeseries",
               "title": "원본 RPS vs 정제값",
@@ -760,7 +758,7 @@ data:
                       "mode": "none"
                     },
                     "thresholdsStyle": {
-                      "mode": "off"
+                      "mode": "dashed"
                     }
                   },
                   "thresholds": {
@@ -778,7 +776,23 @@ data:
                   },
                   "unit": "short"
                 },
-                "overrides": []
+                "overrides": [
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "정제 RPS"
+                    },
+                    "properties": [
+                      {
+                        "id": "color",
+                        "value": {
+                          "mode": "fixed",
+                          "fixedColor": "blue"
+                        }
+                      }
+                    ]
+                  }
+                ]
               },
               "options": {
                 "annotations": {
@@ -2331,7 +2345,7 @@ data:
                     "uid": "prometheus"
                   },
                   "expr": "count(\r\n  node_total_hourly_cost\r\n  * on(node) group_left()\r\n  kube_node_labels{job=\"kubecost-cost-analyzer\", label_eks_amazonaws_com_capacityType!=\"ON_DEMAND\"}\r\n)",
-                  "legendFormat": "__auto",
+                  "legendFormat": "spot 노드 수",
                   "range": true,
                   "editorMode": "code"
                 }
@@ -2656,47 +2670,38 @@ data:
               ],
               "transformations": [
                 {
-                  "group": "joinByField",
-                  "kind": "Transformation",
-                  "spec": {
-                    "options": {
-                      "byField": "namespace",
-                      "mode": "outer"
+                  "id": "joinByField",
+                  "options": {
+                    "byField": "namespace",
+                    "mode": "outer"
+                  }
+                },
+                {
+                  "id": "organize",
+                  "options": {
+                    "excludeByName": {
+                      "Time": true,
+                      "Time 1": true,
+                      "Time 2": true,
+                      "Time 3": true
+                    },
+                    "renameByName": {
+                      "Value #A": "request (core)",
+                      "Value #B": "평시 usage (core)",
+                      "Value #C": "피크 usage (core)"
                     }
                   }
                 },
                 {
-                  "group": "organize",
-                  "kind": "Transformation",
-                  "spec": {
-                    "options": {
-                      "excludeByName": {
-                        "Time": true,
-                        "Time 1": true,
-                        "Time 2": true,
-                        "Time 3": true
-                      },
-                      "renameByName": {
-                        "Value #A": "request (core)",
-                        "Value #B": "평시 usage (core)",
-                        "Value #C": "피크 usage (core)"
-                      }
-                    }
-                  }
-                },
-                {
-                  "group": "calculateField",
-                  "kind": "Transformation",
-                  "spec": {
-                    "options": {
-                      "alias": "유휴율(평시,%)",
-                      "binary": {
-                        "left": "request (core)",
-                        "operator": "-",
-                        "right": "평시 usage (core)"
-                      },
-                      "mode": "binary"
-                    }
+                  "id": "calculateField",
+                  "options": {
+                    "alias": "유휴율(평시,%)",
+                    "binary": {
+                      "left": "request (core)",
+                      "operator": "-",
+                      "right": "평시 usage (core)"
+                    },
+                    "mode": "binary"
                   }
                 }
               ],
@@ -2798,7 +2803,7 @@ data:
                     "type": "prometheus",
                     "uid": "prometheus"
                   },
-                  "expr": "(\n  sum by (namespace) (kube_pod_container_resource_requests{resource=\"cpu\", namespace!=\"\"}) - sum by (namespace) (rate(container_cpu_usage_seconds_total{namespace!=\"\", container!=\"\", container!=\"POD\"}[5m]))\n) * on() group_left() (sum(worldcup_ondemand_realtime_price_usd) / sum(kube_node_status_capacity{resource=\"cpu\"}))",
+                  "expr": "(\n  sum by (namespace) (kube_pod_container_resource_requests{resource=\"cpu\", namespace!=\"\"}) - sum by (namespace) (rate(container_cpu_usage_seconds_total{namespace!=\"\", container!=\"\", container!=\"POD\"}[5m]))) * on() group_left() (sum(worldcup_ondemand_realtime_price_usd) / sum(kube_node_status_capacity{resource=\"cpu\"}))",
                   "legendFormat": "{{namespace}}",
                   "range": true,
                   "editorMode": "code"
@@ -3032,7 +3037,11 @@ data:
               "refId": "Anno"
             },
             "titleFormat": "{{pod}} Pending",
-            "tagKeys": "pending"
+            "tagKeys": "pending",
+            "filter": {
+              "exclude": false,
+              "ids": [104]
+            }
           },
           {
             "name": "Pod CrashLoopBackOff",
@@ -3048,7 +3057,11 @@ data:
               "refId": "Anno"
             },
             "titleFormat": "{{pod}} CrashLoopBackOff",
-            "tagKeys": "CrashLoopBackOff"
+            "tagKeys": "CrashLoopBackOff",
+            "filter": {
+              "exclude": false,
+              "ids": [104]
+            }
           },
           {
             "name": "Pod OOMKilled",
@@ -3064,7 +3077,11 @@ data:
               "refId": "Anno"
             },
             "titleFormat": "{{pod}} OOMKilled",
-            "tagKeys": "OOMKilled"
+            "tagKeys": "OOMKilled",
+            "filter": {
+              "exclude": false,
+              "ids": [104]
+            }
           },
           {
             "name": "Pod Restart",
@@ -3080,7 +3097,11 @@ data:
               "refId": "Anno"
             },
             "titleFormat": "{{pod}} Restarted",
-            "tagKeys": "Restarted"
+            "tagKeys": "Restarted",
+            "filter": {
+              "exclude": false,
+              "ids": [104]
+            }
           },
           {
             "name": "Annotations & Alerts",
@@ -3110,7 +3131,11 @@ data:
               "refId": "Anno"
             },
             "titleFormat": "{{pod}} Unknown",
-            "tagKeys": "Unknown"
+            "tagKeys": "Unknown",
+            "filter": {
+              "exclude": false,
+              "ids": [104]
+            }
           }
         ]
       },
